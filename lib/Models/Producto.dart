@@ -2,15 +2,20 @@ import 'dart:ffi';
 
 class Producto {
   late String nombre;
-  late String marca;
   late Float precio;
-  late Float descuento;
+  late String precioLbCurrency;
+  late Float precioLb;
+  late String imagenUrl;
+  late String descripcion;
+  late Int cantInventario;
 
-  Producto(n, m, p, d) {
+  Producto(n, p, plc, pl, url, d, ci) {
     nombre = n;
-    marca = m;
     precio = p;
-    descuento = d;
+    precioLbCurrency = plc;
+    precioLb = pl;
+    imagenUrl = url;
+    descripcion = d;
+    cantInventario = ci;
   }
-
 }

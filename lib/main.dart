@@ -1,5 +1,6 @@
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -36,29 +37,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Gif>> lista;
+  // Future<List<Gif>> lista;
 
-  Future<List<Gif>> _getGifs() {
-    return lista;
-  }
+  // Future<List<Gif>> _getGifs() {
+  //   return lista;
+  // }
 
-  Future<List<Producto>> prods;
+  // Future<List<Producto>> prods;
 
-  Future<List<Producto>> _getProductos() async {
-    final response = await http.get(
-        "https://api.giphy.com/v1/gifs/trending?api_key=3NX1Mo2zvXicwQp42SjR6ESUbWO4Ykoo&limit=10&rating=g");
+  // Future<List<Producto>> _getProductos() async {
+  //   final response = await http.get(
+  //       "https://api.giphy.com/v1/gifs/trending?api_key=3NX1Mo2zvXicwQp42SjR6ESUbWO4Ykoo&limit=10&rating=g");
 
-    if (response.statusCode == 200) {
-      print(response.body);
-    } else {
-      throw Exception("Error");
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     print(response.body);
+  //   } else {
+  //     throw Exception("Error");
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    _getProductos();
+    // _getProductos();
   }
 
   static const _menuItems = <String>[
@@ -153,28 +154,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           ),
-          Container(
-            alignment: Alignment.center,
-            height: 100,
-            decoration: BoxDecoration(
-                color: Colors.amber, borderRadius: BorderRadius.circular(20)),
-            margin: const EdgeInsets.all(10),
-            child: const Text(
-              "hello",
-              textScaleFactor: 3,
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            height: 100,
-            decoration: BoxDecoration(
-                color: Colors.amber, borderRadius: BorderRadius.circular(20)),
-            margin: EdgeInsets.all(10),
-            child: Text(
-              "hello",
-              textScaleFactor: 3,
-            ),
-          )
         ],
       ),
       drawer: Drawer(
