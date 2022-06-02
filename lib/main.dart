@@ -1,9 +1,5 @@
-import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'DiploMarket',
       theme: ThemeData(
         useMaterial3: true,
       ),
@@ -24,4 +20,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
