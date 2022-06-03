@@ -1,5 +1,8 @@
 import 'package:e_commerce/Pages/homePage.dart';
+import 'package:e_commerce/Pages/loginPage.dart';
 import 'package:flutter/material.dart';
+
+import 'Pages/registerPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +19,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: homePage(),
+      initialRoute: '/home',
+      routes: {
+        '/': (context) => homePage(),
+        '/home': (context) => homePage(),
+        '/login': (context) => loginPage(),
+        '/register': (context) => registerPage(),
+      },
     );
   }
 }

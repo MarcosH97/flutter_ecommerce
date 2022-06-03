@@ -10,7 +10,6 @@ class remote {
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
-      
     }
   }
 }
