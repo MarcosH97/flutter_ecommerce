@@ -1,11 +1,12 @@
 buildscript {
     ext.kotlin_version = '1.6.10'
     repositories {
+        mavenCentral()
         google()
         maven{
             url 'https://dl.google.com/dl/android/maven2'
         }
-        mavenCentral()
+        
     }
 
     dependencies {

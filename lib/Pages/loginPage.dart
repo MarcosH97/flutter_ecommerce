@@ -1,6 +1,9 @@
 import 'package:e_commerce/Widgets/glassmorph.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
+import 'package:snippet_coder_utils/ProgressHUD.dart';
 import '../Utils/Device.dart';
 
 class loginPage extends StatefulWidget {
@@ -11,10 +14,12 @@ class loginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<loginPage> {
-  final GlobalKey<FormFieldState<String>> _password =
-      GlobalKey<FormFieldState<String>>();
+  final GlobalKey<FormFieldState> _globalKey = GlobalKey<FormFieldState>();
+  bool isAPICallProcess = false;
+  bool hidePassword = true;
 
   String? _username;
+  String? _password;
 
   String? validateName(String? value) {
     if (value?.isEmpty ?? false) {
@@ -25,117 +30,192 @@ class _loginPageState extends State<loginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/Login01bg.png'),
-                  fit: BoxFit.cover)),
-          width: Device().isMobile(context)
-              ? MediaQuery.of(context).size.width
-              : MediaQuery.of(context).size.width / 3,
-          height: MediaQuery.of(context).size.height,
+    return ProgressHUD(
+      inAsyncCall: isAPICallProcess,
+      key: UniqueKey(),
+      child: Form(
+        key: _globalKey,
+        child: RawKeyboardListener(
+          autofocus: true,
+          onKey: (event) {
+            if (event.isKeyPressed(LogicalKeyboardKey.escape)) {
+              Navigator.popAndPushNamed(context, '/home');
+            }
+          },
+          focusNode: FocusNode(),
           child: Column(
             children: [
-              Card(
-                margin: Device().isMobile(context)
-                    ? EdgeInsets.only(top: 80, left: 20, right: 20)
-                    : EdgeInsets.only(top: 80),
-                color: Colors.transparent,
-                child: Glassmorphism(
-                    blur: 20,
-                    opacity: 0.7,
-                    child: Column(
-                      // ignore: prefer_const_literals_to_create_immutables
-                      children: <Widget>[
-                        const Image(
-                          image: AssetImage('assets/logo.png'),
-                          height: 200,
-                        ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        FormHelper.inputFieldWidget(
-                            context, 'username', 'Usuario', validateName,
-                            (onSaved) {
-                          _username = onSaved;
-                        },
-                            borderFocusColor: Colors.white,
-                            borderColor: Colors.white,
-                            textColor: Colors.grey,
-                            hintColor: Colors.grey.withOpacity(0.7),
-                            borderRadius: 10,
-                            backgroundColor: Colors.white),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        FormHelper.inputFieldWidget(
-                            context, 'password', 'Contraseña', validateName,
-                            (onSaved) {
-                          _username = onSaved;
-                        },
-                            borderFocusColor: Colors.white,
-                            borderColor: Colors.white,
-                            textColor: Colors.grey,
-                            hintColor: Colors.grey.withOpacity(0.7),
-                            borderRadius: 10,
-                            backgroundColor: Colors.white),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    )),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                    padding:
-                        MaterialStateProperty.all(const EdgeInsets.all(20)),
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.indigo[900]),
-                    fixedSize: MaterialStateProperty.all(
-                        Size(MediaQuery.of(context).size.width / 1.5, 60)),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)))),
-                onPressed: () {},
-                child: const Text(
-                  'L O G I N',
-                  textScaleFactor: 1.3,
-                  style: TextStyle(color: Colors.white, wordSpacing: 3),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                '¿Aún no tienes cuenta? ¡Crea una ya!',
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  decoration: TextDecoration.none,
-                  backgroundColor: Colors.grey,
-                  color: Colors.white,
-                ),
-              ),
-              const Card(
-                color: Colors.transparent,
-                child: Text(
-                  '¿Aún no tienes cuenta? ¡Crea una ya!',
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/LoginBGDesktop.png'),
+                        fit: BoxFit.cover)),
+                child: Column(
+                  children: [
+                    Container(
+                      width: Device().isMobile(context)
+                          ? MediaQuery.of(context).size.width
+                          : MediaQuery.of(context).size.width / 3,
+                      child: Card(
+                        margin: Device().isMobile(context)
+                            ? EdgeInsets.only(top: 80, left: 20, right: 20)
+                            : EdgeInsets.only(top: 80),
+                        color: Colors.transparent,
+                        child: Glassmorphism(
+                            blur: 30,
+                            opacity: 0.3,
+                            child: Column(
+                              // ignore: prefer_const_literals_to_create_immutables
+                              children: <Widget>[
+                                const Image(
+                                  image: AssetImage('assets/logo.png'),
+                                  height: 180,
+                                ),
+                                FormHelper.inputFieldWidget(context, 'username',
+                                    'Usuario', validateName, (onSaved) {
+                                  _username = onSaved;
+                                },
+                                    prefixIcon: const Icon(Icons.person),
+                                    showPrefixIcon: true,
+                                    prefixIconPaddingLeft: 10,
+                                    borderFocusColor: Colors.white,
+                                    borderColor: Colors.white,
+                                    textColor: Colors.grey,
+                                    hintColor: Colors.grey.withOpacity(0.7),
+                                    borderRadius: 10,
+                                    backgroundColor: Colors.white),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                FormHelper.inputFieldWidget(
+                                    context, 'password', 'Contraseña',
+                                    (onValidate) {
+                                  if (onValidate.isEmpty) {
+                                    return "El campo no puede estar vacio";
+                                  }
+                                }, (onSaved) {
+                                  _password = onSaved;
+                                },
+                                    prefixIcon: const Icon(Icons.lock),
+                                    prefixIconPaddingLeft: 10,
+                                    showPrefixIcon: true,
+                                    borderFocusColor: Colors.white,
+                                    borderColor: Colors.white,
+                                    textColor: Colors.grey,
+                                    hintColor: Colors.grey.withOpacity(0.7),
+                                    borderRadius: 10,
+                                    backgroundColor: Colors.white,
+                                    obscureText: hidePassword,
+                                    suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            hidePassword = !hidePassword;
+                                          });
+                                        },
+                                        color: Colors.grey.withOpacity(0.7),
+                                        icon: Icon(hidePassword
+                                            ? Icons.visibility_off
+                                            : Icons.visibility))),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: RichText(
+                                      text: TextSpan(
+                                          style: TextStyle(
+                                              color: Colors.amber,
+                                              fontSize: 16),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: "Contraseña olvidada",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    decoration: TextDecoration
+                                                        .underline),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        print(
+                                                            "forgot password");
+                                                      })
+                                          ]),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            )),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    FormHelper.submitButton("L O G I N", () {},
+                        borderColor: Colors.transparent,
+                        btnColor: Color.fromRGBO(22, 26, 72, 1),
+                        txtColor: Colors.white,
+                        width: Device().isMobile(context)
+                            ? MediaQuery.of(context).size.width / 1.5
+                            : MediaQuery.of(context).size.width / 3,
+                        height: 60,
+                        borderRadius: 10),
+
+                    // ElevatedButton(
+                    //   style: ButtonStyle(
+                    //       padding:
+                    //           MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    //       backgroundColor:
+                    //           MaterialStateProperty.all(Colors.indigo[900]),
+                    // fixedSize: MaterialStateProperty.all(Size(
+                    //     Device().isMobile(context)
+                    //         ? MediaQuery.of(context).size.width / 1.5
+                    //         : MediaQuery.of(context).size.width / 3,
+                    //     60)),
+                    //       shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(10)))),
+                    //   onPressed: () {},
+                    //   child: const Text(
+                    //     'L O G I N',
+                    //     textScaleFactor: 1.3,
+                    //     style: TextStyle(color: Colors.white, wordSpacing: 3),
+                    //   ),
+                    // ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: RichText(
+                        text: TextSpan(
+                            style: TextStyle(color: Colors.amber, fontSize: 16),
+                            children: <TextSpan>[
+                              TextSpan(text: "¿No tiene cuenta?"),
+                              TextSpan(
+                                  text: "¡Cree una!",
+                                  style: TextStyle(
+                                      color: Colors.grey[500],
+                                      decoration: TextDecoration.underline),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.pushNamed(context, "/register");
+                                    })
+                            ]),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

@@ -11,6 +11,16 @@ class foodPageBody extends StatefulWidget {
 }
 
 class _foodPageBodyState extends State<foodPageBody> {
+
+  List<String> imagesURL = [
+    "https://source.unsplash.com/featured/?vase",
+    "https://source.unsplash.com/featured/?lamp",
+    "https://source.unsplash.com/featured/?macbook",
+    "https://source.unsplash.com/featured/?iphone",
+    "https://source.unsplash.com/featured/?vacuum,cleaner"
+  ];
+
+
   @override
   Widget build(BuildContext context) {
     double wid = Device().isMobile(context) ? 400 : 500;
@@ -32,7 +42,10 @@ class _foodPageBodyState extends State<foodPageBody> {
         children: [
           Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), color: Colors.amber),
+              image: DecorationImage(image: NetworkImage(imagesURL[pos], 
+              ),fit: BoxFit.fill),
+                borderRadius: BorderRadius.circular(20), 
+                ),
           ),
           const Glassmorphism(
               blur: 30,
