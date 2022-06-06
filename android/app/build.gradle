@@ -25,6 +25,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def keysotreProperties = new Properties()
+def keysotrePropertiesFile = rootProject.file('key.properties')
+if(keysotrePropertiesFile.exists()){
+    keysotreProperties.load(new FileInputStream(keysotrePropertiesFile))
+}
+
 android {
     compileSdkVersion flutter.compileSdkVersion
 
@@ -43,7 +49,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.e_commerce"
+        applicationId "com.mahostudios.diplomarket"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()

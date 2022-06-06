@@ -1,5 +1,6 @@
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
+import 'package:e_commerce/Pages/productPage.dart';
 import 'package:flutter/material.dart';
 
 import 'Pages/registerPage.dart';
@@ -25,7 +26,9 @@ class MyApp extends StatelessWidget {
         '/home': (context) => homePage(),
         '/login': (context) => loginPage(),
         '/register': (context) => registerPage(),
+        '/product': (context) => productPage(),
       },
     );
   }
 }
+// 
