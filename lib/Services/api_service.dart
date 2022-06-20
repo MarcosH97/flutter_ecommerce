@@ -12,7 +12,7 @@ class api_service {
     {
       'Content-Type' : 'application/jason',
     };
-    var url = Uri.http(Config.apiURL, Config.loginAPI);
+    var url = Uri.http(Config.apiURL, Config.userAPI);
 
     var response = await client.post(
       url,
