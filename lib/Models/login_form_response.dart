@@ -1,10 +1,16 @@
+import 'dart:convert';
+
+login_form_response loginResponseJson(String s) =>
+    login_form_response.fromJson(json.decode(s));
+
 class login_form_response {
   late int count;
   Null next;
   Null previous;
   late List<Results> results;
 
-  login_form_response({required this.count, this.next, this.previous, required this.results});
+  login_form_response(
+      {required this.count, this.next, this.previous, required this.results});
 
   login_form_response.fromJson(Map<String, dynamic> json) {
     count = json['count'];

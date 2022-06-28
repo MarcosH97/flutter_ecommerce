@@ -2,12 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FormTextHelper extends StatelessWidget {
+  final String name;
   final String label;
   final String hint;
   final Icon icon;
 
   const FormTextHelper(
-      {Key? key, required this.label, required this.hint, required this.icon})
+      {Key? key,
+      required this.name,
+      required this.label,
+      required this.hint,
+      required this.icon})
       : super(key: key);
 
   @override
@@ -22,6 +27,10 @@ class FormTextHelper extends StatelessWidget {
           textAlignVertical: TextAlignVertical.center,
           maxLines: 1,
           focusNode: FocusNode(),
+          validator: _validateName,
+          onSaved: (String? value) {
+            
+          },
           decoration: InputDecoration(
               border: InputBorder.none,
               floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -31,5 +40,16 @@ class FormTextHelper extends StatelessWidget {
               hintText: hint,
               focusColor: Colors.blue)),
     );
+  }
+
+  String? _validateName(String? value) {
+    if (value?.isEmpty ?? false) {
+      return 'Nombre vacio';
+    }
+    // final RegExp nameRegExp = RegExp(r'^[A-Za-z]+$');
+    // if(!nameRegExp.hasMatch(value!)){
+
+    // }
+    return "";
   }
 }

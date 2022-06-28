@@ -4,6 +4,7 @@ import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Pages/foodPageBody.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
 import 'package:e_commerce/Pages/productPage.dart';
+import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Utils/Device.dart';
 import 'package:e_commerce/Utils/Responsive.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,25 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   String selmun = 'Habana del Este';
   String selcat = 'cat1';
+  late var textController = TextEditingController();
   List<bool> isFav = [];
+
+  Future openDialog() => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text('Nuevo IP'),
+            content: TextField(
+              controller: textController,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Config.apiURL = textController.text.toString();
+                },
+                child: Text('SUBMIT'),
+              )
+            ],
+          ));
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +90,10 @@ class _homePageState extends State<homePage> {
       // ignore: prefer_const_literals_to_create_immutables
       children: <Widget>[
         drawerHeader,
-        const ListTile(title: Text('Cuenta')),
+        ListTile(
+          title: Text('Cuenta'),
+          onTap: openDialog,
+        ),
         const ListTile(title: Text('Home')),
         const ListTile(title: Text('Categorias')),
         const ListTile(title: Text('Carrito')),
@@ -330,21 +352,27 @@ class _homePageState extends State<homePage> {
                                         child: IconButton(
                                           onPressed: () {
                                             setState(() {
-                                              isFav[0] = !isFav[0];
+                                              // isFav[index] = !isFav[index];
                                             });
                                           },
-                                          icon: !isFav[0]
-                                              ? const Icon(
-                                                  Icons
-                                                      .favorite_border_outlined,
-                                                  size: 42,
-                                                  color: Colors.red,
-                                                )
-                                              : const Icon(
-                                                  Icons.favorite,
-                                                  size: 42,
-                                                  color: Colors.red,
-                                                ),
+                                          icon: const Icon(
+                                            Icons.favorite_border_outlined,
+                                            size: 42,
+                                            color: Colors.red,
+                                          ),
+
+                                          // isFav[index]
+                                          //      const Icon(
+                                          //         Icons
+                                          //             .favorite_border_outlined,
+                                          //         size: 42,
+                                          //         color: Colors.red,
+                                          //       )
+                                          //     : const Icon(
+                                          //         Icons.favorite,
+                                          //         size: 42,
+                                          //         color: Colors.red,
+                                          //       ),
                                           alignment: Alignment.center,
                                         )),
                                   ],
@@ -374,14 +402,13 @@ class _homePageState extends State<homePage> {
                               ],
                             ),
                           ),
-                          onTap: () async {
-                            // Navigator.pushNamed(context, '/product');
-                            Producto p = await Scraper.getProducto();
+                          // onTap: () async {
+                          //   // Navigator.pushNamed(context, '/product');
 
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: ((context) =>
-                                    productPage(producto: p))));
-                          },
+                          //   Navigator.of(context).push(MaterialPageRoute(
+                          //       builder: ((context) =>
+                          //           productPage())));
+                          // },
                         );
                       },
                     ),

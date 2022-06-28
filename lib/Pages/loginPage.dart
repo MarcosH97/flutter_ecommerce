@@ -1,3 +1,5 @@
+import 'package:e_commerce/Models/loginModelResponse.dart';
+import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Widgets/formPasswordHelper.dart';
 import 'package:e_commerce/Widgets/formTextHelper.dart';
 import 'package:e_commerce/Widgets/glassmorph.dart';
@@ -14,6 +16,7 @@ class loginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<loginPage> {
+  final textController = TextEditingController();
   final GlobalKey<FormFieldState> _globalKey = GlobalKey<FormFieldState>();
   bool isAPICallProcess = false;
   bool hidePassword = true;
@@ -23,7 +26,7 @@ class _loginPageState extends State<loginPage> {
 
   String? validateName(String? value) {
     if (value?.isEmpty ?? false) {
-      return "Usuario vacio";
+      return "Usuario vacio"; 
     }
     return null;
   }
@@ -31,7 +34,6 @@ class _loginPageState extends State<loginPage> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _globalKey,
       child: RawKeyboardListener(
         autofocus: true,
         onKey: (event) {
@@ -71,10 +73,39 @@ class _loginPageState extends State<loginPage> {
                                 image: AssetImage('assets/logo.png'),
                                 height: 180,
                               ),
-                              const FormTextHelper(
-                                  label: "Usuario",
-                                  hint: "amanzo",
-                                  icon: Icon(Icons.person)),
+                              // const FormTextHelper(
+                              //     label: "Usuario",
+                              //     hint: "amanzo",
+                              //     icon: Icon(Icons.person)),
+                              Container(
+                                height: 60,
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 10),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child:
+                                TextFormField(
+                                    textAlignVertical: TextAlignVertical.center,
+                                    maxLines: 1,
+                                    focusNode: FocusNode(),
+                                    validator: validateName,
+                                    onChanged: (String? value) {
+                                      this._username = value;
+                                    },
+                                    controller: textController,
+                                    decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.never,
+                                        isCollapsed: true,
+                                        prefixIcon: Icon(Icons.person),
+                                        labelText: "Usuario",
+                                        hintText: "abc@gmail.com",
+                                        focusColor: Colors.blue)),
+                              ),
+
                               Container(
                                 height: 60,
                                 alignment: Alignment.center,
@@ -84,6 +115,12 @@ class _loginPageState extends State<loginPage> {
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white),
                                 child: TextFormField(
+                                  key: _globalKey,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      this._password = value;
+                                    });
+                                  },
                                   maxLines: 1,
                                   focusNode: FocusNode(),
                                   textAlignVertical: TextAlignVertical.center,
@@ -109,51 +146,6 @@ class _loginPageState extends State<loginPage> {
                                   obscureText: hidePassword,
                                 ),
                               ),
-                              // FormHelper.inputFieldWidget(context, 'username',
-                              //     'Usuario', validateName, (onSaved) {
-                              //   _username = onSaved;
-                              // },
-                              //     prefixIcon: const Icon(Icons.person),
-                              //     showPrefixIcon: true,
-                              //     prefixIconPaddingLeft: 10,
-                              //     borderFocusColor: Colors.white,
-                              //     borderColor: Colors.white,
-                              //     textColor: Colors.grey,
-                              //     hintColor: Colors.grey.withOpacity(0.7),
-                              //     borderRadius: 10,
-                              //     backgroundColor: Colors.white),
-                              // const SizedBox(
-                              //   height: 20,
-                              // ),
-                              // FormHelper.inputFieldWidget(
-                              //     context, 'password', 'Contraseña',
-                              //     (onValidate) {
-                              //   if (onValidate.isEmpty) {
-                              //     return "El campo no puede estar vacio";
-                              //   }
-                              // }, (onSaved) {
-                              //   _password = onSaved;
-                              // },
-                              //     prefixIcon: const Icon(Icons.lock),
-                              //     prefixIconPaddingLeft: 10,
-                              //     showPrefixIcon: true,
-                              //     borderFocusColor: Colors.white,
-                              //     borderColor: Colors.white,
-                              //     textColor: Colors.grey,
-                              //     hintColor: Colors.grey.withOpacity(0.7),
-                              //     borderRadius: 10,
-                              //     backgroundColor: Colors.white,
-                              //     obscureText: hidePassword,
-                              //     suffixIcon: IconButton(
-                              //         onPressed: () {
-                              //           setState(() {
-                              //             hidePassword = !hidePassword;
-                              //           });
-                              //         },
-                              //         color: Colors.grey.withOpacity(0.7),
-                              //         icon: Icon(hidePassword
-                              //             ? Icons.visibility_off
-                              //             : Icons.visibility))),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -190,16 +182,6 @@ class _loginPageState extends State<loginPage> {
                   const SizedBox(
                     height: 15,
                   ),
-                  // FormHelper.submitButton("L O G I N", () {},
-                  //     borderColor: Colors.transparent,
-                  //     btnColor: Color.fromRGBO(22, 26, 72, 1),
-                  //     txtColor: Colors.white,
-                  //     width: Device().isMobile(context)
-                  //         ? MediaQuery.of(context).size.width / 1.5
-                  //         : MediaQuery.of(context).size.width / 3,
-                  //     height: 60,
-                  //     borderRadius: 10),
-
                   ElevatedButton(
                     style: ButtonStyle(
                         padding:
@@ -213,7 +195,32 @@ class _loginPageState extends State<loginPage> {
                             60)),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
-                    onPressed: () {},
+                        onPressed: () async {
+                          _username = textController.text.toString();
+                          String s = await LoginModelResponse.login(
+                              _username.toString(), _password.toString());
+                          if(!s.contains("Bad")){
+                            Config.token = s;
+                            print(s);
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    content: Text("Login Successfull"),
+                                  );
+                                }
+                            ); 
+                          }else{
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Text("Credenciales Incorrectas"),
+                                );
+                              }
+                            );
+                          }
+                    },
                     child: const Text(
                       'L O G I N',
                       textScaleFactor: 1.3,

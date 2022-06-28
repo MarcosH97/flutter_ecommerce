@@ -5,11 +5,11 @@ import 'package:e_commerce/Utils/Scraper.dart';
 import 'package:flutter/material.dart';
 
 class productPage extends StatefulWidget {
-  final Producto producto;
+  
 
   const productPage(
       {Key? key,
-      required this.producto})
+      })
       : super(key: key);
 
   @override
@@ -34,8 +34,8 @@ class _productPageState extends State<productPage> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height / 2,
               child: Center(
-                child: Image.network(widget.producto.imgURL,
-                    fit: BoxFit.fitWidth, alignment: Alignment.center),
+                // child: Image.network(widget.producto.imgURL,
+                //     fit: BoxFit.fitWidth, alignment: Alignment.center),
               ),
             ),
             IconButton(
@@ -69,11 +69,11 @@ class _productPageState extends State<productPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Text(widget.producto.name,
-                      style: const TextStyle(
-                          fontSize: 24,
-                          color: Colors.black,
-                          decoration: TextDecoration.none)),
+                  // Text(widget.producto.name,
+                  //     style: const TextStyle(
+                  //         fontSize: 24,
+                  //         color: Colors.black,
+                  //         decoration: TextDecoration.none)),
                   const SizedBox(
                     height: 10,
                   ),
@@ -88,11 +88,11 @@ class _productPageState extends State<productPage> {
                   ),
                   Row(
                     children: [
-                      Text(widget.producto.price,
-                          style: TextStyle(
-                              fontSize: 32,
-                              color: Colors.black,
-                              decoration: TextDecoration.none)),
+                      // Text(widget.producto.price,
+                      //     style: TextStyle(
+                      //         fontSize: 32,
+                      //         color: Colors.black,
+                      //         decoration: TextDecoration.none)),
                       Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(10),

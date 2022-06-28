@@ -27,25 +27,25 @@ class Scraper {
     // }
   }
 
-  static Future<Producto> getProducto() async {
-    final response = await http.get(Uri.parse(""));
+  // static Future<String> getProducto() async {
+  //   final response = await http.get(Uri.parse(""));
 
-    final body = response.body;
+  //   final body = response.body;
 
-    final html = parse(body);
+  //   final html = parse(body);
 
-    print(
-        "html.querySelectorAll('.slick-track img')[1].attributes['src']!.trim()");
-    return Producto(
-        "html.querySelectorAll('.slick-track img')[1].attributes['src']!.trim()",
-        " ",
-        " ",
-        " ");
+  //   print(
+  //       "html.querySelectorAll('.slick-track img')[1].attributes['src']!.trim()");
+  //   return String(
+  //       "html.querySelectorAll('.slick-track img')[1].attributes['src']!.trim()",
+  //       " ",
+  //       " ",
+  //       " ");
 
-    // html.querySelector('.title-detail')!.text
-    // html.querySelector('.product-price .text-brand')!.text
-    // html.querySelector('.product-price .save-price')!.text
-  }
+  //   // html.querySelector('.title-detail')!.text
+  //   // html.querySelector('.product-price .text-brand')!.text
+  //   // html.querySelector('.product-price .save-price')!.text
+  // }
 
   static Future<List<String>> getWishlist() async {
     final response = await http.get(Uri.parse(""));
