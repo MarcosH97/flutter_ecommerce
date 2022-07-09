@@ -1,4 +1,4 @@
-import 'package:e_commerce/Models/loginModelResponse.dart';
+import 'package:e_commerce/Models/Login_Register/loginModelResponse.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Widgets/formPasswordHelper.dart';
 import 'package:e_commerce/Widgets/formTextHelper.dart';
@@ -26,7 +26,7 @@ class _loginPageState extends State<loginPage> {
 
   String? validateName(String? value) {
     if (value?.isEmpty ?? false) {
-      return "Usuario vacio"; 
+      return "Usuario vacio";
     }
     return null;
   }
@@ -85,8 +85,7 @@ class _loginPageState extends State<loginPage> {
                                 decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10)),
-                                child:
-                                TextFormField(
+                                child: TextFormField(
                                     textAlignVertical: TextAlignVertical.center,
                                     maxLines: 1,
                                     focusNode: FocusNode(),
@@ -195,31 +194,25 @@ class _loginPageState extends State<loginPage> {
                             60)),
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
-                        onPressed: () async {
-                          _username = textController.text.toString();
-                          String s = await LoginModelResponse.login(
-                              _username.toString(), _password.toString());
-                          if(!s.contains("Bad")){
-                            Config.token = s;
-                            print(s);
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: Text("Login Successfull"),
-                                  );
-                                }
-                            ); 
-                          }else{
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  content: Text("Credenciales Incorrectas"),
-                                );
-                              }
-                            );
-                          }
+                    onPressed: () async {
+                      // print("Entered login");
+                      _username = textController.text.toString();
+                      String s = await LoginModelResponse.login(
+                          _username.toString(), _password.toString());
+                      if (!s.contains("Bad")) {
+                        print(Config.user.name);
+                        Navigator.of(context).popAndPushNamed("/home");
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Login Exitoso")));
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                content: Text("Credenciales Incorrectas"),
+                              );
+                            });
+                      }
                     },
                     child: const Text(
                       'L O G I N',

@@ -1,5 +1,5 @@
 import 'package:api_cache_manager/api_cache_manager.dart';
-import 'package:e_commerce/Models/login_form_response.dart';
+import 'package:e_commerce/Models/Login_Register/login_form_response.dart';
 
 class SharedService {
   static Future<bool> isLoggedIn() async {

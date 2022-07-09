@@ -1,13 +1,45 @@
+class UserRequest {
+  int? count;
+  Null? next;
+  Null? previous;
+  List<User>? results;
+
+  UserRequest({this.count, this.next, this.previous, this.results});
+
+  UserRequest.fromJson(Map<String, dynamic> json) {
+    count = json['count'];
+    next = json['next'];
+    previous = json['previous'];
+    if (json['results'] != null) {
+      results = <User>[];
+      json['results'].forEach((v) {
+        results!.add(new User.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['count'] = this.count;
+    data['next'] = this.next;
+    data['previous'] = this.previous;
+    if (this.results != null) {
+      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
 class User {
   int? id;
-  late String email;
-  late String password;
-  late String name;
-  late String direccion;
+  String? email;
+  String? name;
+  String? password;
+  String? direccion;
   int? pais;
-  late String ciudad;
-  late String codigoPostal;
-  late String telefono;
+  String? ciudad;
+  String? codigoPostal;
+  String? telefono;
   bool? rss;
   bool? isActive;
   bool? isStaff;
@@ -16,14 +48,14 @@ class User {
 
   User(
       {this.id,
-      required this.email,
-      required this.password,
-      required this.name,
-      required this.direccion,
+      this.email,
+      this.name,
+      this.password,
+      this.direccion,
       this.pais,
-      required this.ciudad,
-      required this.codigoPostal,
-      required this.telefono,
+      this.ciudad,
+      this.codigoPostal,
+      this.telefono,
       this.rss,
       this.isActive,
       this.isStaff,
@@ -33,8 +65,8 @@ class User {
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     email = json['email'];
-    password = json['password'];
     name = json['name'];
+    password = json['password'];
     direccion = json['direccion'];
     pais = json['pais'];
     ciudad = json['ciudad'];
@@ -51,7 +83,6 @@ class User {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['email'] = this.email;
-    data['password'] = this.password;
     data['name'] = this.name;
     data['direccion'] = this.direccion;
     data['pais'] = this.pais;

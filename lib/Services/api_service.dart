@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:e_commerce/Models/login_form_request.dart';
-import 'package:e_commerce/Models/register_form_response.dart';
+import 'package:e_commerce/Models/Login_Register/login_form_request.dart';
+import 'package:e_commerce/Models/Login_Register/register_form_response.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
 
-import '../Models/register_form_request.dart';
+import '../Models/Login_Register/register_form_request.dart';
 
 class api_service {
   static var client = http.Client();

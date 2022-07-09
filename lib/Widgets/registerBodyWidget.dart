@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../Models/User.dart';
-import '../Models/register_form_response.dart';
+import '../Models/Login_Register/register_form_response.dart';
 import '../Utils/Device.dart';
 import 'glassmorph.dart';
 
 class RegisterBody extends StatefulWidget {
-  
-
   @override
   State<StatefulWidget> createState() => _RegisterBodyState();
 }
-class _RegisterBodyState extends State<RegisterBody>{
 
+class _RegisterBodyState extends State<RegisterBody> {
   late User user;
 
   // final Tcontroller = TextEditingController();
@@ -65,12 +63,7 @@ class _RegisterBodyState extends State<RegisterBody>{
                       margin: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       child: Expanded(
-                        child:
-                            // TextFieldHelper()
-                            //     .InputField("Correo", 'abc@gmail.com', null, Tcontroller, () {
-                            //   print('test');
-                            // }),
-                            TextField(
+                        child: TextField(
                           autofocus: false,
                           maxLines: 1,
                           onChanged: (String value) {
@@ -130,7 +123,7 @@ class _RegisterBodyState extends State<RegisterBody>{
                           onChanged: (String value) {
                             setState(() {
                               _password = value;
-                            // print('contra : ' + _password);
+                              // print('contra : ' + _password);
                             });
                           },
                           obscureText: true,
@@ -323,15 +316,23 @@ class _RegisterBodyState extends State<RegisterBody>{
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)))),
           onPressed: () async {
-            print(getUser().email);
+            // print(getUser().email);
             bool b = await register_form_response().register(getUser());
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    content: Text(b ? "User Registered" : "Error"),
-                  );
-                });
+            // showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return AlertDialog(
+            //         content: Text(b ? "Registrado exitosamente" : "Error"),
+            //       );
+            //     });
+            if(b){
+              ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Registro Exitoso")));
+              Navigator.popAndPushNamed(context, "/login"); 
+            }else{
+              ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Registro Fallido")));
+            }
           },
           child: const Text(
             'R E G I S T R A R',

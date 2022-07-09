@@ -29,9 +29,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  shared_preferences: ^2.0.15
+  extended_image: ^6.2.1
   api_cache_manager: ^1.0.2
-  shared_preferences: 2.0.6
+  badges: ^2.0.3
+  # shared_preferences: 2.0.6
   cached_network_image: ^3.2.1
   cupertino_icons: ^1.0.2
   http: ^0.13.4

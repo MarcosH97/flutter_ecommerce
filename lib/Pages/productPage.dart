@@ -1,16 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Models/Producto2.dart';
 import 'package:e_commerce/Pages/foodPageBody.dart';
 import 'package:e_commerce/Utils/Scraper.dart';
 import 'package:flutter/material.dart';
 
 class productPage extends StatefulWidget {
-  
+  final Producto producto;
 
-  const productPage(
-      {Key? key,
-      })
-      : super(key: key);
+  const productPage({
+    required this.producto,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _productPageState();
@@ -34,9 +35,9 @@ class _productPageState extends State<productPage> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height / 2,
               child: Center(
-                // child: Image.network(widget.producto.imgURL,
-                //     fit: BoxFit.fitWidth, alignment: Alignment.center),
-              ),
+                  child: Image.network(widget.producto.imgPrincipal!,
+                      fit: BoxFit.fitWidth, alignment: Alignment.center),
+                  ),
             ),
             IconButton(
                 alignment: Alignment.center,
@@ -69,15 +70,15 @@ class _productPageState extends State<productPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  // Text(widget.producto.name,
-                  //     style: const TextStyle(
-                  //         fontSize: 24,
-                  //         color: Colors.black,
-                  //         decoration: TextDecoration.none)),
+                  Text(widget.producto.nombre!,
+                      style: const TextStyle(
+                          fontSize: 24,
+                          color: Colors.black,
+                          decoration: TextDecoration.none)),
                   const SizedBox(
                     height: 10,
                   ),
-                  const Text('marca',
+                      Text(widget.producto.marca!.nombre!,
                       textAlign: TextAlign.left,
                       style: TextStyle(
                           fontSize: 24,
@@ -88,11 +89,6 @@ class _productPageState extends State<productPage> {
                   ),
                   Row(
                     children: [
-                      // Text(widget.producto.price,
-                      //     style: TextStyle(
-                      //         fontSize: 32,
-                      //         color: Colors.black,
-                      //         decoration: TextDecoration.none)),
                       Container(
                         alignment: Alignment.center,
                         padding: EdgeInsets.all(10),

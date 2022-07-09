@@ -1,4 +1,4 @@
-import 'package:e_commerce/Models/register_form_response.dart';
+import 'package:e_commerce/Models/Login_Register/register_form_response.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
