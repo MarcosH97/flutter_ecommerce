@@ -1,5 +1,4 @@
 import 'package:e_commerce/Models/Producto.dart';
-import 'package:e_commerce/Models/Producto2.dart';
 import 'package:e_commerce/Models/ProductoModelResponse.dart';
 import 'package:e_commerce/Widgets/foodCardWidget.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +62,7 @@ class _AllProductsPageState extends State<allProductsPage> {
                           FoodCardWidget(
                               pr: snapshot.data, index: index);
                         }),
-                        childCount: 10,
+                        childCount: snapshot.data.count,
                         ),
                       ),
                     ]);

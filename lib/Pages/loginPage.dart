@@ -200,7 +200,6 @@ class _loginPageState extends State<loginPage> {
                       String s = await LoginModelResponse.login(
                           _username.toString(), _password.toString());
                       if (!s.contains("Bad")) {
-                        print(Config.user.name);
                         Navigator.of(context).popAndPushNamed("/home");
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Login Exitoso")));

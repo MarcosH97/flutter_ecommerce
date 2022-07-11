@@ -1,16 +1,13 @@
-import 'package:e_commerce/Models/Categoria.dart';
-import 'package:e_commerce/Models/CategoriaModelResponse.dart';
-import 'package:e_commerce/Models/MunicipioModelResponse.dart';
-import 'package:e_commerce/Models/ProductoModelResponse.dart';
-import 'package:e_commerce/Models/PromoModelResponse.dart';
 import 'package:e_commerce/Pages/allProductsPage.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
-import 'package:e_commerce/Pages/productPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
+import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
+import 'package:e_commerce/Widgets/makePayments.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Pages/registerPage.dart';
 
@@ -18,10 +15,15 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  State<StatefulWidget> createState() => _myApp();
   // This widget is the root of your application.
+}
+
+class _myApp extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Widget _defaultHome = loginPage();
@@ -29,8 +31,9 @@ class MyApp extends StatelessWidget {
     Config.wishlist = [];
     Config.munNames = [];
     Config.categorias = [];
+    loadLogin();
 
-    setAll();
+    SharedService().LoadData;
 
     return MaterialApp(
       title: 'DiploMarket',
@@ -46,20 +49,20 @@ class MyApp extends StatelessWidget {
         '/checkout': (context) => checkOutPage(),
         '/allproducts': (context) => allProductsPage(),
         '/user': (context) => userPage(),
+        '/paypal': (context) => makePayment(),
       },
     );
   }
 
-  void setAll() async {
-    Config.municipios = await MunicipioModelResponse().getMunicipios();
-    CategoriaRequest cats = await CategoriaModelResponse().getCategorias();
-    Config.promo = await PromoModelResponse().getPromo();
-    Config.municipios.forEach((element) {
-      Config.munNames.add(element.nombre!);
-    });
-    cats.results!.forEach((element) {
-      Config.categorias.add(element.nombre!);
-    });
+  Future loadLogin() async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    if (sh.getString('ip') != null) {
+      setState(() {
+        Config.apiURL = sh.getString("ip")!;
+      });
+      // print(Config.apiURL);
+    }
+    Config().setAll;
   }
 }
 // 

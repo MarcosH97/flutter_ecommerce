@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../Models/Producto2.dart';
+import '../../Models/Producto.dart';
 import '../../Models/ProductoModelResponse.dart';
 import '../../Utils/Config.dart';
 
-class ProductsMobile extends StatelessWidget {
-  bool isFav = false;
+class ProductsMobile extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _productsMobile();
+}
 
+class _productsMobile extends State<ProductsMobile> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<dynamic>(
@@ -62,62 +65,64 @@ class ProductsMobile extends StatelessWidget {
               }
             case ConnectionState.none:
               {
-                return ListView.builder(
-                  itemCount: 10,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: EdgeInsets.all(10),
-                      width: 360,
-                      decoration: BoxDecoration(
-                        color: Colors.amber,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 100,
-                            margin: EdgeInsets.all(10),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(" ", fit: BoxFit.fill,
-                                    loadingBuilder: (context, child, progress) {
-                                  return progress == null
-                                      ? child
-                                      : Container(
-                                          width: 50,
-                                          height: 50,
-                                          child: const Center(
-                                              child: CircularProgressIndicator(
-                                                  color: Colors.blue)),
-                                        );
-                                }, errorBuilder: (context, error, stacktrace) {
-                                  return const Icon(
-                                    Icons.error,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  );
-                                })),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
+                return Text("nuller");
+                // ListView.builder(
+                //   itemCount: 10,
+                //   scrollDirection: Axis.horizontal,
+                //   itemBuilder: (context, index) {
+                //     return Container(
+                //       margin: EdgeInsets.all(10),
+                //       width: 360,
+                //       decoration: BoxDecoration(
+                //         color: Colors.amber,
+                //         borderRadius: BorderRadius.circular(20),
+                //       ),
+                //       child: Column(
+                //         crossAxisAlignment: CrossAxisAlignment.center,
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //           Container(
+                //             height: 100,
+                //             margin: EdgeInsets.all(10),
+                //             child: ClipRRect(
+                //                 borderRadius: BorderRadius.circular(20),
+                //                 child: Image.network(" ", fit: BoxFit.fill,
+                //                     loadingBuilder: (context, child, progress) {
+                //                   return progress == null
+                //                       ? child
+                //                       : Container(
+                //                           width: 50,
+                //                           height: 50,
+                //                           child: const Center(
+                //                               child: CircularProgressIndicator(
+                //                                   color: Colors.blue)),
+                //                         );
+                //                 }, errorBuilder: (context, error, stacktrace) {
+                //                   return const Icon(
+                //                     Icons.error,
+                //                     size: 50,
+                //                     color: Colors.grey,
+                //                   );
+                //                 })),
+                //           ),
+                //         ],
+                //       ),
+                //     );
+                //   },
+                // );
               }
             case ConnectionState.done:
 
             default:
               {
                 if (snapshot.hasError) {
+                  print(snapshot.data);
                   return Text(snapshot.data.toString());
                 } else if (snapshot.hasData) {
                   final pr = snapshot.data;
                   List<Producto> proreq = pr.results!;
                   return ListView.builder(
-                    itemCount: 5,
+                    itemCount: proreq.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return Container(
@@ -132,7 +137,7 @@ class ProductsMobile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              height: 100,
+                              height: 200,
                               margin: EdgeInsets.all(10),
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(20),
@@ -191,8 +196,24 @@ class ProductsMobile extends StatelessWidget {
                                     width: 42,
                                     alignment: Alignment.topCenter,
                                     child: IconButton(
-                                      onPressed: () {},
-                                      icon: !isFav
+                                      onPressed: () {
+                                        setState(() {
+                                          if (Config.isLoggedIn) {
+                                            if (!Config.wishlist
+                                                .contains(proreq[index])) {
+                                              Config.wishlist
+                                                  .add(proreq[index]);
+                                            } else {
+                                              Config.wishlist
+                                                  .remove(proreq[index]);
+                                            }
+                                          } else {
+                                            AlertDialog();
+                                          }
+                                        });
+                                      },
+                                      icon: !Config.wishlist
+                                              .contains(proreq[index])
                                           ? const Icon(
                                               Icons.favorite_border_outlined,
                                               size: 42,
@@ -219,8 +240,8 @@ class ProductsMobile extends StatelessWidget {
                                 ),
                                 style: ButtonStyle(
                                   alignment: Alignment.center,
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Config.maincolor),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor),
                                   fixedSize:
                                       MaterialStateProperty.all(Size(200, 50)),
                                 ),
@@ -235,8 +256,6 @@ class ProductsMobile extends StatelessWidget {
                 return Text("null2");
               }
           }
-          ;
-          return Text("null");
         });
   }
 }

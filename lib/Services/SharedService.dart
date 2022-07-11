@@ -1,20 +1,37 @@
-import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:e_commerce/Models/Login_Register/login_form_response.dart';
+import 'package:e_commerce/Models/User.dart';
+import 'package:e_commerce/Utils/Config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class SharedService {
-  static Future<bool> isLoggedIn() async {
-    var keyExists = await APICacheManager().isAPICacheKeyExist('login_details');
-
-    return keyExists;
+  void SaveData() async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    if (Config.isLoggedIn) {
+      String json = jsonEncode(Config.activeUser);
+      sh.setString("user", json);
+      print('user saved');
+    }
+    bool login = Config.isLoggedIn;
+    sh.setBool("login", login);
+    if (sh.getBool("login") == true) {
+      print('login saved');
+    }
   }
 
-  // static Future<login_form_response?> loginDetails() async {
-  //   var keyExist = await APICacheManager().isAPICacheKeyExist('login_details');
+  Future LoadData() async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    String? json = sh.getString("user");
+    bool? b = sh.getBool("login");
+    if (b! && json != null) {
+      Config.user = User.fromJson(jsonDecode(json));
+      print('user loaded');
+    }
+    Config.login = b;
+  }
 
-  //   if (keyExist) {
-  //     var cacheData = await APICacheManager().getCacheData('login_details');
-
-  //     return login_form_response(cacheData.syncData);
-  //   }
-  // }
+  void ClearData() async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    sh.clear();
+  }
 }

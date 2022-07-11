@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/Models/Producto.dart';
-import 'package:e_commerce/Models/Producto2.dart';
 import 'package:e_commerce/Pages/foodPageBody.dart';
 import 'package:e_commerce/Utils/Scraper.dart';
 import 'package:flutter/material.dart';

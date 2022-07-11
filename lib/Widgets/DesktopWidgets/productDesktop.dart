@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../Models/Producto2.dart';
+import '../../Models/Producto.dart';
 import '../../Models/ProductoModelResponse.dart';
 import '../../Utils/Config.dart';
 
@@ -117,7 +117,7 @@ class ProductsDesktop extends StatelessWidget {
                   final pr = snapshot.data;
                   List<Producto> proreq = pr.results!;
                   return ListView.builder(
-                    itemCount: 5,
+                    itemCount: proreq.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       return Container(

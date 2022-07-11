@@ -1,3 +1,4 @@
+import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,10 +48,12 @@ class LoginModelResponse {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       UserRequest data = UserRequest.fromJson(jsonDecode(resBody));
       List<User> users = data.results!;
+
       users.forEach((usuario) {
         if (usuario.email == umail) {
           Config.user = usuario;
           Config.login = true;
+          SharedService().SaveData();
         }
       });
     } else {

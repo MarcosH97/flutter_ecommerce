@@ -318,13 +318,6 @@ class _RegisterBodyState extends State<RegisterBody> {
           onPressed: () async {
             // print(getUser().email);
             bool b = await register_form_response().register(getUser());
-            // showDialog(
-            //     context: context,
-            //     builder: (context) {
-            //       return AlertDialog(
-            //         content: Text(b ? "Registrado exitosamente" : "Error"),
-            //       );
-            //     });
             if(b){
               ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Registro Exitoso")));

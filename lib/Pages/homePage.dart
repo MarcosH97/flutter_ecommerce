@@ -1,11 +1,12 @@
 import 'dart:ui';
-import 'package:e_commerce/Models/Producto2.dart';
+import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/ProductoModelResponse.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Utils/Responsive.dart';
 import 'package:e_commerce/Widgets/addToPopupCard.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils/HeroDialogRoute.dart';
 import '../Widgets/DesktopWidgets/productDesktop.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
@@ -18,9 +19,6 @@ class homePage extends StatefulWidget {
 }
 
 class _homePageState extends State<homePage> {
-
-  String selmun = Config.munNames[0];
-  String selcat = Config.categorias[0];
   late var textController = TextEditingController();
 
   Future openDialog() => showDialog(
@@ -32,8 +30,10 @@ class _homePageState extends State<homePage> {
             ),
             actions: [
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  SharedPreferences sh = await SharedPreferences.getInstance();
                   Config.apiURL = "http://" + textController.text.toString();
+                  sh.setString("ip", Config.apiURL);
                   Navigator.pop(context);
                 },
                 child: Text('SUBMIT'),
@@ -42,7 +42,6 @@ class _homePageState extends State<homePage> {
           ));
   @override
   Widget build(BuildContext context) {
-
     var drawerHeader = UserAccountsDrawerHeader(
         currentAccountPicture: CircleAvatar(
           backgroundColor: Colors.amber,
@@ -62,7 +61,7 @@ class _homePageState extends State<homePage> {
             : Text("no email"));
 
     var w = MediaQuery.of(context).size.width;
-  
+
     final List<DropdownMenuItem<String>> _dropDownCatItems = Config.categorias
         .map((String value) => DropdownMenuItem<String>(
               child: Center(child: Text(value, textAlign: TextAlign.center)),
@@ -98,6 +97,11 @@ class _homePageState extends State<homePage> {
         ListTile(title: Text('Ayuda')),
         ListTile(title: Text('Qué debe saber')),
         ListTile(title: Text('Contacto')),
+        ListTile(
+            title: Text('Pagar'),
+            onTap: () {
+              Navigator.pushNamed(context, '/paypal');
+            }),
         Divider(),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10),
@@ -116,158 +120,176 @@ class _homePageState extends State<homePage> {
     return Scaffold(
       appBar: myAppBar(context: context).AppBarM(),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              children: [
-                Container(
-                  height: 50,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const Expanded(
-                        child: TextField(
-                          autofocus: false,
-                          maxLines: 1,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'carne',
-                              labelText: 'Barra de busqueda'),
-                        ),
-                      ),
-                      ElevatedButton(
-                          onPressed: () {},
-                          style: ButtonStyle(
-                            padding: MaterialStateProperty.all(EdgeInsets.all(0)),
-                            alignment: Alignment.center,
-                            backgroundColor:
-                                MaterialStateProperty.all(Config.maincolor),
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(2))),
-                            fixedSize:
-                                MaterialStateProperty.all(Size(30, 60)),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            setState(() {
+              Config().setAll;
+            });
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    height: 50,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Expanded(
+                          child: TextField(
+                            autofocus: false,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: 'carne',
+                                labelText: 'Barra de busqueda'),
                           ),
-                          child: const Icon(
-                            Icons.search,
-                            color: Colors.white,
-                            size: 30,
-                          ))
-                    ],
+                        ),
+                        ElevatedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              padding:
+                                  MaterialStateProperty.all(EdgeInsets.all(0)),
+                              alignment: Alignment.center,
+                              backgroundColor:
+                                  MaterialStateProperty.all(Config.maincolor),
+                              shape: MaterialStateProperty.all(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(2))),
+                              fixedSize:
+                                  MaterialStateProperty.all(Size(30, 60)),
+                            ),
+                            child: const Icon(
+                              Icons.search,
+                              color: Colors.white,
+                              size: 30,
+                            ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 60,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      // ignore: prefer_const_literals_to_create_immutables
+                      children: [
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.grey),
+                              color: Config.maincolor,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              dropdownColor: Config.maincolor,
+                              hint: Text(
+                                'CATEGORIAS',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              items: _dropDownCatItems,
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                              ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                overflow: TextOverflow.visible,
+                              ),
+                              alignment: Alignment.center,
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    Config.selectedCar = newValue;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        )),
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Config.maincolor,
+                              border: Border.all(width: 1, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              dropdownColor: Config.maincolor,
+                              icon: Icon(
+                                Icons.location_on_outlined,
+                                color: Colors.white,
+                              ),
+                              isExpanded: true,
+                              itemHeight: null,
+                              items: _dropDownMenuItems,
+                              value: Config.selectedMun,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                overflow: TextOverflow.visible,
+                              ),
+                              alignment: Alignment.center,
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    Config.selectedMun = newValue;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        )),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  )
+                ],
+              ),
+              // Stack(
+              //   alignment: Alignment.bottomCenter,
+              //   children: [
+              //     foodPageBody(),
+              //   ],
+              // ),
+              Padding(
+                padding: EdgeInsets.all(15),
+                child: const Text(
+                  'Más vendidos en la última hora',
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Container(
-                  height: 60,
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    // ignore: prefer_const_literals_to_create_immutables
-                    children: [
-                      Expanded(
-                          child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.grey),
-                            color: Config.maincolor,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            dropdownColor: Config.maincolor,
-                            hint: Text(
-                              'CATEGORIAS',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white, ),
-                            ),
-                            items: _dropDownCatItems,
-                            icon: Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                            ),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              overflow: TextOverflow.visible,
-                            ),
-                            alignment: Alignment.center,
-                            onChanged: (String? newValue) {
-                              if (newValue != null) {
-                                setState(() {
-                                  selcat = newValue;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      )),
-                      Expanded(
-                          child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                            color: Config.maincolor,
-                            border: Border.all(width: 1, color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            dropdownColor: Config.maincolor,
-                            icon: Icon(
-                              Icons.location_on_outlined,
-                              color: Colors.white,
-                            ),
-                            isExpanded: true,
-                            itemHeight: null,
-                            items: _dropDownMenuItems,
-                            value: selmun,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              overflow: TextOverflow.visible,
-                            ),
-                            alignment: Alignment.center,
-                            onChanged: (String? newValue) {
-                              if (newValue != null) {
-                                setState(() {
-                                  selmun = newValue;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      )),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 24,
-                )
-              ],
-            ),
-            // Stack(
-            //   alignment: Alignment.bottomCenter,
-            //   children: [
-            //     foodPageBody(),
-            //   ],
-            // ),
-            const Text(
-              'Productos',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-            Responsive.isDesktop(context)
-                ? Container(
-                    height: 500,
-                    width: MediaQuery.of(context).size.width,
-                    child: ProductsDesktop())
-                : Container(
-                    height: 400,
-                    child: ProductsMobile(),
-                  ),
-            SizedBox(
-              height: 24,
-            ),
-          ],
+              ),
+              Responsive.isDesktop(context)
+                  ? Container(
+                      height: 500,
+                      width: MediaQuery.of(context).size.width,
+                      child: ProductsDesktop())
+                  : Container(
+                      height: 400,
+                      child: ProductsMobile(),
+                    ),
+              SizedBox(
+                height: 24,
+              ),
+            ],
+          ),
         ),
       ),
       drawer: Drawer(

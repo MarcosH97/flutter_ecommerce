@@ -36,14 +36,6 @@ class myAppBar {
             position: BadgePosition.center(),
           ),
         ),
-        // IconButton(
-        //   onPressed: () {
-        //     Navigator.of(context).push(HeroDialogRoute(builder: (context) {
-        //       return AddTodoPopupCard();
-        //     }));
-        //   },
-        //   icon: const Icon(Icons.favorite_border_outlined),
-        // ),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: IconButton(
@@ -66,7 +58,7 @@ class myAppBar {
               padding: EdgeInsets.all(0),
               icon: Config.isLoggedIn
                   ? Icon(
-                      Icons.account_circle_outlined,
+                      Icons.account_circle,
                       color: Config.maincolor,
                       size: 40,
                     )

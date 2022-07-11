@@ -2,10 +2,11 @@
 
 import 'dart:convert';
 
-import 'package:e_commerce/Models/Producto2.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_image/extended_image.dart';
+
+import '../Models/Producto.dart';
 
 class FoodCardWidget extends StatefulWidget {
   final pr;
@@ -115,8 +116,7 @@ class _foodCardWidget extends State<FoodCardWidget> {
                         ElevatedButton(
                             onPressed: () {
                               if (p[widget.index].cantidadInventario! > 0) {
-                                Config.carrito.add(p[widget.index]);
-                                p[widget.index].cantidadInventario;
+                                
                               }
                             },
                             child: Text("COMPRAR"))

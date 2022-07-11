@@ -9,7 +9,7 @@ class register_form_response {
       'Authorization': Config.token,
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse(Config.apiURL+Config.userAPI);
+    var url = Uri.parse(Config.apiURL + Config.userAPI);
 
     var body = {
       "email": user.email,
@@ -26,7 +26,7 @@ class register_form_response {
 
     var res = await req.send();
     final resBody = await res.stream.bytesToString();
-
+    print(user.password);
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // print(user.password);
       // print(resBody);
