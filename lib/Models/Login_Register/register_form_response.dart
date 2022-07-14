@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class register_form_response {
+
   Future<bool> register(User user) async {
     var headersList = {
       'Authorization': Config.token,
@@ -12,13 +13,14 @@ class register_form_response {
     var url = Uri.parse(Config.apiURL + Config.userAPI);
 
     var body = {
-      "email": user.email,
       "password": user.password,
+      "email": user.email,
       "name": user.name,
       "direccion": user.direccion,
       "ciudad": user.ciudad,
       "codigo_postal": user.codigoPostal,
-      "telefono": user.telefono
+      "telefono": user.telefono,
+      "is_superuser":false
     };
     var req = http.Request('POST', url);
     req.headers.addAll(headersList);
@@ -32,7 +34,7 @@ class register_form_response {
       // print(resBody);
       return true;
     } else {
-      print(res.reasonPhrase);
+      print("Fail Reason: "+res.reasonPhrase.toString());
       return false;
     }
   }

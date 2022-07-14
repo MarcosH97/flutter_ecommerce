@@ -8,6 +8,7 @@ class register_form_request {
   late String codigoPostal;
   late int telefono;
 
+
   register_form_request(
       {required this.password,
       required this.email,
@@ -27,6 +28,8 @@ class register_form_request {
     ciudad = json['ciudad'];
     codigoPostal = json['codigo_postal'];
     telefono = json['telefono'];
+    
+
   }
 
   Map<String, dynamic> toJson() {

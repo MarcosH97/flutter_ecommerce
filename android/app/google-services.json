@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "594490342978",
+    "project_id": "ecommerce-push-66b30",
+    "storage_bucket": "ecommerce-push-66b30.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594490342978:android:d24c97f48a9edadae277db",
+        "android_client_info": {
+          "package_name": "com.mahostudios.diplomarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "594490342978-uafs6abf9trtcm8aub2a4rhhhsb4h7q5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mahostudios.diplomarket",
+            "certificate_hash": "c4fccf22e26a2b1327c60586bfd7b6b9fb01c1fb"
+          }
+        },
+        {
+          "client_id": "594490342978-5321vjensaemf7lbl5b8vu02ptbk1ipr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5fBS421zShjvr3JTCDPka0k9qRIeMfho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "594490342978-5321vjensaemf7lbl5b8vu02ptbk1ipr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

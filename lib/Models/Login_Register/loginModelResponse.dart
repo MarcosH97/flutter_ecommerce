@@ -9,10 +9,11 @@ import '../User.dart';
 class LoginModelResponse {
   late List<User> users;
 
-  static Future<String> login(String username, String password) async {
+  static Future<bool> login(String username, String password) async {
     var headersList = {};
     var url = Uri.parse(Config.apiURL + Config.userAuth);
 
+    print(username + '  ' + password);
     var body = {'username': username, 'password': password};
     var req = http.MultipartRequest('POST', url);
     // req.headers.addAll(headersList);
@@ -27,10 +28,12 @@ class LoginModelResponse {
       getUserInfo(username);
       Config.token = "token " + data['token'];
       print(Config.token);
-      return (data['token']);
+      print(data['token']);
+      return (true);
     } else {
       // print('login false');
-      return (res.reasonPhrase.toString());
+      print(res.reasonPhrase);
+      return (false);
     }
   }
 

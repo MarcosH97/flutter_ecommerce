@@ -12,13 +12,81 @@ class ProductoModelResponse {
 
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
-
-    var res = await req.send();
+    var res = await req.send().timeout(const Duration(seconds: 5));
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
+      // var body = jsonDecode(resBody)['results'][0]['municipios'];
       var body = ProductoRequest.fromJson(jsonDecode(resBody));
+      return body;
+    } else {
+      print(res.reasonPhrase);
+      print("error");
+      throw Exception();
+    }
+  }
+
+  Future<List<ProductoRec>> getProductRecList(municipioID) async {
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse(Config.apiURL + Config.recomendadosAPI + "1");
+    // print("getting PREC");
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+    var res = await req.send().timeout(const Duration(seconds: 5));
+    // print(res.statusCode);
+    final resBody = await res.stream.bytesToString();
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      // var body = jsonDecode(resBody)['results'][0]['municipios'];
+      // List<ProductoRec> body = jsonDecode(resBody)
+      var body = List<ProductoRec>.from(jsonDecode(resBody));
       // print(body);
-      // print(body.results![0].municipios![0].nombre);
+      return body;
+    } else {
+      print(res.reasonPhrase);
+      // print("error");
+      throw Exception();
+    }
+  }
+
+  Future<void> getProductTopSellList(municipioID) async {
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse(Config.apiURL + Config.masvendidosAPI + "1");
+
+    var req = http.Request('GET', url);
+
+    req.headers.addAll(headersList);
+    var res = await req.send().timeout(const Duration(seconds: 5));
+
+    // print("Top seller status: "+ res.statusCode.toString());
+
+    final resBody = await res.stream.bytesToString();
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var body = jsonDecode(resBody);
+      List<dynamic> lista = List.from(body);
+      ProductoRec pr = lista[0];
+
+      print(pr);
+      // print(body);
+      // return body;
+    } else {
+      print(res.reasonPhrase);
+      // print("error");
+      throw Exception();
+    }
+  }
+
+  Future<List<ProductoRec>> getProductSpecialList(municipioID) async {
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse(Config.apiURL + Config.masvendidosAPI + "1");
+
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+    var res = await req.send().timeout(const Duration(seconds: 5));
+    final resBody = await res.stream.bytesToString();
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      // var body = jsonDecode(resBody)['results'][0]['municipios'];
+      // List<ProductoRec> body = jsonDecode(resBody)
+      var body = jsonDecode(resBody);
+
       return body;
     } else {
       print(res.reasonPhrase);

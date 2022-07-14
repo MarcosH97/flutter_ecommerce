@@ -27,6 +27,7 @@ class SharedService {
       Config.user = User.fromJson(jsonDecode(json));
       print('user loaded');
     }
+    print('Login state: ' + b.toString());
     Config.login = b;
   }
 

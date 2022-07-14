@@ -12,13 +12,13 @@ class loginPage extends StatefulWidget {
   loginPage({Key? key}) : super(key: key);
 
   @override
-  State<loginPage> createState() => _loginPageState();
+  State<StatefulWidget> createState() => _loginPageState();
 }
-
 class _loginPageState extends State<loginPage> {
   final textController = TextEditingController();
-  final GlobalKey<FormFieldState> _globalKey = GlobalKey<FormFieldState>();
-  bool isAPICallProcess = false;
+
+  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+
   bool hidePassword = true;
 
   String? _username;
@@ -27,6 +27,15 @@ class _loginPageState extends State<loginPage> {
   String? validateName(String? value) {
     if (value?.isEmpty ?? false) {
       return "Usuario vacio";
+    } else if (!(value!.contains("@"))) {
+      return "Correo no válido";
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value!.length < 8) {
+      return "Contraseña demasiado corta";
     }
     return null;
   }
@@ -66,115 +75,114 @@ class _loginPageState extends State<loginPage> {
                           blur: 30,
                           opacity: 0.3,
                           borderRadius: BorderRadius.circular(20),
-                          child: Column(
-                            // ignore: prefer_const_literals_to_create_immutables
-                            children: <Widget>[
-                              const Image(
-                                image: AssetImage('assets/logo.png'),
-                                height: 180,
-                              ),
-                              // const FormTextHelper(
-                              //     label: "Usuario",
-                              //     hint: "amanzo",
-                              //     icon: Icon(Icons.person)),
-                              Container(
-                                height: 60,
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 10),
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: TextFormField(
-                                    textAlignVertical: TextAlignVertical.center,
-                                    maxLines: 1,
-                                    focusNode: FocusNode(),
-                                    validator: validateName,
-                                    onChanged: (String? value) {
-                                      this._username = value;
-                                    },
-                                    controller: textController,
-                                    decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.never,
-                                        isCollapsed: true,
-                                        prefixIcon: Icon(Icons.person),
-                                        labelText: "Usuario",
-                                        hintText: "abc@gmail.com",
-                                        focusColor: Colors.blue)),
-                              ),
-
-                              Container(
-                                height: 60,
-                                alignment: Alignment.center,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white),
-                                child: TextFormField(
-                                  key: _globalKey,
-                                  onChanged: (String value) {
-                                    setState(() {
-                                      this._password = value;
-                                    });
-                                  },
-                                  maxLines: 1,
-                                  focusNode: FocusNode(),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  decoration: InputDecoration(
-                                    isCollapsed: true,
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.never,
-                                    prefixIcon: Icon(Icons.lock),
-                                    border: InputBorder.none,
-                                    suffixIcon: IconButton(
-                                      icon: hidePassword
-                                          ? Icon(Icons.visibility_off)
-                                          : Icon(Icons.visibility),
-                                      color: Colors.grey.withOpacity(0.7),
-                                      onPressed: () {
-                                        setState(() {
-                                          hidePassword = !hidePassword;
-                                        });
+                          child: Form(
+                            key: _globalKey,
+                            child: Column(
+                              // ignore: prefer_const_literals_to_create_immutables
+                              children: <Widget>[
+                                const Image(
+                                  image: AssetImage('assets/logo.png'),
+                                  height: 180,
+                                ),
+                                Container(
+                                  height: 60,
+                                  alignment: Alignment.center,
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 40, vertical: 10),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: TextFormField(
+                                      keyboardType: TextInputType.emailAddress,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      maxLines: 1,
+                                      validator: validateName,
+                                      onSaved: (String? value) {
+                                        this._username = value;
+                                        // print(value);
                                       },
+                                      // controller: textController,
+                                      decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          floatingLabelBehavior:
+                                              FloatingLabelBehavior.never,
+                                          isCollapsed: true,
+                                          prefixIcon: Icon(Icons.person),
+                                          labelText: "Usuario",
+                                          hintText: "abc@gmail.com",
+                                          focusColor: Colors.blue)),
+                                ),
+                                Container(
+                                  height: 60,
+                                  alignment: Alignment.center,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 40, vertical: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Colors.white),
+                                  child: TextFormField(
+                                    validator: validatePassword,
+                                    onSaved: (value) {
+                                      this._password = value;
+                                      // print(value);
+                                    },
+                                    maxLines: 1,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    decoration: InputDecoration(
+                                      isCollapsed: true,
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.never,
+                                      prefixIcon: Icon(Icons.lock),
+                                      border: InputBorder.none,
+                                      suffixIcon: IconButton(
+                                        icon: hidePassword
+                                            ? Icon(Icons.visibility_off)
+                                            : Icon(Icons.visibility),
+                                        color: Colors.grey.withOpacity(0.7),
+                                        onPressed: () {
+                                          hidePassword = !hidePassword;
+                                        },
+                                      ),
+                                      labelText: "Contraseña",
                                     ),
-                                    labelText: "Contrasena",
-                                  ),
-                                  obscureText: hidePassword,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: RichText(
-                                    text: TextSpan(
-                                        style: TextStyle(
-                                            color: Colors.amber, fontSize: 16),
-                                        children: <TextSpan>[
-                                          TextSpan(
-                                              text: "Contraseña olvidada",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  decoration:
-                                                      TextDecoration.underline),
-                                              recognizer: TapGestureRecognizer()
-                                                ..onTap = () {
-                                                  print("forgot password");
-                                                })
-                                        ]),
+                                    obscureText: hidePassword,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                            ],
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: RichText(
+                                      text: TextSpan(
+                                          style: TextStyle(
+                                              color: Colors.amber,
+                                              fontSize: 16),
+                                          children: <TextSpan>[
+                                            TextSpan(
+                                                text: "Contraseña olvidada",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    decoration: TextDecoration
+                                                        .underline),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        print(
+                                                            "forgot password");
+                                                      })
+                                          ]),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
                           )),
                     ),
                   ),
@@ -196,21 +204,25 @@ class _loginPageState extends State<loginPage> {
                             borderRadius: BorderRadius.circular(10)))),
                     onPressed: () async {
                       // print("Entered login");
-                      _username = textController.text.toString();
-                      String s = await LoginModelResponse.login(
-                          _username.toString(), _password.toString());
-                      if (!s.contains("Bad")) {
-                        Navigator.of(context).popAndPushNamed("/home");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Login Exitoso")));
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                content: Text("Credenciales Incorrectas"),
-                              );
-                            });
+                      if (_globalKey.currentState!.validate()) {
+                        _globalKey.currentState!.save();
+                        // _username = textController.text.toString();
+
+                        bool s = await LoginModelResponse.login(
+                            _username.toString(), _password.toString());
+                        if (s) {
+                          Navigator.of(context).popAndPushNamed("/home");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Login Exitoso")));
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: Text("Credenciales Incorrectas"),
+                                );
+                              });
+                        }
                       }
                     },
                     child: const Text(

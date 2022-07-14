@@ -1,13 +1,9 @@
 import 'dart:ui';
-import 'package:e_commerce/Models/Producto.dart';
-import 'package:e_commerce/Models/ProductoModelResponse.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Utils/Responsive.dart';
-import 'package:e_commerce/Widgets/addToPopupCard.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Utils/HeroDialogRoute.dart';
 import '../Widgets/DesktopWidgets/productDesktop.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
 
@@ -32,8 +28,11 @@ class _homePageState extends State<homePage> {
               TextButton(
                 onPressed: () async {
                   SharedPreferences sh = await SharedPreferences.getInstance();
-                  Config.apiURL = "http://" + textController.text.toString();
+                  Config.apiURL = "http://${textController.text}:8000";
                   sh.setString("ip", Config.apiURL);
+                  setState(() {
+                    Config().setAll();
+                  });
                   Navigator.pop(context);
                 },
                 child: Text('SUBMIT'),
@@ -114,6 +113,7 @@ class _homePageState extends State<homePage> {
           title: Text('Cambiar IP'),
           onTap: openDialog,
         ),
+        Text("Current IP: "+Config.apiURL),
       ],
     );
 
@@ -258,16 +258,10 @@ class _homePageState extends State<homePage> {
                   )
                 ],
               ),
-              // Stack(
-              //   alignment: Alignment.bottomCenter,
-              //   children: [
-              //     foodPageBody(),
-              //   ],
-              // ),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.all(15),
-                child: const Text(
-                  'Más vendidos en la última hora',
+                child: Text(
+                  'Productos Destacados',
                   softWrap: true,
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -280,10 +274,82 @@ class _homePageState extends State<homePage> {
                   ? Container(
                       height: 500,
                       width: MediaQuery.of(context).size.width,
-                      child: ProductsDesktop())
+                      child: ProductsDesktop(prodCase: 1,))
+                  : Container(
+                      height: 500,
+                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
+                    ),
+              SizedBox(
+                height: 24,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  'Más vendidos recientemente',
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Responsive.isDesktop(context)
+                  ? Container(
+                      height: 500,
+                      width: MediaQuery.of(context).size.width,
+                      child: ProductsDesktop(prodCase: 2))
+                  : Container(
+                      height: 500,
+                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
+                    ),
+              SizedBox(
+                height: 24,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  'Recomendados de hoy',
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Responsive.isDesktop(context)
+                  ? Container(
+                      height: 500,
+                      width: MediaQuery.of(context).size.width,
+                      child: ProductsDesktop(prodCase: 3))
                   : Container(
                       height: 400,
-                      child: ProductsMobile(),
+                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
+                    ),
+              SizedBox(
+                height: 24,
+              ),
+              const Padding(
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  'Productos en oferta',
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Responsive.isDesktop(context)
+                  ? Container(
+                      height: 500,
+                      width: MediaQuery.of(context).size.width,
+                      child: ProductsDesktop(prodCase: 4))
+                  : Container(
+                      height: 400,
+                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
                     ),
               SizedBox(
                 height: 24,

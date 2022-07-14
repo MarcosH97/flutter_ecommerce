@@ -5,12 +5,42 @@ import '../../Models/ProductoModelResponse.dart';
 import '../../Utils/Config.dart';
 
 class ProductsDesktop extends StatelessWidget {
-  bool isFav = false;
+  final int prodCase;
+  const ProductsDesktop({Key? key, required this.prodCase}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Future func;
+    switch (prodCase) {
+      case 1:
+        {
+          func = ProductoModelResponse().getProductList();
+          break;
+        }
+      case 2:
+        {
+          func = ProductoModelResponse().getProductList();
+          break;
+        }
+      case 3:
+        {
+          func = ProductoModelResponse().getProductList();
+          break;
+        }
+      case 4:
+        { 
+          func = ProductoModelResponse().getProductList();
+          break;
+        }
+      default:
+        {
+          func = ProductoModelResponse().getProductList();
+          break;
+        }
+    }
+
     return FutureBuilder<dynamic>(
-        future: ProductoModelResponse().getProductList(),
+        future: func,
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
@@ -26,35 +56,16 @@ class ProductsDesktop extends StatelessWidget {
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 300,
-                            margin: EdgeInsets.all(10),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(" ", fit: BoxFit.fill,
-                                    loadingBuilder: (context, child, progress) {
-                                  return progress == null
-                                      ? child
-                                      : Container(
-                                          width: 50,
-                                          height: 50,
-                                          child: const Center(
-                                              child: CircularProgressIndicator(
-                                                  color: Colors.blue)),
-                                        );
-                                }, errorBuilder: (context, error, stacktrace) {
-                                  return const Icon(
-                                    Icons.error,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  );
-                                })),
+                      child: 
+                      Center(
+                        child: 
+                        SizedBox(
+                          height: 100,
+                          width: 100,
+                          child: CircularProgressIndicator(
+                            color: Config.maincolor,
                           ),
-                        ],
+                        ),
                       ),
                     );
                   },
@@ -72,36 +83,6 @@ class ProductsDesktop extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.amber,
                         borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 300,
-                            margin: EdgeInsets.all(10),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.network(" ", fit: BoxFit.fill,
-                                    loadingBuilder: (context, child, progress) {
-                                  return progress == null
-                                      ? child
-                                      : Container(
-                                          width: 50,
-                                          height: 50,
-                                          child: const Center(
-                                              child: CircularProgressIndicator(
-                                                  color: Colors.blue)),
-                                        );
-                                }, errorBuilder: (context, error, stacktrace) {
-                                  return const Icon(
-                                    Icons.error,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  );
-                                })),
-                          ),
-                        ],
                       ),
                     );
                   },
@@ -192,7 +173,7 @@ class ProductsDesktop extends StatelessWidget {
                                     alignment: Alignment.topCenter,
                                     child: IconButton(
                                       onPressed: () {},
-                                      icon: !isFav
+                                      icon: 1>0
                                           ? const Icon(
                                               Icons.favorite_border_outlined,
                                               size: 42,
@@ -219,8 +200,8 @@ class ProductsDesktop extends StatelessWidget {
                                 ),
                                 style: ButtonStyle(
                                   alignment: Alignment.center,
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Config.maincolor),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor),
                                   fixedSize:
                                       MaterialStateProperty.all(Size(200, 50)),
                                 ),
@@ -234,9 +215,8 @@ class ProductsDesktop extends StatelessWidget {
                 }
                 return Text("null2");
               }
-          }
-          ;
-          return Text("null");
+          };
+          return Text("null3");
         });
   }
 }

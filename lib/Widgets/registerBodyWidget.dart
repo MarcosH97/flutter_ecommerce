@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 
 import '../Models/User.dart';
 import '../Models/Login_Register/register_form_response.dart';
+import '../Utils/Config.dart';
 import '../Utils/Device.dart';
 import 'glassmorph.dart';
 
@@ -11,9 +14,33 @@ class RegisterBody extends StatefulWidget {
 }
 
 class _RegisterBodyState extends State<RegisterBody> {
-  late User user;
+  final _globalKey = GlobalKey<FormFieldState>();
 
+  late User user;
+  bool hidden = true;
   // final Tcontroller = TextEditingController();
+  String? validateFields(String? value) {
+    if (value!.isEmpty) {
+      return "Campo vacío";
+    }
+    return null;
+  }
+
+  String? validateEmail(String? v) {
+    if (v!.isEmpty) {
+      return "Campo vacío";
+    } else if (!v.contains("@")) {
+      return "Formato de correo no válido";
+    }
+    return null;
+  }
+
+  String? validatePW(String? v) {
+    if (v!.length < 8) {
+      return "Contraseña corta";
+    }
+    return null;
+  }
 
   String _email = "ni",
       _password = "ni",
@@ -51,19 +78,21 @@ class _RegisterBodyState extends State<RegisterBody> {
                   image: AssetImage('assets/logo.png'),
                   height: 180,
                 ),
-                Column(
-                  children: [
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Expanded(
+                Form(
+                  key: _globalKey,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         child: TextField(
+                          keyboardType: TextInputType.emailAddress,
                           autofocus: false,
                           maxLines: 1,
                           onChanged: (String value) {
@@ -73,24 +102,22 @@ class _RegisterBodyState extends State<RegisterBody> {
                               fillColor: Colors.white,
                               border: InputBorder.none,
                               isCollapsed: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
                               hintText: 'abc@email.com',
                               labelText: 'Correo'),
                         ),
                       ),
-                    ),
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Expanded(
-                        child: TextField(
+                      Container(
+                        height: 50,
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: TextFormField(
+                          validator: validateFields,
                           autofocus: false,
                           maxLines: 1,
                           onChanged: (String value) {
@@ -100,25 +127,22 @@ class _RegisterBodyState extends State<RegisterBody> {
                               fillColor: Colors.white,
                               border: InputBorder.none,
                               isCollapsed: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
                               hintText: 'Armando Paredes',
                               labelText: 'Nombre'),
                         ),
                       ),
-                    ),
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Expanded(
-                        child: TextField(
+                      Container(
+                        height: 50,
+                        padding: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        child: TextFormField(
                           autofocus: false,
+                          validator: validatePW,
                           maxLines: 1,
                           onChanged: (String value) {
                             setState(() {
@@ -126,28 +150,35 @@ class _RegisterBodyState extends State<RegisterBody> {
                               // print('contra : ' + _password);
                             });
                           },
-                          obscureText: true,
-                          decoration: const InputDecoration(
+                          obscureText: hidden,
+                          decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      hidden = !hidden;
+                                    });
+                                  },
+                                  icon: Icon(hidden
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                  color: Colors.grey.withOpacity(0.7)),
                               fillColor: Colors.white,
                               border: InputBorder.none,
                               isCollapsed: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
                               hintText: 'A1b2_34',
-                              labelText: 'Contrasenna'),
+                              labelText: 'Contraseña'),
                         ),
                       ),
-                    ),
-                    Container(
-                      height: 50,
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5)),
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      child: Expanded(
+                      Container(
+                        height: 50,
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         child: TextField(
                           autofocus: false,
                           onChanged: (String value) {
@@ -158,27 +189,24 @@ class _RegisterBodyState extends State<RegisterBody> {
                               fillColor: Colors.white,
                               border: InputBorder.none,
                               isCollapsed: true,
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.never,
+                              floatingLabelBehavior: FloatingLabelBehavior.never,
                               hintText: '5ta Ave. 245',
-                              labelText: 'Direccion'),
+                              labelText: 'Dirección'),
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            padding: EdgeInsets.all(8),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5)),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: const Expanded(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(5)),
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
                               child: TextField(
                                 autofocus: false,
                                 maxLines: 1,
@@ -189,24 +217,23 @@ class _RegisterBodyState extends State<RegisterBody> {
                                     floatingLabelBehavior:
                                         FloatingLabelBehavior.never,
                                     hintText: '1',
-                                    labelText: 'Pais'),
+                                    labelText: 'País'),
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            height: 50,
-                            padding: EdgeInsets.all(8),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5)),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: Expanded(
-                              child: TextField(
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(5)),
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              child: TextFormField(
+                                validator: validateFields,
                                 autofocus: false,
                                 onChanged: (String value) {
                                   _ciudad = value;
@@ -224,29 +251,31 @@ class _RegisterBodyState extends State<RegisterBody> {
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 50,
-                            padding: EdgeInsets.all(8),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5)),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: Expanded(
-                              child: TextField(
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(5)),
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
                                 onChanged: (String value) {
                                   _codigopos = value;
                                 },
                                 autofocus: false,
                                 maxLines: 1,
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                                 decoration: const InputDecoration(
                                     fillColor: Colors.white,
                                     border: InputBorder.none,
@@ -261,40 +290,44 @@ class _RegisterBodyState extends State<RegisterBody> {
                               ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            height: 50,
-                            padding: EdgeInsets.all(8),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5)),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
-                            child: Expanded(
-                              child: TextField(
-                                autofocus: false,
-                                onChanged: (String value) {
-                                  _telefono = value;
-                                },
-                                maxLines: 1,
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              height: 50,
+                              padding: EdgeInsets.all(8),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(5)),
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              child: IntlPhoneField(
+                                // autovalidateMode: AutovalidateMode.always,
+                                invalidNumberMessage:
+                                    "Formato de telefono incorrecto",
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly
+                                ],
                                 decoration: const InputDecoration(
-                                    fillColor: Colors.white,
-                                    border: InputBorder.none,
-                                    isCollapsed: true,
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.never,
-                                    hintText: '52641111',
-                                    labelText: 'Telefono'),
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.never,
+                                  labelText: 'Teléfono',
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                initialCountryCode: 'US',
+                                onChanged: (phone) {
+                                  _telefono = phone.toString();
+                                  print(phone);
+                                },
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -317,14 +350,20 @@ class _RegisterBodyState extends State<RegisterBody> {
                   borderRadius: BorderRadius.circular(10)))),
           onPressed: () async {
             // print(getUser().email);
-            bool b = await register_form_response().register(getUser());
-            if(b){
-              ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Registro Exitoso")));
-              Navigator.popAndPushNamed(context, "/login"); 
-            }else{
-              ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Registro Fallido")));
+
+            if (await Config().checkInternetConnection()) {
+              bool b = await register_form_response().register(getUser());
+              if (b) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Registro Exitoso")));
+                Navigator.popAndPushNamed(context, "/login");
+              } else {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Registro Fallido")));
+              }
+            } else {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("No hay conexion")));
             }
           },
           child: const Text(

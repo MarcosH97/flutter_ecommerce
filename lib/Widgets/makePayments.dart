@@ -15,13 +15,13 @@ class _makePaymentState extends State<makePayment> {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: new Scaffold(
+        home: Scaffold(
           backgroundColor: Colors.white,
           key: _scaffoldKey,
           appBar: 
           PreferredSize(
             preferredSize: Size.fromHeight(45.0),
-            child: new AppBar(
+            child: AppBar(
               backgroundColor: Colors.white,
               title: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

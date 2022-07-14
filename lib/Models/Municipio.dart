@@ -32,27 +32,23 @@ class Municipios {
 
 class Municipio {
   int? id;
-  int? precionEntrega;
+  double? precioEntrega;
   String? nombre;
   int? provincia;
 
-  Municipio({this.id, this.precionEntrega, this.nombre, this.provincia});
+  Municipio({this.id, this.precioEntrega, this.nombre, this.provincia});
 
   Municipio.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    // print(id);
-    precionEntrega = json['precion_entrega'];
-    // print(json['precion_entrega']);
+    precioEntrega = json['precio_entrega'];
     nombre = json['nombre'];
-    // print(nombre);
     provincia = json['provincia'];
-    // print(provincia);
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['precion_entrega'] = this.precionEntrega;
+    data['precio_entrega'] = this.precioEntrega;
     data['nombre'] = this.nombre;
     data['provincia'] = this.provincia;
     return data;

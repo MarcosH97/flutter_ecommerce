@@ -60,14 +60,14 @@ class _foodCardWidget extends State<FoodCardWidget> {
                       child: Row(
                         children: [
                           Text(
-                            '\$' + p[widget.index].precio!,
+                            '\$' + p[widget.index].precio!+ " USD",
                             style: TextStyle(
                               // fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
                           ),
                           Text(
-                            " " + p[widget.index].precioLb!,
+                            " " + p[widget.index].precio_lb!,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
@@ -115,7 +115,7 @@ class _foodCardWidget extends State<FoodCardWidget> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              if (p[widget.index].cantidadInventario! > 0) {
+                              if (p[widget.index].cantInventario! > 0) {
                                 
                               }
                             },

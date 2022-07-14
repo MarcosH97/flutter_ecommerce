@@ -29,6 +29,7 @@ class _AllProductsPageState extends State<allProductsPage> {
 
                 default:
                   if (snapshot.hasError) {
+                    print("ALL PRODUCTS: Data Error");
                     return Text(snapshot.data.toString());
                   } else if (snapshot.hasData) {
                     return CustomScrollView(slivers: <Widget>[
@@ -53,16 +54,15 @@ class _AllProductsPageState extends State<allProductsPage> {
                         ),
                       ),
                       SliverGrid(
-
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: Device().isMobile(context) ? 1 : 3,
                         ),
-                        delegate: SliverChildBuilderDelegate(((context, index) {
-                          return 
-                          FoodCardWidget(
-                              pr: snapshot.data, index: index);
-                        }),
-                        childCount: snapshot.data.count,
+                        delegate: SliverChildBuilderDelegate(
+                          ((context, index) {
+                            return FoodCardWidget(
+                                pr: snapshot.data, index: index);
+                          }),
+                          childCount: snapshot.data.count,
                         ),
                       ),
                     ]);

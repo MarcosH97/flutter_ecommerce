@@ -2,14 +2,9 @@ import 'dart:ui';
 
 import 'package:e_commerce/Models/Municipio.dart';
 import 'package:e_commerce/Models/Producto.dart';
-import 'package:e_commerce/Models/ProductoModelResponse.dart';
 import 'package:e_commerce/Models/User.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Models/Categoria.dart';
-import '../Models/CategoriaModelResponse.dart';
+import 'dart:io';
 import '../Models/MunicipioModelResponse.dart';
-import '../Models/PromoModelResponse.dart';
 
 class Config {
   static late List<Municipio> municipios;
@@ -19,18 +14,22 @@ class Config {
   static late List<String> categorias;
 
   static const String appName = "DiploMarket";
-  static const String catAPI = "/api/categoria/";
-  static const String kartAPI = "/api/carrito/";
-  static const String userAPI = "/api/usuario/";
+  static const String catAPI = "/backend/categoria/";
+  static const String kartAPI = "/backend/carrito/";
+  static const String userAPI = "/backend/usuario/";
   static const String userAuth = "/autenticacion/";
-  static const String munAPI = "/api/municipio/";
-  static const String productAPI = "/api/producto/";
-  static const String promoAPI = '/api/promocion/descuentos/';
+  static const String munAPI = "/backend/municipio/";
+  static const String productAPI = "/backend/producto/";
+  static const String recomendadosAPI = "/backend/recomendados/dia/";//lleva mun
+  static const String masvendidosAPI = "/backend/masvendidos/ultimahora/";//lleva mun
+  static const String promoAPI = '/backend/promocion/descuentos/';
+  static const String especialesAPI = "/backend/producto/especiales/"; //lleva mun
 
   static String selectedMun = "Cerro";
   static String selectedCar = "Carnes";
-  static String apiURL = "http://127.0.0.1:8000";
-  static String token = 'token 54cefb0aabf266f83383cec926ef5073dc156f2e';
+  // static String apiURL = "http://www.diplomarket.com";
+  static String apiURL = "https://www.diplomarket.com";
+  static String token = 'token 56bb9a2bd87925b99e9bcd5619a461dcbf15d51f';
   static bool login = false;
   static int mun = 0;
 
@@ -44,23 +43,34 @@ class Config {
   static late User user = User();
   static User get activeUser => user;
 
-  Future<void> setAll() async {
-    if (MunicipioModelResponse().getMunicipios() != null) {
-      Config.municipios = await MunicipioModelResponse().getMunicipios();
+  void setAll(){
       Config.municipios.forEach((element) {
         Config.munNames.add(element.nombre!);
       });
-    } else {
-      print("null request");
+    print("Municipios: "+municipios.length.toString());
+  }
+
+  Future<bool> checkInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup('www.gooogle.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('connected');
+        return true;
+      } else {
+        return false;
+      }
+    } on SocketException catch (_) {
+      print('not connected');
+      return false;
     }
-    if (CategoriaModelResponse().getCategorias() != null) {
-      CategoriaRequest cats = await CategoriaModelResponse().getCategorias();
-      cats.results!.forEach((element) {
-        Config.categorias.add(element.nombre!);
-      });
+  }
+
+  int getActiveMunIndex() {
+    for (int i = 0; i < municipios.length; i++) {
+      if (municipios[i].nombre! == selectedMun) {
+        return i;
+      }
     }
-    if (ProductoModelResponse().getPromo() != null) {
-      Config.promo = await ProductoModelResponse().getPromo();
-    }
+    return 0;
   }
 }

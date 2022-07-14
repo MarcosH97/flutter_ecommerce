@@ -17,18 +17,18 @@ class ProductoRequest {
     if (json['results'] != null) {
       results = <Producto>[];
       json['results'].forEach((v) {
-        results!.add(new Producto.fromJson(v));
+        results!.add(Producto.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['count'] = this.count;
-    data['next'] = this.next;
-    data['previous'] = this.previous;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['count'] = count;
+    data['next'] = next;
+    data['previous'] = previous;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -38,20 +38,17 @@ class Producto {
   int? id;
   String? nombre;
   String? precio;
-  String? precioLb;
+  String? precio_lb;
   String? imgPrincipal;
   Proveedor? proveedor;
   Marca? marca;
-  Subcategoria? subcategoria;
   String? descripcion;
   List<Municipio>? municipios;
-  int? cantidadInventario;
-  List<Etiquetas>? etiquetas;
+  int? cantInventario;
+  // List<Etiquetas>? etiquetas;
   String? slug;
   bool? visible;
   int? ventas;
-  String? sku;
-  String? upc;
   Promocion? promocion;
   List<String>? galeria;
 
@@ -59,20 +56,17 @@ class Producto {
       {this.id,
       this.nombre,
       this.precio,
-      this.precioLb,
+      this.precio_lb,
       this.imgPrincipal,
       this.proveedor,
       this.marca,
-      this.subcategoria,
       this.descripcion,
       this.municipios,
-      this.cantidadInventario,
-      this.etiquetas,
+      this.cantInventario,
+      // this.etiquetas,
       this.slug,
       this.visible,
       this.ventas,
-      this.sku,
-      this.upc,
       this.promocion,
       this.galeria});
 
@@ -80,34 +74,136 @@ class Producto {
     id = json['id'];
     nombre = json['nombre'];
     precio = json['precio'];
-    precioLb = json['precio_lb'];
+    precio_lb = json['precioxlibra'];
+    imgPrincipal = json['img_principal'];
+    proveedor = json['proveedor'] != null
+        ? Proveedor.fromJson(json['proveedor'])
+        : null;
+    marca = json['marca'] != null ? Marca.fromJson(json['marca']) : null;
+    descripcion = json['descripcion'];
+    // print(descripcion);
+    if (json['municipios'] != null) {
+      municipios = <Municipio>[];
+      json['municipios'].forEach((v) {
+        municipios!.add(Municipio.fromJson(v));
+      });
+    }
+    cantInventario = json['cantidad_inventario'];
+    // if (json['etiquetas'] != null) {
+    //   etiquetas = <Etiquetas>[];
+    //   json['etiquetas'].forEach((v) {
+    //     etiquetas!.add(Etiquetas.fromJson(v));
+    //   });
+    // }
+    slug = json['slug'];
+    visible = json['visible'];
+    ventas = json['ventas'];
+    promocion = json['promocion'] != null
+        ? Promocion.fromJson(json['promocion'])
+        : null;
+    if (json['galeria'] != null) {
+      galeria = <String>[];
+      json['galeria'].forEach((v) {
+        galeria!.add(v);
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['nombre'] = nombre;
+    data['precio'] = precio;
+    data['precio_lb'] = precio_lb;
+    data['img_principal'] = imgPrincipal;
+    if (proveedor != null) {
+      data['proveedor'] = proveedor!.toJson();
+    }
+    if (marca != null) {
+      data['marca'] = marca!.toJson();
+    }
+    data['descripcion'] = descripcion;
+    if (municipios != null) {
+      data['municipios'] = municipios!.map((e) => e.toJson()).toList();
+    }
+    data['cantidad_inventario'] = cantInventario;
+    // if (etiquetas != null) {
+    //   data['etiquetas'] = etiquetas!.map((e) => e.toJson()).toList();
+    // }
+    data['slug'] = slug;
+    data['visible'] = visible;
+    data['ventas'] = ventas;
+    if (promocion != null) {
+      data['promocion'] = promocion!.toJson();
+    }
+    if (galeria != null) {
+      data['galeria'] = galeria!.map((v) => v).toList();
+    }
+    return data;
+  }
+}
+
+class ProductoRec {
+  String? id;
+  String? nombre;
+  Precio? precio;
+  Precio? precioxlibra;
+  String? imgPrincipal;
+  Proveedor? proveedor;
+  Proveedor? marca;
+  String? descripcion;
+  List<MuniTemp>? municipios;
+  String? cantInventario;
+  Etiquetas? etiquetas;
+  String? slug;
+  bool? visible;
+  int? ventas;
+  Promocion? promocion;
+  List<String>? galeria;
+
+  ProductoRec(
+      {this.id,
+      this.nombre,
+      this.precio,
+      this.precioxlibra,
+      this.imgPrincipal,
+      this.proveedor,
+      this.marca,
+      this.descripcion,
+      this.municipios,
+      this.cantInventario,
+      this.etiquetas,
+      this.slug,
+      this.visible,
+      this.ventas,
+      this.promocion,
+      this.galeria});
+
+  ProductoRec.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    nombre = json['nombre'];
+    precio =
+        json['precio'] != null ? new Precio.fromJson(json['precio']) : null;
+    precioxlibra = json['precioxlibra'] != null
+        ? new Precio.fromJson(json['precioxlibra'])
+        : null;
     imgPrincipal = json['img_principal'];
     proveedor = json['proveedor'] != null
         ? new Proveedor.fromJson(json['proveedor'])
         : null;
-    marca = json['marca'] != null ? new Marca.fromJson(json['marca']) : null;
-    subcategoria = json['subcategoria'] != null
-        ? new Subcategoria.fromJson(json['subcategoria'])
-        : null;
+    marca =
+        json['marca'] != null ? new Proveedor.fromJson(json['marca']) : null;
     descripcion = json['descripcion'];
-    if (json['municipios'] != null) {
-      municipios = <Municipio>[];
-      json['municipios'].forEach((v) {
-        municipios!.add(new Municipio.fromJson(v));
-      });
-    }
-    cantidadInventario = json['cantidad_inventario'];
-    if (json['etiquetas'] != null) {
-      etiquetas = <Etiquetas>[];
-      json['etiquetas'].forEach((v) {
-        etiquetas!.add(new Etiquetas.fromJson(v));
-      });
-    }
+    // municipios = json['municipios'] != null
+    //     ? new Municipios.fromJson(json['municipios'])
+    //     : null;
+    cantInventario = json['cant_inventario'];
+    etiquetas = json['etiquetas'] != null
+        ? new Etiquetas.fromJson(json['etiquetas'])
+        : null;
     slug = json['slug'];
     visible = json['visible'];
     ventas = json['ventas'];
-    sku = json['sku'];
-    upc = json['upc'];
     promocion = json['promocion'] != null
         ? new Promocion.fromJson(json['promocion'])
         : null;
@@ -123,8 +219,12 @@ class Producto {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['nombre'] = this.nombre;
-    data['precio'] = this.precio;
-    data['precio_lb'] = this.precioLb;
+    if (this.precio != null) {
+      data['precio'] = this.precio!.toJson();
+    }
+    if (this.precioxlibra != null) {
+      data['precioxlibra'] = this.precioxlibra!.toJson();
+    }
     data['img_principal'] = this.imgPrincipal;
     if (this.proveedor != null) {
       data['proveedor'] = this.proveedor!.toJson();
@@ -132,28 +232,43 @@ class Producto {
     if (this.marca != null) {
       data['marca'] = this.marca!.toJson();
     }
-    if (this.subcategoria != null) {
-      data['subcategoria'] = this.subcategoria!.toJson();
-    }
     data['descripcion'] = this.descripcion;
-    if (this.municipios != null) {
-      data['municipios'] = this.municipios!.map((v) => v.toJson()).toList();
-    }
-    data['cantidad_inventario'] = this.cantidadInventario;
+    // if (this.municipios != null) {
+    //   data['municipios'] = this.municipios!.toJson();
+    // }
+    data['cant_inventario'] = this.cantInventario;
     if (this.etiquetas != null) {
-      data['etiquetas'] = this.etiquetas!.map((v) => v.toJson()).toList();
+      data['etiquetas'] = this.etiquetas!.toJson();
     }
     data['slug'] = this.slug;
     data['visible'] = this.visible;
     data['ventas'] = this.ventas;
-    data['sku'] = this.sku;
-    data['upc'] = this.upc;
     if (this.promocion != null) {
       data['promocion'] = this.promocion!.toJson();
     }
-    if (this.galeria != null) {
-      data['galeria'] = this.galeria!.map((v) => v).toList();
+    if (galeria != null) {
+      data['galeria'] = galeria!.map((v) => v).toList();
     }
+    return data;
+  }
+}
+
+
+class Precio {
+  String? cantidad;
+  String? moneda;
+
+  Precio({this.cantidad, this.moneda});
+
+  Precio.fromJson(Map<String, dynamic> json) {
+    cantidad = json['cantidad'];
+    moneda = json['moneda'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['cantidad'] = cantidad;
+    data['moneda'] = moneda;
     return data;
   }
 }
@@ -170,9 +285,9 @@ class Proveedor {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nombre'] = this.nombre;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['nombre'] = nombre;
     return data;
   }
 }
@@ -190,7 +305,7 @@ class Subcategoria {
     if (json['etiquetas'] != null) {
       etiquetas = <Etiquetas>[];
       json['etiquetas'].forEach((v) {
-        etiquetas!.add(new Etiquetas.fromJson(v));
+        etiquetas!.add(Etiquetas.fromJson(v));
       });
     }
     nombre = json['nombre'];
@@ -198,13 +313,13 @@ class Subcategoria {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.etiquetas != null) {
-      data['etiquetas'] = this.etiquetas!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    if (etiquetas != null) {
+      data['etiquetas'] = etiquetas!.map((v) => v.toJson()).toList();
     }
-    data['nombre'] = this.nombre;
-    data['categoria'] = this.categoria;
+    data['nombre'] = nombre;
+    data['categoria'] = categoria;
     return data;
   }
 }
@@ -221,9 +336,9 @@ class Etiquetas {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['etiqueta'] = this.etiqueta;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['etiqueta'] = etiqueta;
     return data;
   }
 }
@@ -243,18 +358,18 @@ class PromoRequest {
     if (json['results'] != null) {
       results = <Promocion>[];
       json['results'].forEach((v) {
-        results!.add(new Promocion.fromJson(v));
+        results!.add(Promocion.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['count'] = this.count;
-    data['next'] = this.next;
-    data['previous'] = this.previous;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['count'] = count;
+    data['next'] = next;
+    data['previous'] = previous;
+    if (results != null) {
+      data['results'] = results!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -279,18 +394,17 @@ class Promocion {
     activo = json['activo'];
     descuento = json['descuento'];
     entregaGratis = json['entrega_gratis'];
-    regalo =
-        json['regalo'] != null ? new Regalo.fromJson(json['regalo']) : null;
+    regalo = json['regalo'] != null ? Regalo.fromJson(json['regalo']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['nombre'] = this.nombre;
-    data['activo'] = this.activo;
-    data['descuento'] = this.descuento;
-    data['entrega_gratis'] = this.entregaGratis;
-    if (this.regalo != null) {
-      data['regalo'] = this.regalo!.toJson();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['nombre'] = nombre;
+    data['activo'] = activo;
+    data['descuento'] = descuento;
+    data['entrega_gratis'] = entregaGratis;
+    if (regalo != null) {
+      data['regalo'] = regalo!.toJson();
     }
     return data;
   }
@@ -308,9 +422,9 @@ class Regalo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['cant_compra'] = this.cantCompra;
-    data['cant_regalo'] = this.cantRegalo;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['cant_compra'] = cantCompra;
+    data['cant_regalo'] = cantRegalo;
     return data;
   }
 }
@@ -327,27 +441,46 @@ class Componente {
 
   Componente.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    producto = json['producto'] != null
-        ? new Producto.fromJson(json['producto'])
-        : null;
+    producto =
+        json['producto'] != null ? Producto.fromJson(json['producto']) : null;
     cantidad = json['cantidad'];
     respaldo = json['respaldo'];
     orden = json['orden'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    if (this.producto != null) {
-      data['producto'] = this.producto!.toJson();
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    if (producto != null) {
+      data['producto'] = producto!.toJson();
     }
-    data['cantidad'] = this.cantidad;
-    data['respaldo'] = this.respaldo;
-    data['orden'] = this.orden;
+    data['cantidad'] = cantidad;
+    data['respaldo'] = respaldo;
+    data['orden'] = orden;
     return data;
   }
 }
 
+class MuniTemp{
+  int? id;
+  String? nombre;
+
+  MuniTemp({this.id, this.nombre});
+
+  MuniTemp.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    nombre = json['nombre'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['nombre'] = nombre;
+    return data;
+  }
+
+
+}
 class Marca {
   int? id;
   String? nombre;
@@ -360,9 +493,9 @@ class Marca {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nombre'] = this.nombre;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['nombre'] = nombre;
     return data;
   }
 }
