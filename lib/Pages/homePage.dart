@@ -4,6 +4,7 @@ import 'package:e_commerce/Utils/Responsive.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/MunicipioModelResponse.dart';
 import '../Widgets/DesktopWidgets/productDesktop.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
 
@@ -17,30 +18,63 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   late var textController = TextEditingController();
 
-  Future openDialog() => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-            title: Text('Nuevo IP'),
-            content: TextField(
-              controller: textController,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  SharedPreferences sh = await SharedPreferences.getInstance();
-                  Config.apiURL = "http://${textController.text}:8000";
-                  sh.setString("ip", Config.apiURL);
-                  setState(() {
-                    Config().setAll();
-                  });
-                  Navigator.pop(context);
-                },
-                child: Text('SUBMIT'),
-              )
-            ],
-          ));
+  // Future openDialog() => showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //           title: Text('Nuevo IP'),
+  //           content: TextField(
+  //             controller: textController,
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () async {
+  //                 SharedPreferences sh = await SharedPreferences.getInstance();
+  //                 Config.apiURL = "http://${textController.text}:8000";
+  //                 sh.setString("ip", Config.apiURL);
+  //                 setState(() {
+  //                   Config().setAll();
+  //                 });
+  //                 Navigator.pop(context);
+  //               },
+  //               child: Text('SUBMIT'),
+  //             )
+  //           ],
+  //         ));
+  List<DropdownMenuItem<String>> _dropDownCatItems = [];
+  List<DropdownMenuItem<String>> _dropDownMenuItems = [];
+
+  @override
+  void initState() {
+    // LoadStuff();
+    super.initState();
+    // print("estado iniciado");
+  }
+
+  Future<void> LoadStuff() async {
+    Config.municipios =
+        await MunicipioModelResponse().getMunicipios().whenComplete(() {
+      Config().setAll();
+      if (Config.munNames.isNotEmpty) {
+        _dropDownMenuItems = Config.munNames
+            .map((String value) => DropdownMenuItem<String>(
+                  child:
+                      Center(child: Text(value, textAlign: TextAlign.center)),
+                  value: value,
+                ))
+            .toList();
+      }
+    });
+    _dropDownCatItems = Config.categorias
+        .map((String value) => DropdownMenuItem<String>(
+              child: Center(child: Text(value, textAlign: TextAlign.center)),
+              value: value,
+            ))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    LoadStuff();
     var drawerHeader = UserAccountsDrawerHeader(
         currentAccountPicture: CircleAvatar(
           backgroundColor: Colors.amber,
@@ -61,19 +95,19 @@ class _homePageState extends State<homePage> {
 
     var w = MediaQuery.of(context).size.width;
 
-    final List<DropdownMenuItem<String>> _dropDownCatItems = Config.categorias
-        .map((String value) => DropdownMenuItem<String>(
-              child: Center(child: Text(value, textAlign: TextAlign.center)),
-              value: value,
-            ))
-        .toList();
+    // final List<DropdownMenuItem<String>> _dropDownCatItems = Config.categorias
+    //     .map((String value) => DropdownMenuItem<String>(
+    //           child: Center(child: Text(value, textAlign: TextAlign.center)),
+    //           value: value,
+    //         ))
+    //     .toList();
 
-    final List<DropdownMenuItem<String>> _dropDownMenuItems = Config.munNames
-        .map((String value) => DropdownMenuItem<String>(
-              child: Center(child: Text(value, textAlign: TextAlign.center)),
-              value: value,
-            ))
-        .toList();
+    // final List<DropdownMenuItem<String>> _dropDownMenuItems = Config.munNames
+    //     .map((String value) => DropdownMenuItem<String>(
+    //           child: Center(child: Text(value, textAlign: TextAlign.center)),
+    //           value: value,
+    //         ))
+    //     .toList();
 
     final _drawerItems = ListView(
       // ignore: prefer_const_literals_to_create_immutables
@@ -93,41 +127,49 @@ class _homePageState extends State<homePage> {
             Navigator.of(context).pushNamed('/allproducts');
           },
         ),
-        ListTile(title: Text('Ayuda')),
+        ExpansionTile(title: Text('Ayuda'),
+        children: [
+          ListTile(title: Text("F.A.Q"),),
+          ListTile(title: Text("¿Cómo usar Diplomarket?"),),
+        ]),
         ListTile(title: Text('Qué debe saber')),
-        ListTile(title: Text('Contacto')),
+        ExpansionTile(title: Text('Contacto'),
+        children: [
+
+        ]),
         ListTile(
             title: Text('Pagar'),
             onTap: () {
               Navigator.pushNamed(context, '/paypal');
             }),
-        Divider(),
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            "Solo Devs",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-        ),
-        ListTile(
-          title: Text('Cambiar IP'),
-          onTap: openDialog,
-        ),
-        Text("Current IP: "+Config.apiURL),
+        // Divider(),
+        // Container(
+        //   margin: EdgeInsets.symmetric(horizontal: 10),
+        //   child: Text(
+        //     "Solo Devs",
+        //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        //   ),
+        // ),
+        // ListTile(
+        //   title: Text('Cambiar IP'),
+        //   onTap: openDialog,
+        // ),
+        // Text("Current IP: " + Config.apiURL),
       ],
     );
 
     return Scaffold(
       appBar: myAppBar(context: context).AppBarM(),
-      body: SingleChildScrollView(
-        child: RefreshIndicator(
-          onRefresh: () async {
+      body: 
+      RefreshIndicator(
+        onRefresh: () async {
             setState(() {
-              Config().setAll;
+              LoadStuff();
             });
           },
+        child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
@@ -270,15 +312,14 @@ class _homePageState extends State<homePage> {
                   ),
                 ),
               ),
-              Responsive.isDesktop(context)
-                  ? Container(
-                      height: 500,
-                      width: MediaQuery.of(context).size.width,
-                      child: ProductsDesktop(prodCase: 1,))
-                  : Container(
-                      height: 500,
-                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
-                    ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                height: 500,
+                child: ProductsMobile(
+                  id: 3,
+                  mun: 1,
+                ),
+              ),
               SizedBox(
                 height: 24,
               ),
@@ -294,15 +335,13 @@ class _homePageState extends State<homePage> {
                   ),
                 ),
               ),
-              Responsive.isDesktop(context)
-                  ? Container(
-                      height: 500,
-                      width: MediaQuery.of(context).size.width,
-                      child: ProductsDesktop(prodCase: 2))
-                  : Container(
-                      height: 500,
-                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
-                    ),
+              SizedBox(
+                  height: 500,
+                  width: MediaQuery.of(context).size.width,
+                  child: ProductsMobile(
+                    id: 3,
+                    mun: 1,
+                  )),
               SizedBox(
                 height: 24,
               ),
@@ -318,15 +357,13 @@ class _homePageState extends State<homePage> {
                   ),
                 ),
               ),
-              Responsive.isDesktop(context)
-                  ? Container(
-                      height: 500,
-                      width: MediaQuery.of(context).size.width,
-                      child: ProductsDesktop(prodCase: 3))
-                  : Container(
-                      height: 400,
-                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
-                    ),
+              SizedBox(
+                  height: 500,
+                  width: MediaQuery.of(context).size.width,
+                  child: ProductsMobile(
+                    id: 3,
+                    mun: 1,
+                  )),
               SizedBox(
                 height: 24,
               ),
@@ -342,18 +379,121 @@ class _homePageState extends State<homePage> {
                   ),
                 ),
               ),
-              Responsive.isDesktop(context)
-                  ? Container(
-                      height: 500,
-                      width: MediaQuery.of(context).size.width,
-                      child: ProductsDesktop(prodCase: 4))
-                  : Container(
-                      height: 400,
-                      child: ProductsMobile(id: 1, mun: Config().getActiveMunIndex()),
-                    ),
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 10),
+                  height: 500,
+                  width: MediaQuery.of(context).size.width,
+                  child: ProductsMobile(
+                    id: 3,
+                    mun: 1,
+                  )),
               SizedBox(
                 height: 24,
               ),
+              Container(
+                color: Config.secondarycolor,
+                child: Column(children: [
+                  Image.asset('assets/logo_large.png', fit: BoxFit.contain),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Diplomarket is a division of the Las Americas TCC, LLC. We are very proud to say that Diplomarket is one of the first American Companies to serve the purchase and logistic needs to customers between US and Cuba.",
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontFamily: "Arial",
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  const Text(
+                    "INFORMACIÓN",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Config.maincolor)),
+                        child: const Text(
+                          "Sobre nosotros",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Config.maincolor)),
+                        child: const Text(
+                          "Políticas de Privacidad",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Config.maincolor)),
+                        child: const Text(
+                          "Términos y Condiciones",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Config.maincolor)),
+                        child: const Text(
+                          "Contáctenos",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                    width: 200,
+                    child: ClipRRect(
+                        child: Image.network(
+                      "https://www.diplomarket.com/payment-item.png",
+                      fit: BoxFit.fitWidth,
+                    )),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "© 2022 Diplomarket Cuba Embassies All rights reserved.",
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                ]),
+              )
             ],
           ),
         ),

@@ -22,8 +22,8 @@ class FoodCardWidget extends StatefulWidget {
 class _foodCardWidget extends State<FoodCardWidget> {
   @override
   Widget build(BuildContext context) {
-    List<Producto> p = widget.pr.results!;
-
+    List<ProductoAct> p = widget.pr.results!;
+    final int index = widget.index;
     return Container(
       child: Card(
         color: Colors.amber,
@@ -48,7 +48,7 @@ class _foodCardWidget extends State<FoodCardWidget> {
                     Container(
                       margin: EdgeInsets.only(top: 5, left: 10),
                       child: Text(
-                        p[widget.index].nombre!,
+                        p[index].nombre!,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -60,26 +60,26 @@ class _foodCardWidget extends State<FoodCardWidget> {
                       child: Row(
                         children: [
                           Text(
-                            '\$' + p[widget.index].precio!+ " USD",
+                            '\$' + p[index].precio!.cantidad! + p[index].precio!.moneda!,
                             style: TextStyle(
                               // fontWeight: FontWeight.bold,
                               fontSize: 24,
                             ),
                           ),
-                          Text(
-                            " " + p[widget.index].precio_lb!,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
-                          ),
+                          // Text(
+                          //   " " + p[index].precio_lb!,
+                          //   style: TextStyle(
+                          //     fontWeight: FontWeight.bold,
+                          //     fontSize: 24,
+                          //   ),
+                          // ),
                           Container(
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(10)),
                             child: Text(
-                              "-" + p[widget.index].promocion!.toString() + "%",
+                              "-" + p[index].promocion!.toString() + "%",
                               style: TextStyle(
                                 // fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -101,13 +101,12 @@ class _foodCardWidget extends State<FoodCardWidget> {
                             } else {
                               Config.wishlist.remove(p[widget.index]);
                             }
-                              setState(() {
-                                
-                              });
+                            setState(() {});
                           },
-                          icon: Icon(Config.wishlist.contains(p[widget.index]) ?
-                            Icons.favorite : Icons.favorite_border_outlined
-                            ,
+                          icon: Icon(
+                            Config.wishlist.contains(p[widget.index])
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
                             size: 42,
                             color: Colors.red,
                           ),
@@ -115,9 +114,7 @@ class _foodCardWidget extends State<FoodCardWidget> {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              if (p[widget.index].cantInventario! > 0) {
-                                
-                              }
+                              if (int.parse(p[widget.index].cantInventario!) > 0) {}
                             },
                             child: Text("COMPRAR"))
                       ],

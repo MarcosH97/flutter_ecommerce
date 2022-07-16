@@ -19,7 +19,7 @@ class CarritoModelResponse {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       cr.results!.forEach((element) {
         if (element.user == Config.activeUser.id && Config.carrito == null) {
-          Config.carrito = element.componentes!;
+          // Config.carrito = element.componentes!;
         }
       });
       // print(resBody);

@@ -1,9 +1,12 @@
 import 'package:e_commerce/Models/MunicipioModelResponse.dart';
 import 'package:e_commerce/Pages/allProductsPage.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
+import 'package:e_commerce/Pages/helpPage.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
 import 'package:e_commerce/Pages/paypalPage.dart';
+import 'package:e_commerce/Pages/paypalthree.dart';
+import 'package:e_commerce/Pages/stagingPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Services/pushNotificationsProvider.dart';
@@ -21,12 +24,20 @@ Future<void> main() async {
   Config.wishlist = [];
   Config.munNames = [];
   Config.categorias = [];
-  Config.municipios = await MunicipioModelResponse().getMunicipios().timeout(const Duration(seconds: 5));
-  Config().setAll;
+  Config.municipios = [];
+  Config.destinatarios = [];
+  Config.destinos = [];
+  Config.componentes = [];
+  Config.ordenes = [];
 
-  if (Platform.isAndroid) {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
+  // Config().setAll;
+  if (await Config().checkInternetConnection()) {
+    if (Platform.isAndroid) {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+    }
+  } else {
+    Config.internet = false;
   }
   runApp(const MyApp());
 }
@@ -44,7 +55,7 @@ class _myApp extends State<MyApp> {
   void initState() {
     super.initState();
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid && Config.internet) {
       final pushprov = new PushNProvider();
       pushprov.initNotifications();
     }
@@ -68,9 +79,11 @@ class _myApp extends State<MyApp> {
         '/login': (context) => loginPage(),
         '/register': (context) => registerPage(),
         '/checkout': (context) => checkOutPage(),
+        '/staging': (context) => stagePage(),
         '/allproducts': (context) => allProductsPage(),
         '/user': (context) => userPage(),
-        '/paypal': (context) => makePayment(),
+        '/paypal': (context) => PayPalLast(),
+        '/help': (context) => helpPage(),
       },
     );
   }

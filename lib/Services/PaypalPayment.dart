@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:core';
+import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Services/PaypalService.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,8 @@ class PaypalPayment extends StatefulWidget {
 
 class PaypalPaymentState extends State<PaypalPayment> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String checkoutUrl = Config.apiURL + '/api/checkout';
+  String checkoutUrl = Config.apiURL + Config.checkoutAPI;
+  var headers = {'Authorization': Config.token};
   late String executeUrl;
   late String accessToken;
   PaypalServices services = PaypalServices();
@@ -46,7 +49,7 @@ class PaypalPaymentState extends State<PaypalPayment> {
       try {
         accessToken = await services.getAccessToken();
 
-        final transactions = getOrderParams();
+        final transactions = componente();
         final res =
             await services.createPaypalPayment(transactions, accessToken);
         if (res != null) {
@@ -72,34 +75,33 @@ class PaypalPaymentState extends State<PaypalPayment> {
   }
 
   // item name, price and quantity
-  String itemName = 'iPhone X';
+  String producto = '7';
   String itemPrice = '1.99';
-  int quantity = 1;
+  int cantidad = 1;
+  String respaldo = "";
 
-  Map<String, dynamic> getOrderParams() {
+  Map<String, dynamic> componente() {
     List items = [
       {
-        "name": itemName,
-        "quantity": quantity,
-        "price": itemPrice,
-        "currency": defaultCurrency["currency"]
+        "producto": producto,
+        "respaldo": respaldo,
+        "cantidad": cantidad,
       }
     ];
 
     // checkout invoice details
     String total = '1.99';
     String subTotal = '1.99';
-    String costoEnvio = '0';
-    int descuento = 0;
+    int costoEnvio = 0;
+    String resumen_pago = "";
     String nombre = 'Paco';
     String ciudad = 'La Habana';
     String direccion = 'La esquina 25';
-    String codigoPostal = '10401';
     String pais = '1';
     String provicia = 'La Habana';
     String telefono = '+53569669';
 
-    Map<String, dynamic> temp = {
+    Map<String, dynamic> orden = {
       "intent": "sale",
       "payer": {"payment_method": "paypal"},
       "transactions": [
@@ -110,7 +112,7 @@ class PaypalPaymentState extends State<PaypalPayment> {
             "details": {
               "subtotal": subTotal,
               "shipping": costoEnvio,
-              "shipping_discount": ((-1.0) * descuento).toString()
+              "precio_envio": ((-1.0) * costoEnvio).toString()
             }
           },
           "description": "The payment transaction description.",
@@ -120,27 +122,19 @@ class PaypalPaymentState extends State<PaypalPayment> {
           "item_list": {
             "items": items,
             if (isEnableShipping && isEnableAddress)
-              "shipping_address": {
-                "recipient_name": nombre,
-                "line1": direccion,
-                "line2": "",
-                "city": ciudad,
-                "country_code": pais,
-                "postal_code": codigoPostal,
-                "phone": telefono,
-                "state": provicia
-              },
+              "destinatario": jsonEncode(Config.activeDest).replaceAll(r'\"', "'"),
           }
         }
       ],
-      "note_to_payer": "nota",
+      "nota": "nota",
       "redirect_urls": {"return_url": returnURL, "cancel_url": cancelURL}
     };
-    return temp;
+    return orden;
   }
 
   @override
   Widget build(BuildContext context) {
+    late WebViewController wc;
     print(checkoutUrl);
 
     if (checkoutUrl != null) {
@@ -153,6 +147,12 @@ class PaypalPaymentState extends State<PaypalPayment> {
           ),
         ),
         body: WebView(
+          onWebViewCreated: (controller) {
+            wc = controller;
+          },
+          onPageStarted: (checkoutUrl) {
+            wc.loadUrl(checkoutUrl, headers: headers);
+          },
           initialUrl: checkoutUrl,
           javascriptMode: JavascriptMode.unrestricted,
           navigationDelegate: (NavigationRequest request) {

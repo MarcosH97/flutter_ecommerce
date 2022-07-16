@@ -7,7 +7,10 @@ import 'dart:async';
 
 class ProductoModelResponse {
   Future<ProductoRequest> getProductList() async {
-    var headersList = {'Authorization': Config.token};
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
     var url = Uri.parse(Config.apiURL + Config.productAPI);
 
     var req = http.Request('GET', url);
@@ -25,9 +28,12 @@ class ProductoModelResponse {
     }
   }
 
-  Future<List<ProductoRec>> getProductRecList(municipioID) async {
-    var headersList = {'Authorization': Config.token};
-    var url = Uri.parse(Config.apiURL + Config.recomendadosAPI + "1");
+  Future<List<ProductoAct>?> getProductRecList() async {
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url = Uri.parse(Config.apiURL + Config.productAPI +"?municipios="+Config.activeMun.toString());
     // print("getting PREC");
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
@@ -35,9 +41,10 @@ class ProductoModelResponse {
     // print(res.statusCode);
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
+      // print(resBody);
       // var body = jsonDecode(resBody)['results'][0]['municipios'];
       // List<ProductoRec> body = jsonDecode(resBody)
-      var body = List<ProductoRec>.from(jsonDecode(resBody));
+      List<ProductoAct>? body = ProductoSec.fromJson(jsonDecode(resBody)).data;
       // print(body);
       return body;
     } else {

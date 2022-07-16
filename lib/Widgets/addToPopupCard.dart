@@ -1,15 +1,24 @@
+import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Pages/productPage.dart';
 import 'package:flutter/material.dart';
 
 import '../Utils/Config.dart';
 
 // const String _heroAddTodo = 'add-todo-hero';
 
-class AddTodoPopupCard extends StatelessWidget {
+class AddTodoPopupCard extends StatefulWidget {
   /// {@macro add_todo_popup_card}
+  ///
   const AddTodoPopupCard({Key? key}) : super(key: key);
 
   @override
+  State<StatefulWidget> createState() => _addToPopupCard();
+}
+
+class _addToPopupCard extends State<AddTodoPopupCard> {
+  @override
   Widget build(BuildContext context) {
+    List<ProductoAct> deseos = Config.wishlist;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -40,27 +49,42 @@ class AddTodoPopupCard extends StatelessWidget {
                     height: 15,
                   ),
                   Container(
+                    // alignment: Alignment.center,
                     width: MediaQuery.of(context).size.width - 30,
                     height: 200,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(30)),
-                    child: SingleChildScrollView(
-                      child: 
-                      ListView.builder(
-                        itemBuilder: (context, index) => ListTile(
-                            title: Text('Nombre prod'),
-                            subtitle: Text('descripcion prod'),
-                            trailing: Icon(Icons.cancel_outlined),
-                            leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: Image.network(
-                                    "http://diplomarket-backend.herokuapp.com/media/products/bistec%20de%20cerdo/2022-06-06-333232.jpg")),
-                            style: ListTileStyle.drawer,
-                          ),
-                        )
-                      
-                    ),
+                    child: deseos.length > 0
+                        ? ListView.builder(
+                            itemCount: Config.wishlist.length,
+                            itemBuilder: (context, index) => ListTile(
+                              title: Text(deseos[index].nombre!),
+                              subtitle: Text(deseos[index].descripcion!),
+                              trailing: IconButton(
+                                icon: Icon(Icons.cancel_outlined),
+                                onPressed: () {
+                                  setState(() {
+                                    Config.wishlist.removeAt(index);
+                                  });
+                                },
+                              ),
+                              leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Image.network(Config.apiURL +
+                                      deseos[index].imgPrincipal!)),
+                              style: ListTileStyle.list,
+                              onTap: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => productPage(
+                                          producto: deseos[index],
+                                        )));
+                              },
+                            ),
+                          )
+                        : Center(
+                            child: Text("No hay productos en favoritos",
+                                style: TextStyle(fontSize: 24))),
                   )
                 ],
               ),

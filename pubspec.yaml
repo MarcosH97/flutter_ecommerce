@@ -36,12 +36,14 @@ dependencies:
   cached_network_image: ^3.2.1
   cupertino_icons: ^1.0.2
   http: ^0.13.4
-  webview_flutter: ^3.0.4
+  webview_flutter: ^2.1.1
   http_auth: ^1.0.1
   flutter_braintree: ^2.3.1
   firebase_messaging: ^11.4.4
   firebase_core: ^1.19.1
   intl_phone_field: ^3.1.0
+  intl: ^0.17.0
+  flutter_paypal: ^0.0.8
 
   # shared_preferences: 2.0.6
   # native_notify: ^0.0.15

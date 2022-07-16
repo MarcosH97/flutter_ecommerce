@@ -11,6 +11,7 @@ class myAppBar {
   myAppBar({required this.context});
 
   AppBar AppBarM() {
+
     return AppBar(
       actions: [
         Padding(
@@ -28,7 +29,7 @@ class myAppBar {
                     return AddTodoPopupCard();
                   }));
                 },
-                icon: Icon(Icons.favorite_border_outlined),
+                icon: Config.wishlist.length>0 ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border_outlined),
                 iconSize: 40,
                 padding: EdgeInsets.all(0)),
             animationType: BadgeAnimationType.scale,
@@ -38,13 +39,21 @@ class myAppBar {
         ),
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/checkout');
-            },
-            padding: EdgeInsets.all(0),
-            icon: const Icon(Icons.shopping_cart_outlined),
-            iconSize: 40,
+          child: 
+          Badge(
+            badgeContent: Text(Config.carrito.length.toString(),  style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+            child: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/checkout');
+              },
+              padding: EdgeInsets.all(0),
+              icon: const Icon(Icons.shopping_cart_outlined),
+              iconSize: 40,
+            ),
+            animationType: BadgeAnimationType.scale,
+            showBadge: Config.carrito.length > 0,
+            position: BadgePosition.center(),
           ),
         ),
         Padding(

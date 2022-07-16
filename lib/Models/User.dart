@@ -36,7 +36,7 @@ class User {
   String? name;
   String? password;
   String? direccion;
-  int? pais;
+  String? pais;
   String? ciudad;
   String? codigoPostal;
   String? telefono;

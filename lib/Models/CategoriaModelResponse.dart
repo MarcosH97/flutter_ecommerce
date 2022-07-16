@@ -5,7 +5,7 @@ import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
 
 class CategoriaModelResponse {
-  Future<CategoriaRequest> getCategorias() async {
+  Future<void> getCategorias() async {
     var headersList = {'Authorization': Config.token};
     var url = Uri.parse(Config.apiURL + Config.catAPI);
 
@@ -16,15 +16,15 @@ class CategoriaModelResponse {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      final CategoriaRequest cat =
-          CategoriaRequest.fromJson(jsonDecode(resBody));
+      var cat = CategoriaRequest.fromJson(jsonDecode(resBody));
 
-      // print(cat.results);
-      // print(cat.results);
-      return cat;
+      cat.results!.forEach((element) {
+        if (!Config.categories.contains(element)) {
+          Config.categories.add(element);
+        }
+      });
     } else {
       print(res.reasonPhrase);
-      return CategoriaRequest();
     }
   }
 }

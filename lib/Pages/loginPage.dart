@@ -14,6 +14,7 @@ class loginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _loginPageState();
 }
+
 class _loginPageState extends State<loginPage> {
   final textController = TextEditingController();
 
@@ -141,7 +142,9 @@ class _loginPageState extends State<loginPage> {
                                             : Icon(Icons.visibility),
                                         color: Colors.grey.withOpacity(0.7),
                                         onPressed: () {
-                                          hidePassword = !hidePassword;
+                                          setState(() {
+                                            hidePassword = !hidePassword;
+                                          });
                                         },
                                       ),
                                       labelText: "Contraseña",

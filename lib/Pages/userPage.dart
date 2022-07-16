@@ -1,6 +1,7 @@
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Widgets/addToPopupCard.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Utils/Config.dart';
 import '../Utils/HeroDialogRoute.dart';
@@ -14,8 +15,15 @@ class userPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<userPage> {
+  Future<void> getlogin() async {
+    var sh = await SharedPreferences.getInstance();
+    bool b = sh.getBool('login')!;
+    print(b);
+  }
+
   @override
   Widget build(BuildContext context) {
+    getlogin();
     return Scaffold(
       appBar: myAppBar(context: context).AppBarM(),
       body: Column(children: [

@@ -1,5 +1,4 @@
 import 'package:e_commerce/Models/Municipio.dart';
-import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -7,9 +6,9 @@ import 'dart:convert';
 class MunicipioModelResponse {
   Future<List<Municipio>> getMunicipios() async {
     var headersList = {
-      'Authorization': 'token 54cefb0aabf266f83383cec926ef5073dc156f2e'
+      'Authorization': Config.token
     };
-    var url = Uri.parse('http://127.0.0.1:8000/api/municipio/');
+    var url = Uri.parse(Config.apiURL+Config.munAPI);
 
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
