@@ -59,14 +59,7 @@ class _registerPageState extends State<registerPage> {
                       width: Device().isMobile(context)
                           ? MediaQuery.of(context).size.width
                           : MediaQuery.of(context).size.width / 3,
-                      child: Card(
-                        margin: Device().isMobile(context)
-                            ? EdgeInsets.only(top: 80, left: 20, right: 20)
-                            : EdgeInsets.only(top: 80),
-                        color: Colors.transparent,
-                        child: 
-                        RegisterBody()
-                      ),
+                      child: RegisterBody(),
                     ),
                     
                     Align(

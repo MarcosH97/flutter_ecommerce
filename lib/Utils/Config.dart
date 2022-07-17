@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 import 'package:e_commerce/Models/Categoria.dart';
 import 'package:e_commerce/Models/Destinatario.dart';
@@ -8,7 +9,9 @@ import 'package:e_commerce/Models/User.dart';
 import 'dart:io';
 import '../Models/Componente.dart';
 import '../Models/MunicipioModelResponse.dart';
+import '../Models/Pais.dart';
 import '../Models/ProductoModelResponse.dart';
+import 'package:http/http.dart' as http;
 
 class Config {
   static late List<Municipio> municipios;
@@ -19,8 +22,11 @@ class Config {
   static late List<String> munNames;
   static late List<String> categorias;
   static late List<String> destinos;
+  static late List<String> paises;
   static late List<Componente> componentes;
+  static late List<Provincia> provincias;
   static late List<Orden> ordenes;
+  static late List<Pais> paisesT;
 
   static const String appName = "DiploMarket";
   static const String checkoutAPI = "/backend/checkout/";
@@ -47,6 +53,7 @@ class Config {
   static String token = 'token 56bb9a2bd87925b99e9bcd5619a461dcbf15d51f';
   static bool login = false;
   static int mun = 0;
+  static int pais = 0;
   static int destiny = 0;
   static bool internet = true;
 
@@ -55,6 +62,7 @@ class Config {
   static const maincolor = Color.fromARGB(255, 177, 32, 36);
   static const secondarycolor = Color.fromARGB(255, 27, 39, 79);
 
+  static int get activePais => mun;
   static int get activeMun => mun;
   static int get activeDest => destiny;
   static bool get isLoggedIn => login;
@@ -63,12 +71,17 @@ class Config {
   static User get activeUser => user;
 
   void setAll() {
-    Config.municipios.forEach((element) {
-      if (!munNames.contains(element.nombre))
-        Config.munNames.add(element.nombre!);
+    municipios.forEach((element) {
+      if (!munNames.contains(element.nombre)) munNames.add(element.nombre!);
     });
-    Config.categorias.forEach((element) {});
-
+    CategoriaModelResponse().getCategorias();
+    if (categories.isNotEmpty) {
+      categories.forEach((element) {
+        if (!categorias.contains(element.nombre!))
+          categorias.add(element.nombre!);
+      });
+    }
+    PaisRequest().getPaises();
     // print("Municipios: "+municipios.length.toString());
   }
 
@@ -115,13 +128,16 @@ class Config {
   }
 
   double getProductFinalPrice(ProductoAct p) {
-    if (p.promocion!.activo! && p.promocion != null) {
-      return double.parse(p.precio!.cantidad!) * p.promocion!.descuento! / 100;
-    } else if (p.precio != null) {
-      return double.parse(p.precio!.cantidad!);
-    } else {
-      return 0;
+    if (p.promocion!.activo != null) {
+      if (p.promocion!.activo!) {
+        return double.parse(p.precio!.cantidad!) *
+            p.promocion!.descuento! /
+            100;
+      } else if (p.precio != null) {
+        return double.parse(p.precio!.cantidad!);
+      }
     }
+    return double.parse(p.precio!.cantidad!);
   }
 
   void setupDestinatarios() {
@@ -135,9 +151,11 @@ class Config {
   double getTotalPriceKart() {
     double total = 0;
     carrito.forEach((element) {
-      // print(element.respaldo);
-      // total += element.respaldo!;
+      print(element.respaldo);
+      total += element.respaldo!;
     });
+    total = double.parse(total.toStringAsFixed(2));
+
     return total;
   }
 
@@ -169,7 +187,7 @@ class Config {
     return ProductoAct();
   }
 
-  Future<List<ProductoAct>> getProductosCarrito() async{
+  List<ProductoAct> getProductosCarrito() {
     List<ProductoAct> listado = [];
     carrito.forEach((element) async {
       listado.add(await getProducto(element.producto!));
@@ -185,7 +203,7 @@ class Config {
 
   bool inCarrito(ProductoAct producto) {
     bool inKart = false;
-    Config.carrito.forEach((element) {
+    carrito.forEach((element) {
       if (element.producto == producto.id) {
         inKart = true;
       }

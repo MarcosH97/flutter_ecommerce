@@ -71,7 +71,7 @@ class ProductoModelResponse {
       List<dynamic> lista = List.from(body);
       ProductoRec pr = lista[0];
 
-      print(pr);
+      // print(pr);
       // print(body);
       // return body;
     } else {

@@ -42,19 +42,15 @@ class _foodCardWidget extends State<FoodCardWidget> {
                 margin: EdgeInsets.all(10),
                 alignment: Alignment.topLeft,
                 child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 5, left: 10),
-                      child: Text(
-                        p[index].nombre!,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                  children: [Container(
+                        height: 10,
+                        margin: EdgeInsets.only(top: 5, left: 10),
+                        child: RichText(overflow: TextOverflow.ellipsis,
+                        strutStyle: StrutStyle(fontSize: 2),
+                          text: TextSpan(text: p[index].nombre!),
                         ),
                       ),
-                    ),
                     Container(
                       margin: EdgeInsets.only(left: 10),
                       child: Row(
@@ -66,20 +62,20 @@ class _foodCardWidget extends State<FoodCardWidget> {
                               fontSize: 24,
                             ),
                           ),
-                          // Text(
-                          //   " " + p[index].precio_lb!,
-                          //   style: TextStyle(
-                          //     fontWeight: FontWeight.bold,
-                          //     fontSize: 24,
-                          //   ),
-                          // ),
+                          Text(
+                            "\$" + p[index].precioxlibra!.cantidad!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          ),
                           Container(
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              "-" + p[index].promocion!.toString() + "%",
+                            child: Text(p[index].promocion != null ?
+                              ("-" + p[index].promocion!.toString() + "%") : "",
                               style: TextStyle(
                                 // fontWeight: FontWeight.bold,
                                 color: Colors.white,

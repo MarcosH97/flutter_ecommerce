@@ -1,3 +1,4 @@
+import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
@@ -16,19 +17,17 @@ class LoginModelResponse {
     print(username + '  ' + password);
     var body = {'username': username, 'password': password};
     var req = http.MultipartRequest('POST', url);
-    // req.headers.addAll(headersList);
     req.fields.addAll(body);
 
     var res = await req.send();
-    final resBody = await res.stream.bytesToString();
-    // print('enter login');
+    final resBody = await res.stream.bytesToString(); // print('enter login');
+
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      // print('login true');
       final data = jsonDecode(resBody);
       getUserInfo(username);
       Config.token = "token " + data['token'];
-      print(Config.token);
-      print(data['token']);
+      print("vamo pa los destin");
+      DestinatarioResponse().getDestinatarios();
       return (true);
     } else {
       // print('login false');

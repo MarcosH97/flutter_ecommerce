@@ -17,7 +17,10 @@ class stagePage extends StatefulWidget {
 }
 
 class stagePageState extends State<stagePage> {
+  var destin = Config.destinos[0];
+  bool _switch = false;
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+
   int currentStep = 0;
   Destinatario d = Destinatario();
   @override
@@ -89,6 +92,13 @@ class stagePageState extends State<stagePage> {
     );
   }
 
+  List<DropdownMenuItem<String>> _destinos = Config.destinos
+      .map((String value) => DropdownMenuItem<String>(
+            child: Center(child: Text(value, textAlign: TextAlign.center)),
+            value: value,
+          ))
+      .toList();
+
   List<Step> getSteps() => [
         Step(
             title: Text("Destinatario"),
@@ -97,117 +107,193 @@ class stagePageState extends State<stagePage> {
               key: _globalKey,
               child: Column(
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Nombre*"),
-                    onSaved: (value) {
-                      d.nombre = value;
-                    },
+                  Text(
+                    "Seleccione un destinatario",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Apellido 1*"),
-                    onSaved: (value) {
-                      d.apellido1 = value;
-                    },
+                  SizedBox(
+                    height: 10,
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Apellido 2*"),
-                    onSaved: (value) {
-                      d.apellido2 = value;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Email*"),
-                    onSaved: (value) {
-                      d.email = value;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "CI*"),
-                    onSaved: (value) {
-                      d.ci = value;
-                    },
-                  ),
-                  IntlPhoneField(
-                    // autovalidateMode: AutovalidateMode.always,
-                    invalidNumberMessage: "Formato de telefono incorrecto",
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
-                    decoration: const InputDecoration(
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      labelText: 'Teléfono',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.grey),
+                            color: Config.maincolor,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                          dropdownColor: Config.maincolor,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            overflow: TextOverflow.visible,
+                          ),
+                          isExpanded: true,
+                          itemHeight: null,
+                          value: Config.destinos.length > 0 ? destin : "",
+                          alignment: Alignment.center,
+                          items: _destinos,
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
+                          onChanged: (String? value) {
+                            if (value != null) {
+                              int id = 0;
+                              Config.destinatarios.forEach(
+                                (element) {
+                                  if (element.nombre == value) {
+                                    id = element.id!;
+                                  }
+                                },
+                              );
+                              setState(() {
+                                Config.destiny = id;
+                                destin = value;
+                                print(Config.destiny);
+                              });
+                            }
+                          },
+                        )),
                       ),
-                    ),
-                    initialCountryCode: 'US',
-                    onChanged: (phone) {
-                      print(phone.completeNumber);
-                      d.telefono = phone.completeNumber;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "País*"),
-                    onSaved: (value) {
-                      d.pais = 1;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Provincia*"),
-                    onSaved: (value) {
-                      d.provincia = 2;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Municipio*"),
-                    onSaved: (value) {
-                      d.municipio = 2;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Reparto o Ciudad*"),
-                    onSaved: (value) {
-                      d.ciudad = value;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Dirección*"),
-                    onSaved: (value) {
-                      d.direccion = value;
-                    },
-                  ),
-                  Divider(),
-                  Text("Campos alternativos"),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Otro Nombre"),
-                    onSaved: (value) {
-                      d.nombreAlternativo = value;
-                    },
-                  ),
-                  IntlPhoneField(
-                    // autovalidateMode: AutovalidateMode.always,
-                    invalidNumberMessage: "Formato de telefono incorrecto",
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly
+                      Switch(
+                          value: _switch,
+                          onChanged: (bool b) {
+                            setState(() => _switch);
+                          },
+                          activeColor: Config.maincolor),
                     ],
-                    decoration: const InputDecoration(
-                      floatingLabelBehavior: FloatingLabelBehavior.never,
-                      labelText: 'Teléfono Alternativo',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    initialCountryCode: 'US',
-                    onChanged: (phone) {
-                      d.telefonoAlternativo = phone.completeNumber.toString();
-                    },
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Nota"),
-                    onSaved: (value) {
-                      d.notaEntrega = value;
-                    },
-                  ),
+                  _switch
+                      ? Column(
+                          children: [
+                            TextFormField(
+                              decoration: InputDecoration(labelText: "Nombre*"),
+                              onSaved: (value) {
+                                d.nombre = value;
+                              },
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Apellido 1*"),
+                              onSaved: (value) {
+                                d.apellido1 = value;
+                              },
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Apellido 2*"),
+                              onSaved: (value) {
+                                d.apellido2 = value;
+                              },
+                            ),
+                            TextFormField(
+                              decoration: InputDecoration(labelText: "Email*"),
+                              onSaved: (value) {
+                                d.email = value;
+                              },
+                            ),
+                            TextFormField(
+                              decoration: InputDecoration(labelText: "CI*"),
+                              onSaved: (value) {
+                                d.ci = value;
+                              },
+                            ),
+                            IntlPhoneField(
+                              // autovalidateMode: AutovalidateMode.always,
+                              invalidNumberMessage:
+                                  "Formato de telefono incorrecto",
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              decoration: const InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                                labelText: 'Teléfono',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              initialCountryCode: 'US',
+                              onChanged: (phone) {
+                                print(phone.completeNumber);
+                                d.telefono = phone.completeNumber;
+                              },
+                            ),
+                            TextFormField(
+                              decoration: InputDecoration(labelText: "País*"),
+                              onSaved: (value) {
+                                d.pais = 1;
+                              },
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Provincia*"),
+                              onSaved: (value) {
+                                d.provincia = 2;
+                              },
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Municipio*"),
+                              onSaved: (value) {
+                                d.municipio = 2;
+                              },
+                            ),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                  labelText: "Reparto o Ciudad*"),
+                              onSaved: (value) {
+                                d.ciudad = value;
+                              },
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Dirección*"),
+                              onSaved: (value) {
+                                d.direccion = value;
+                              },
+                            ),
+                            Divider(),
+                            Text("Campos alternativos"),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(labelText: "Otro Nombre"),
+                              onSaved: (value) {
+                                d.nombreAlternativo = value;
+                              },
+                            ),
+                            IntlPhoneField(
+                              // autovalidateMode: AutovalidateMode.always,
+                              invalidNumberMessage:
+                                  "Formato de telefono incorrecto",
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              decoration: const InputDecoration(
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.never,
+                                labelText: 'Teléfono Alternativo',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              initialCountryCode: 'US',
+                              onChanged: (phone) {
+                                d.telefonoAlternativo =
+                                    phone.completeNumber.toString();
+                              },
+                            ),
+                            TextFormField(
+                              decoration: InputDecoration(labelText: "Nota"),
+                              onSaved: (value) {
+                                d.notaEntrega = value;
+                              },
+                            ),
+                          ],
+                        )
+                      : SizedBox(),
                 ],
               ),
             )),

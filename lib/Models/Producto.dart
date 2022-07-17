@@ -454,16 +454,16 @@ class ProductoSec {
 	ProductoSec({this.data});
 
 	ProductoSec.fromJson(Map<String, dynamic> json) {
-		if (json['data'] != null) {
+		if (json['results'] != null) {
 			data = <ProductoAct>[];
-			json['data'].forEach((v) { data!.add(new ProductoAct.fromJson(v)); });
+			json['results'].forEach((v) { data!.add(new ProductoAct.fromJson(v)); });
 		}
 	}
 
 	Map<String, dynamic> toJson() {
 		final Map<String, dynamic> data = new Map<String, dynamic>();
 		if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
+      data['results'] = this.data!.map((v) => v.toJson()).toList();
     }
 		return data;
 	}

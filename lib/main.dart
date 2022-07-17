@@ -1,17 +1,15 @@
-import 'package:e_commerce/Models/MunicipioModelResponse.dart';
+import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Pages/allProductsPage.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/helpPage.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
-import 'package:e_commerce/Pages/paypalPage.dart';
 import 'package:e_commerce/Pages/paypalthree.dart';
 import 'package:e_commerce/Pages/stagingPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Services/pushNotificationsProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
-import 'package:e_commerce/Widgets/makePayments.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,12 +22,14 @@ Future<void> main() async {
   Config.wishlist = [];
   Config.munNames = [];
   Config.categorias = [];
+  Config.categories = [];
   Config.municipios = [];
   Config.destinatarios = [];
   Config.destinos = [];
   Config.componentes = [];
   Config.ordenes = [];
-
+  Config.paises = [];
+  Config.paisesT = [];
   // Config().setAll;
   if (await Config().checkInternetConnection()) {
     if (Platform.isAndroid) {

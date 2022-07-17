@@ -14,7 +14,7 @@ class PayPalLast extends StatefulWidget {
 }
 
 class _PayPalLastState extends State<PayPalLast> {
-  Destinatario d = Config.destinatarios[Config.destiny];
+  Destinatario d = Config.destinatarios.where((element) => (element.id == Config.destiny)).first;
   String carrito = jsonEncode(Config.carrito).replaceAll(r"\", "");
   @override
   Widget build(BuildContext context) {
@@ -51,8 +51,7 @@ class _PayPalLastState extends State<PayPalLast> {
                                 //       "INSTANT_FUNDING_SOURCE"
                                 // },
                                 "item_list": {
-                                  carrito,
-
+                                  "list":carrito,
                                   // shipping address is not required though
                                   "shipping_address": {
                                     "recipient_name": d.nombre,

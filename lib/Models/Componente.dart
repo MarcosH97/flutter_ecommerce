@@ -18,10 +18,11 @@ class Componente {
   });
 
   void incrementCantidad() {
-    cantidad = cantidad!+1;
+    cantidad = cantidad! + 1;
   }
+
   void decrementCantidad() {
-    cantidad = cantidad!+1;
+    cantidad = cantidad! - 1;
   }
 
   void setRespaldo(double value) {
@@ -56,16 +57,21 @@ class ComponenteCreate {
     return Componente(producto: producto.id, cantidad: 1, respaldo: respaldop);
   }
 
-  void updateRespaldo(int index) async {
-    List<ProductoAct>? productos =
-        await ProductoModelResponse().getProductRecList();
-    productos!.forEach((element) {
-      if (element.id == Config.carrito[index].producto) {
-        Config.carrito[index].setRespaldo(
-            double.parse(element.precio!.cantidad!) *
-                    Config.carrito[index].cantidad! +
-                1);
-      }
-    });
+  void updateRespaldo(int index) {
+    // List<ProductoAct>? productos =
+    //     await ProductoModelResponse().getProductRecList();
+    // productos!.forEach((element) {
+    //   if (element.id == Config.carrito[index].producto) {
+    //     Config.carrito[index].setRespaldo(
+    //         double.parse(element.precio!.cantidad!) *
+    //                 Config.carrito[index].cantidad! +
+    //             1);
+    //   }
+    // });
+    Componente c = Config.carrito[index];
+    
+
+    double value = 0;
+    Config.carrito[index].setRespaldo(value);
   }
 }

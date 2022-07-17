@@ -20,13 +20,15 @@ class _productPageState extends State<productPage> {
   bool isFav = false;
 
   double getDiscount() {
-    if (widget.producto.promocion!.activo!) {
-      return double.parse(widget.producto.precio!.cantidad!) *
-          widget.producto.promocion!.descuento! /
-          100;
-    } else {
-      return 0;
+    if (widget.producto.promocion != null) {
+      print("es nullo");
+      if (widget.producto.promocion!.activo!) {
+        return double.parse(widget.producto.precio!.cantidad!) *
+            widget.producto.promocion!.descuento! /
+            100;
+      }
     }
+    return 0;
   }
 
   @override
@@ -173,10 +175,12 @@ class _productPageState extends State<productPage> {
                                   color: Colors.red[700],
                                   borderRadius: BorderRadius.circular(10)),
                               child: Text(
-                                  '-' +
-                                      widget.producto.promocion!.descuento
-                                          .toString() +
-                                      '%',
+                                  widget.producto.promocion != null
+                                      ? ('-' +
+                                          widget.producto.promocion!.descuento
+                                              .toString() +
+                                          '%')
+                                      : " ",
                                   style: TextStyle(
                                       fontSize: 24,
                                       color: Colors.white,
@@ -201,8 +205,9 @@ class _productPageState extends State<productPage> {
                     alignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: !Config().inCarrito(widget.producto) ? () {
-                          if (Config.isLoggedIn) {
+                        onPressed: !Config().inCarrito(widget.producto)
+                            ? () {
+                                if (Config.isLoggedIn) {
                                   setState(() {
                                     Config.carrito.add(Componente(
                                         producto: widget.producto.id,
@@ -224,16 +229,21 @@ class _productPageState extends State<productPage> {
                                             ],
                                           ));
                                 }
-                        }
-                        : null,
+                              }
+                            : null,
                         style: ButtonStyle(
                             fixedSize: MaterialStateProperty.all(Size(150, 50)),
-                            backgroundColor:
-                                MaterialStateProperty.all(!Config().inCarrito(widget.producto)?Config.maincolor:Colors.red[100]),
+                            backgroundColor: MaterialStateProperty.all(
+                                !Config().inCarrito(widget.producto)
+                                    ? Config.maincolor
+                                    : Colors.red[100]),
                             shape: MaterialStateProperty.all(
                                 RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)))),
-                        child: Text(!Config().inCarrito(widget.producto) ? "COMPRAR" : "AÑADIDO",
+                        child: Text(
+                            !Config().inCarrito(widget.producto)
+                                ? "COMPRAR"
+                                : "AÑADIDO",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: "Arial",

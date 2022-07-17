@@ -1,34 +1,8 @@
-class CategoriaRequest {
-  int? count;
-  String? next;
-  String? previous;
-  List<Categoria>? results;
+import 'dart:convert';
 
-  CategoriaRequest({this.count, this.next, this.previous, this.results});
-
-  CategoriaRequest.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
-    next = json['next'];
-    previous = json['previous'];
-    if (json['results'] != null) {
-      results = <Categoria>[];
-      json['results'].forEach((v) {
-        results!.add(new Categoria.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['count'] = this.count;
-    data['next'] = this.next;
-    data['previous'] = this.previous;
-    if (this.results != null) {
-      data['results'] = this.results!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
+import 'package:e_commerce/Models/Categoria.dart';
+import 'package:e_commerce/Utils/Config.dart';
+import 'package:http/http.dart' as http;
 
 class Categoria {
   int? id;
@@ -49,5 +23,30 @@ class Categoria {
     data['nombre'] = this.nombre;
     data['especial'] = this.especial;
     return data;
+  }
+}
+
+class CategoriaModelResponse {
+  Future<void> getCategorias() async {
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse(Config.apiURL + Config.catAPI);
+
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var cat = List.from(jsonDecode(resBody)['results']);
+      cat.forEach((element) {
+        Categoria c = Categoria.fromJson(element);
+        if (!Config.categories.contains(c)) {
+          Config.categories.add(c);
+        }
+      });
+    } else {
+      print(res.reasonPhrase);
+    }
   }
 }

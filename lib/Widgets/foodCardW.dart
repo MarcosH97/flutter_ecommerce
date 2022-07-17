@@ -71,10 +71,10 @@ class _FoodCardWState extends State<FoodCardW> {
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 alignment: Alignment.topLeft,
-                child: Text(
-                  producto[index].nombre!,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
+                child: RichText(overflow: TextOverflow.ellipsis,
+                        strutStyle: StrutStyle(fontSize: 2),
+                          text: TextSpan(text: producto[index].nombre!),
+                        ),
               ),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 15),

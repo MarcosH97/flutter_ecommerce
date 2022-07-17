@@ -146,7 +146,7 @@ class DestinatarioResponse {
       "pais": d.pais,
       "provincia": d.provincia,
       "municipio": d.municipio,
-      "activo":d.activo
+      "activo": d.activo
     };
     print(body);
     var req = http.Request('POST', url);
@@ -172,14 +172,18 @@ class DestinatarioResponse {
 
     var res = await req.send();
     final resBody = await res.stream.bytesToString();
+    // print('llenando destinatarios');
+    // print(resBody);
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       var body = DestinatarioRequest.fromJson(jsonDecode(resBody));
-
       body.results!.forEach((element) {
+        // print(element);
         if (element.usuario == Config.activeUser.id &&
             !Config.destinatarios.contains(element)) {
           Config.destinatarios.add(element);
+          Config.destinos.add(element.nombre!);
+          print(Config.destinos);
         }
       });
     } else {
