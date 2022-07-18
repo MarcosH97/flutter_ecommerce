@@ -92,7 +92,6 @@ class _myApp extends State<MyApp> {
     SharedPreferences sh = await SharedPreferences.getInstance();
     if (sh.getString('ip') != null) {
       setState(() {
-        Config.apiURL = sh.getString("ip")!;
         Config().setAll;
       });
       // print(Config.apiURL);

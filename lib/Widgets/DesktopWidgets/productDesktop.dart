@@ -10,34 +10,33 @@ class ProductsDesktop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future func;
-    switch (prodCase) {
-      case 1:
-        {
-          func = ProductoModelResponse().getProductList();
-          break;
-        }
-      case 2:
-        {
-          func = ProductoModelResponse().getProductList();
-          break;
-        }
-      case 3:
-        {
-          func = ProductoModelResponse().getProductList();
-          break;
-        }
-      case 4:
-        {
-          func = ProductoModelResponse().getProductList();
-          break;
-        }
-      default:
-        {
-          func = ProductoModelResponse().getProductList();
-          break;
-        }
-    }
+    Future func = ProductoModelResponse().getProductRecList();
+    // switch (prodCase) {
+    //   case 1:
+    //     {
+    //       func = ProductoModelResponse().getProductList();
+    //       break;
+    //     }
+    //   case 2:
+    //     {
+    //       func = ProductoModelResponse().getProductList();
+    //       break;
+    //     }
+    //   case 3:
+    //     {
+    //       func = ProductoModelResponse().getProductList();
+    //       break;
+    //     }
+    //   case 4:
+    //     {
+    //       func = ProductoModelResponse().getProductList();
+    //       break;
+    //     }
+    //   default:
+    //     {
+    //       func = ProductoModelResponse().getProductList();
+    //       break;
+    //     }
 
     return FutureBuilder<dynamic>(
         future: func,

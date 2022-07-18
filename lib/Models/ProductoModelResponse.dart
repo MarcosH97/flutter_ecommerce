@@ -6,34 +6,14 @@ import 'dart:convert';
 import 'dart:async';
 
 class ProductoModelResponse {
-  Future<ProductoRequest> getProductList() async {
+
+  Future<dynamic> getProductRecList() async {
     var headersList = {
       'Accept-Language': Config.language,
       'Authorization': Config.token
     };
-    var url = Uri.parse(Config.apiURL + Config.productAPI);
-
-    var req = http.Request('GET', url);
-    req.headers.addAll(headersList);
-    var res = await req.send().timeout(const Duration(seconds: 5));
-    final resBody = await res.stream.bytesToString();
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      // var body = jsonDecode(resBody)['results'][0]['municipios'];
-      var body = ProductoRequest.fromJson(jsonDecode(resBody));
-      return body;
-    } else {
-      print(res.reasonPhrase);
-      print("error");
-      throw Exception();
-    }
-  }
-
-  Future<List<ProductoAct>?> getProductRecList() async {
-    var headersList = {
-      'Accept-Language': Config.language,
-      'Authorization': Config.token
-    };
-    var url = Uri.parse(Config.apiURL + Config.productAPI +"?municipios="+Config.activeMun.toString());
+    var url =
+        Uri.parse('https://www.diplomarket.com/backend/producto/?municipios=2');
     // print("getting PREC");
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
@@ -42,11 +22,10 @@ class ProductoModelResponse {
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // print(resBody);
-      // var body = jsonDecode(resBody)['results'][0]['municipios'];
-      // List<ProductoRec> body = jsonDecode(resBody)
-      List<ProductoAct>? body = ProductoSec.fromJson(jsonDecode(resBody)).data;
-      // print(body);
-      return body;
+
+      ProductoSec body = ProductoSec.fromJson(jsonDecode(resBody));
+      List<ProductoAct>? pro = body.data;
+      return pro;
     } else {
       print(res.reasonPhrase);
       // print("error");

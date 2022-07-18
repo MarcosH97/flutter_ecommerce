@@ -17,7 +17,6 @@ class ProductsMobile extends StatefulWidget {
 }
 
 class _productsMobile extends State<ProductsMobile> {
-
   @override
   Widget build(BuildContext context) {
     Future func;
@@ -45,7 +44,7 @@ class _productsMobile extends State<ProductsMobile> {
 
       default:
         {
-          func = ProductoModelResponse().getProductList();
+          func = ProductoModelResponse().getProductRecList(); ;
           break;
         }
     }
@@ -139,27 +138,27 @@ class _productsMobile extends State<ProductsMobile> {
                   }
                 } else {
                   return ListView.builder(
-                  itemCount: 10,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      margin: EdgeInsets.all(10),
-                      elevation: 10,
-                      child: Container(
-                        width: 360,
-                        child: const Center(
-                            child: SizedBox(
-                                height: 100,
-                                width: 100,
-                                child: Icon(
-                                  Icons.cancel_rounded,
-                                  size: 100,
-                                  color: Color.fromARGB(50, 25, 25, 25),
-                                ))),
-                      ),
-                    );
-                  },
-                );
+                    itemCount: 10,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: EdgeInsets.all(10),
+                        elevation: 10,
+                        child: Container(
+                          width: 360,
+                          child: const Center(
+                              child: SizedBox(
+                                  height: 100,
+                                  width: 100,
+                                  child: Icon(
+                                    Icons.cancel_rounded,
+                                    size: 100,
+                                    color: Color.fromARGB(50, 25, 25, 25),
+                                  ))),
+                        ),
+                      );
+                    },
+                  );
                 }
 
                 return Text("null2");
@@ -307,12 +306,11 @@ class _productsMobile extends State<ProductsMobile> {
   Widget forProductsRecOnly(pr) {
     List<ProductoAct> proreq = pr;
     return ListView.builder(
-      itemCount: proreq.length,
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, index) {
-        return FoodCardW(productReq: proreq, index: index);
-      }
-    );    // r
+        itemCount: proreq.length,
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) {
+          return FoodCardW(productReq: proreq, index: index);
+        }); // r
   }
 
   Widget forProductsOfDayOnly(pr) {
@@ -572,6 +570,5 @@ class _productsMobile extends State<ProductsMobile> {
         );
       },
     );
-  } 
+  }
 }
-
