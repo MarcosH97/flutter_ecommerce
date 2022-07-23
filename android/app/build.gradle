@@ -50,7 +50,7 @@ android {
 
     signingConfigs {
         release {
-            keyAlias 'key'
+            keyAlias 'key0'
             keyPassword 'M3g@hero'
             storeFile rootProject.file('key.jks')
             storePassword 'M3g@hero'

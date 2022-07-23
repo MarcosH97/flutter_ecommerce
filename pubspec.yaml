@@ -44,6 +44,9 @@ dependencies:
   intl_phone_field: ^3.1.0
   intl: ^0.17.0
   flutter_paypal: ^0.0.8
+  get: ^4.6.5
+  fluttertoast: ^8.0.9
+  toast: ^0.2.9
 
   # shared_preferences: 2.0.6
   # native_notify: ^0.0.15

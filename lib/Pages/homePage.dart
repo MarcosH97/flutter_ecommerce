@@ -3,7 +3,12 @@ import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Utils/Responsive.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
+import '../Models/Carrito.dart';
 import '../Models/MunicipioModelResponse.dart';
 import '../Widgets/DesktopWidgets/productDesktop.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
@@ -45,15 +50,12 @@ class _homePageState extends State<homePage> {
 
   @override
   void initState() {
-    // LoadStuff();
     super.initState();
-    // print("estado iniciado");
+    LoadStuff();
   }
 
-  Future<void> LoadStuff() async {
-    Config.municipios =
-        await MunicipioModelResponse().getMunicipios().whenComplete(() {
-      Config().setAll();
+  void LoadStuff() {
+    setState(() {
       if (Config.munNames.isNotEmpty) {
         _dropDownMenuItems = Config.munNames
             .map((String value) => DropdownMenuItem<String>(
@@ -63,18 +65,19 @@ class _homePageState extends State<homePage> {
                 ))
             .toList();
       }
+      Config().setAll();
+      _dropDownCatItems = Config.categorias
+          .map((String value) => DropdownMenuItem<String>(
+                child: Center(child: Text(value, textAlign: TextAlign.center)),
+                value: value,
+              ))
+          .toList();
     });
-    _dropDownCatItems = Config.categorias
-        .map((String value) => DropdownMenuItem<String>(
-              child: Center(child: Text(value, textAlign: TextAlign.center)),
-              value: value,
-            ))
-        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    LoadStuff();
+    ToastContext().init(context);
     var drawerHeader = UserAccountsDrawerHeader(
         currentAccountPicture: CircleAvatar(
           backgroundColor: Colors.amber,
@@ -95,26 +98,12 @@ class _homePageState extends State<homePage> {
 
     var w = MediaQuery.of(context).size.width;
 
-    // final List<DropdownMenuItem<String>> _dropDownCatItems = Config.categorias
-    //     .map((String value) => DropdownMenuItem<String>(
-    //           child: Center(child: Text(value, textAlign: TextAlign.center)),
-    //           value: value,
-    //         ))
-    //     .toList();
-
-    // final List<DropdownMenuItem<String>> _dropDownMenuItems = Config.munNames
-    //     .map((String value) => DropdownMenuItem<String>(
-    //           child: Center(child: Text(value, textAlign: TextAlign.center)),
-    //           value: value,
-    //         ))
-    //     .toList();
-
     final _drawerItems = ListView(
       // ignore: prefer_const_literals_to_create_immutables
       children: <Widget>[
         drawerHeader,
         ListTile(
-          title: Text('Cuenta'),
+          title: Text('account'.tr),
           onTap: () {
             Config.isLoggedIn
                 ? Navigator.pushNamed(context, '/user')
@@ -122,51 +111,42 @@ class _homePageState extends State<homePage> {
           },
         ),
         ListTile(
-          title: Text('Todos los Productos'),
+          title: Text('all_products'.tr),
           onTap: () {
             Navigator.of(context).pushNamed('/allproducts');
           },
         ),
-        ExpansionTile(title: Text('Ayuda'),
-        children: [
-          ListTile(title: Text("F.A.Q"),),
-          ListTile(title: Text("¿Cómo usar Diplomarket?"),),
+        ExpansionTile(title: Text('help'), children: [
+          ListTile(
+            title: Text("F.A.Q"),
+          ),
+          ListTile(
+            title: Text("¿Cómo usar Diplomarket?"),
+          ),
         ]),
-        ListTile(title: Text('Qué debe saber')),
-        ExpansionTile(title: Text('Contacto'),
-        children: [
-
-        ]),
+        ListTile(title: Text('to_know'.tr)),
+        ExpansionTile(title: Text('contact'.tr), children: []),
         ListTile(
             title: Text('Pagar'),
             onTap: () {
               Navigator.pushNamed(context, '/paypal');
             }),
-        // Divider(),
-        // Container(
-        //   margin: EdgeInsets.symmetric(horizontal: 10),
-        //   child: Text(
-        //     "Solo Devs",
-        //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        //   ),
-        // ),
-        // ListTile(
-        //   title: Text('Cambiar IP'),
-        //   onTap: openDialog,
-        // ),
-        // Text("Current IP: " + Config.apiURL),
+        ListTile(
+            title: Text('Pagar Braintree'),
+            onTap: () {
+              Navigator.pushNamed(context, '/braintree');
+            }),
       ],
     );
 
     return Scaffold(
       appBar: myAppBar(context: context).AppBarM(),
-      body: 
-      RefreshIndicator(
+      body: RefreshIndicator(
         onRefresh: () async {
-            setState(() {
-              LoadStuff();
-            });
-          },
+          setState(() {
+            LoadStuff();
+          });
+        },
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -181,29 +161,25 @@ class _homePageState extends State<homePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: TextField(
                             autofocus: false,
                             maxLines: 1,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 hintText: 'carne',
-                                labelText: 'Barra de busqueda'),
+                                labelText: 'search'.tr),
                           ),
                         ),
                         ElevatedButton(
                             onPressed: () {},
-                            style: ButtonStyle(
-                              padding:
-                                  MaterialStateProperty.all(EdgeInsets.all(0)),
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(0),
                               alignment: Alignment.center,
-                              backgroundColor:
-                                  MaterialStateProperty.all(Config.maincolor),
-                              shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(2))),
-                              fixedSize:
-                                  MaterialStateProperty.all(Size(30, 60)),
+                              primary: Config.maincolor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(2)),
+                              fixedSize: Size(30, 60),
                             ),
                             child: const Icon(
                               Icons.search,
@@ -230,8 +206,9 @@ class _homePageState extends State<homePage> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton(
                               dropdownColor: Config.maincolor,
+                              value: Config.selectedCar,
                               hint: Text(
-                                'CATEGORIAS',
+                                'categories'.tr,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
@@ -477,14 +454,30 @@ class _homePageState extends State<homePage> {
                   const SizedBox(
                     height: 30,
                   ),
-                  SizedBox(
-                    width: 200,
-                    child: ClipRRect(
-                        child: Image.network(
-                      "https://www.diplomarket.com/payment-item.png",
-                      fit: BoxFit.fitWidth,
-                    )),
-                  ),
+                  Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 50,
+                          child: ClipRRect(
+                              child: Image.asset(
+                            "assets/paypal.png",
+                            fit: BoxFit.fitWidth,
+                          )),
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        SizedBox(
+                          width: 50,
+                          child: ClipRRect(
+                              child: Image.asset(
+                            "assets/tropi.png",
+                            fit: BoxFit.fitWidth,
+                          )),
+                        ),
+                      ]),
                   const SizedBox(
                     height: 10,
                   ),
@@ -499,19 +492,210 @@ class _homePageState extends State<homePage> {
         ),
       ),
       drawer: Drawer(
-        child: _drawerItems,
+        child: drawerMenuItems(context),
       ),
     );
   }
-}
 
-Widget products(index) {
-  return Container(
-    width: double.infinity,
-    height: 500,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
-      color: Colors.grey,
-    ),
-  );
+  Widget drawerHeader(context) => Container(
+        height: MediaQuery.of(context).size.height / 5,
+        alignment: Alignment.bottomCenter,
+        color: Colors.white,
+        child: Image.asset('assets/logo.png'),
+      );
+
+  Widget drawerMenuItems(context) => Column(
+        children: [
+          drawerHeader(context),
+          Expanded(
+            child: Container(
+              color: Config.maincolor,
+              child: SingleChildScrollView(
+                child: Wrap(
+                  runSpacing: 14,
+                  children: [
+                    ExpansionTile(
+                        iconColor: Colors.white,
+                        collapsedIconColor: Colors.white,
+                        title: drawerText(
+                          'categories'.tr,
+                        ),
+                        children: [
+                          ExpansionTile(
+                            title: drawerText('Aceites'),
+                            iconColor: Colors.white,
+                            collapsedIconColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 77, 22, 18),
+                            collapsedBackgroundColor:
+                                Color.fromARGB(255, 143, 34, 34),
+                            children: [
+                              ListTile(title: drawerText('Todas')),
+                              ListTile(
+                                title: drawerText('Pomos'),
+                                onTap: () => null,
+                              ),
+                            ],
+                          ),
+                          ExpansionTile(
+                            title: drawerText('Bebidas'),
+                            iconColor: Colors.white,
+                            collapsedIconColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 77, 22, 18),
+                            collapsedBackgroundColor:
+                                Color.fromARGB(255, 143, 34, 34),
+                            children: [
+                              ListTile(title: drawerText('Todas')),
+                              ListTile(title: drawerText('Aguas')),
+                              ListTile(title: drawerText('Gaseadas')),
+                              ListTile(title: drawerText('Instantáneas')),
+                              ListTile(title: drawerText('Jugos')),
+                            ],
+                          ),
+                          ExpansionTile(
+                            title: drawerText('Carnes'),
+                            iconColor: Colors.white,
+                            collapsedIconColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 77, 22, 18),
+                            collapsedBackgroundColor:
+                                Color.fromARGB(255, 143, 34, 34),
+                            children: [],
+                          ),
+                        ]),
+                    ListTile(
+                      title: drawerText('account'.tr),
+                      onTap: () {
+                        Config.isLoggedIn
+                            ? Navigator.pushNamed(context, '/user')
+                            : Navigator.popAndPushNamed(context, '/login');
+                      },
+                    ),
+                    ListTile(
+                      title: drawerText('all_products'.tr),
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/allproducts');
+                      },
+                    ),
+                    ExpansionTile(
+                        iconColor: Colors.white,
+                        collapsedIconColor: Colors.white,
+                        title: drawerText('help'.tr),
+                        children: [
+                          ListTile(title: drawerText("F.A.Q")),
+                          ListTile(title: drawerText('how_to'.tr)),
+                        ]),
+                    ExpansionTile(
+                      title: drawerText('lang'.tr),
+                      children: [
+                        ListTile(
+                          leading: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset('assets/es.png'),
+                          ),
+                          title: drawerText('ESP'),
+                          onTap: () {
+                            setState(() {
+                              Get.updateLocale(Locale('es', 'ES'));
+                            });
+                          },
+                        ),
+                        ListTile(
+                          leading: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset('assets/us.png'),
+                          ),
+                          title: drawerText('ENG'),
+                          onTap: () {
+                            setState(() {
+                              Get.updateLocale(Locale('en', 'US'));
+                            });
+                          }
+                        ),
+                      ],
+                    ),
+                    ExpansionTile(
+                        iconColor: Colors.white,
+                        collapsedIconColor: Colors.white,
+                        title: drawerText('contact'.tr),
+                        children: [
+                          ListTile(
+                              title: drawerText("+53 54024747"),
+                              leading: Icon(
+                                Icons.phone,
+                                color: Colors.white,
+                              ),
+                              onTap: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: "53 54024747"));
+                                Fluttertoast.showToast(
+                                    msg: 'cclip'.tr,
+                                    gravity: ToastGravity.BOTTOM);
+                                // Toast.show('cclip'.tr, duration: Toast.lengthShort, gravity: Toast.bottom);
+                              }),
+                          ListTile(
+                              title: drawerText("+1 305 26 7330"),
+                              leading: Icon(
+                                Icons.phone,
+                                color: Colors.white,
+                              ),
+                              onTap: () {
+                                Clipboard.setData(
+                                    ClipboardData(text: "1 305 26 7330"));
+                                Fluttertoast.showToast(
+                                    msg: 'cclip'.tr,
+                                    gravity: ToastGravity.BOTTOM);
+                              }),
+                          ListTile(
+                              title: drawerText("sales@lasamericastcc.com"),
+                              leading: Icon(
+                                Icons.mail_outline,
+                                color: Colors.white,
+                              ),
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(
+                                    text: "sales@lasamericastcc.com"));
+                                Fluttertoast.showToast(
+                                    msg: 'cclip'.tr,
+                                    gravity: ToastGravity.BOTTOM);
+                              }),
+                          ListTile(
+                              title: drawerText("info@lasamericastcc.com"),
+                              leading: Icon(
+                                Icons.mail_outline,
+                                color: Colors.white,
+                              ),
+                              onTap: () {
+                                Clipboard.setData(ClipboardData(
+                                    text: "info@lasamericastcc.com"));
+                                Fluttertoast.showToast(
+                                    msg: 'cclip'.tr,
+                                    gravity: ToastGravity.BOTTOM);
+                              }),
+                        ]),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
+  Widget drawerText(String text) => Text(
+        text,
+        style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: 18,
+            letterSpacing: 2),
+      );
+
+  Widget products(index) {
+    return Container(
+      width: double.infinity,
+      height: 500,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.grey,
+      ),
+    );
+  }
 }

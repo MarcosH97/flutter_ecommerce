@@ -77,7 +77,7 @@ class _addToPopupCard extends State<AddTodoPopupCard> {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => productPage(
-                                          producto: deseos[index],
+                                          producto: deseos[index], index: index,
                                         )));
                               },
                             ),

@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../Pages/productPage.dart';
 import '../Utils/Config.dart';
 
 class FoodCardW extends StatefulWidget {
-  final List<ProductoAct> productReq;
+  final ProductoAct productReq;
   final int index;
 
   FoodCardW({Key? key, required this.productReq, required this.index})
@@ -19,21 +20,27 @@ class FoodCardW extends StatefulWidget {
 }
 
 class _FoodCardWState extends State<FoodCardW> {
+  bool inKart = false;
+  bool inWL = false;
+  bool outofstock = false;
   @override
   Widget build(BuildContext context) {
-    bool inKart = false;
-    int index = widget.index;
-    List<ProductoAct> producto = widget.productReq;
+    ProductoAct producto = widget.productReq;
+    inKart = Config().inCarrito(producto);
+    inWL = Config().inWishlist(producto);
+    outofstock = int.parse(widget.productReq.cantInventario!) > 0;
 
     return Card(
-      elevation: 15,
+      elevation: 5,
       child: InkWell(
         onTap: () {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      productPage(producto: producto[index])));
+                  builder: (context) => productPage(
+                        producto: producto,
+                        index: widget.index,
+                      )));
         },
         child: SizedBox(
           width: 360,
@@ -43,13 +50,17 @@ class _FoodCardWState extends State<FoodCardW> {
             children: [
               Container(
                 height: 300,
-                width: double.infinity,
-                margin: EdgeInsets.all(15),
+                width: 400,
+                padding: EdgeInsets.all(15),
+                margin: EdgeInsets.only(top: 15, right: 20, left: 20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30)),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
-                        Config.apiURL + producto[index].imgPrincipal.toString(),
-                        fit: BoxFit.fill,
+                        Config.apiURL + producto.imgPrincipal.toString(),
+                        fit: BoxFit.fitHeight,
                         loadingBuilder: (context, child, progress) {
                       return progress == null
                           ? child
@@ -58,7 +69,7 @@ class _FoodCardWState extends State<FoodCardW> {
                               height: 50,
                               child: const Center(
                                   child: CircularProgressIndicator(
-                                      color: Colors.blue)),
+                                      color: Config.maincolor)),
                             );
                     }, errorBuilder: (context, error, stacktrace) {
                       return const Icon(
@@ -68,36 +79,56 @@ class _FoodCardWState extends State<FoodCardW> {
                       );
                     })),
               ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.topLeft,
-                child: RichText(overflow: TextOverflow.ellipsis,
-                        strutStyle: StrutStyle(fontSize: 12),
-                          text: TextSpan(text: producto[index].nombre!,style: TextStyle(color: Colors.black)),
-                        ),
+              Wrap(
+                textDirection: TextDirection.ltr,
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.topLeft,
+                    child: RichText(
+                      overflow: TextOverflow.ellipsis,
+                      strutStyle: StrutStyle(fontSize: 20),
+                      text: TextSpan(
+                          text: producto.nombre!,
+                          style: TextStyle(color: Colors.black, fontSize: 22)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.topLeft,
+                    child: RichText(
+                      overflow: TextOverflow.ellipsis,
+                      strutStyle: StrutStyle(fontSize: 20),
+                      text: TextSpan(
+                          text: producto.marca!.nombre!,
+                          style: TextStyle(
+                              color: Config.maincolor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20)),
+                    ),
+                  ),
+                ],
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 15),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Text(
-                        "\$" +
-                            Config()
-                                .getProductFinalPrice(producto[index])
-                                .toString(),
+                        Config().getProductFinalPrice(producto).toString() +
+                            " US\$",
                         // +producto[index].slug!,
                         style: const TextStyle(
+                          color: Config.maincolor,
                           fontWeight: FontWeight.bold,
                           fontSize: 24,
                         ),
                       ),
-                    ),
-                    Text(""),
-                    SizedBox(
-                      height: 24,
                     ),
                     Container(
                         height: 55,
@@ -108,11 +139,10 @@ class _FoodCardWState extends State<FoodCardW> {
                           onPressed: () {
                             if (Config.isLoggedIn) {
                               setState(() {
-                                if (!Config.wishlist
-                                    .contains(producto[index])) {
-                                  Config.wishlist.add(producto[index]);
+                                if (!inWL) {
+                                  Config.wishlist.add(producto);
                                 } else {
-                                  Config.wishlist.remove(producto[index]);
+                                  Config.wishlist.removeAt(widget.index);
                                 }
                               });
                             } else {
@@ -130,7 +160,7 @@ class _FoodCardWState extends State<FoodCardW> {
                                       ));
                             }
                           },
-                          icon: !Config.wishlist.contains(producto[index])
+                          icon: !inWL
                               ? const Icon(
                                   Icons.favorite_border_outlined,
                                   size: 42,
@@ -146,17 +176,21 @@ class _FoodCardWState extends State<FoodCardW> {
                   ],
                 ),
               ),
+              outofstock ?
               Container(
                 padding: EdgeInsets.all(10),
                 alignment: Alignment.bottomCenter,
-                child: ElevatedButton(
-                  onPressed: !inCarrito(producto[index])
+                child: 
+                ElevatedButton(
+                  onPressed: !inCarrito(producto)
                       ? () {
                           if (Config.isLoggedIn) {
-                              setState(() {
-                                Config.carrito.add(Componente(
-                                    producto: producto[index].id, cantidad: 1, respaldo: Config().getRespaldo(producto[index])));
-                              });
+                            setState(() {
+                              Config.carrito.add(Componente(
+                                  producto: producto.id,
+                                  cantidad: 1,
+                                  respaldo: Config().getRespaldo(producto)));
+                            });
                           } else {
                             showDialog(
                                 context: context,
@@ -174,19 +208,20 @@ class _FoodCardWState extends State<FoodCardW> {
                         }
                       : null,
                   child: Text(
-                    !inCarrito(producto[index]) ? "C O M P R A R" : "A Ñ A D I D O",
+                    !inCarrito(producto) ? "buy".tr : "added".tr,
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   style: ButtonStyle(
                     alignment: Alignment.center,
-                    backgroundColor: !inCarrito(producto[index])?
-                        MaterialStateProperty.all(Config.maincolor):
-                        MaterialStateProperty.all(Colors.red[100])
-                        ,
+                    backgroundColor: !inCarrito(producto)
+                        ? MaterialStateProperty.all(Config.maincolor)
+                        : MaterialStateProperty.all(Colors.red[100]),
                     fixedSize: MaterialStateProperty.all(Size(200, 50)),
                   ),
                 ),
               )
+              :
+              Text('Out of Stock')
             ],
           ),
         ),

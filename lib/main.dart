@@ -4,14 +4,17 @@ import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/helpPage.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
+import 'package:e_commerce/Pages/paypalPage.dart';
 import 'package:e_commerce/Pages/paypalthree.dart';
 import 'package:e_commerce/Pages/stagingPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Services/pushNotificationsProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
+import 'package:e_commerce/Utils/Translation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
@@ -67,7 +70,9 @@ class _myApp extends State<MyApp> {
     // loadLogin();
     SharedService().LoadData;
 
-    return MaterialApp(
+    return GetMaterialApp(
+      translations: TranslationUtil(),
+      locale: Locale('es','ES'),
       title: 'DiploMarket',
       theme: ThemeData(
         useMaterial3: true,
@@ -83,6 +88,7 @@ class _myApp extends State<MyApp> {
         '/allproducts': (context) => allProductsPage(),
         '/user': (context) => userPage(),
         '/paypal': (context) => PayPalLast(),
+        '/braintree':(context) => PayPage(),
         '/help': (context) => helpPage(),
       },
     );

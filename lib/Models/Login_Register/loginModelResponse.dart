@@ -1,3 +1,4 @@
+import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
@@ -23,11 +24,10 @@ class LoginModelResponse {
     final resBody = await res.stream.bytesToString(); // print('enter login');
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
+      Config.currentPW = password;
       final data = jsonDecode(resBody);
       getUserInfo(username);
       Config.token = "token " + data['token'];
-      print("vamo pa los destin");
-      DestinatarioResponse().getDestinatarios();
       return (true);
     } else {
       // print('login false');
@@ -51,13 +51,16 @@ class LoginModelResponse {
       UserRequest data = UserRequest.fromJson(jsonDecode(resBody));
       List<User> users = data.results!;
 
-      users.forEach((usuario) {
+      users.forEach((usuario) async {
         if (usuario.email == umail) {
           Config.user = usuario;
           Config.login = true;
           SharedService().SaveData();
+          // Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
+          Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
         }
       });
+      DestinatarioResponse().getDestinatarios();
     } else {
       print(res.reasonPhrase);
     }

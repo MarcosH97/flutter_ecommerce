@@ -1,5 +1,6 @@
-import 'package:flutter_braintree/flutter_braintree.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_braintree/flutter_braintree.dart';
 
 class PayPage extends StatelessWidget {
   const PayPage({Key? key}) : super(key: key);
@@ -16,11 +17,11 @@ class PayPage extends StatelessWidget {
               onPressed: () async {
                 var request = BraintreeDropInRequest(
                     tokenizationKey: "sandbox_tvhccd36_fbgwp5gzcnhcpd9c",
+                    amount: '15.00',
                     paypalEnabled: true,
-                    amount: '10.00',
                     collectDeviceData: true,
                     paypalRequest: BraintreePayPalRequest(
-                      amount: '10.00',
+                      amount: '15.00',
                       displayName: "DiploMarket",
                     ),
                     cardEnabled: true);

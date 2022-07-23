@@ -173,7 +173,7 @@ class _productsMobile extends State<ProductsMobile> {
       itemCount: proreq.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
-        return FoodCardW(productReq: proreq, index: index);
+        return FoodCardW(productReq: proreq[index], index: index);
         // return foodCard(index, proreq);
       },
     );
@@ -187,7 +187,7 @@ class _productsMobile extends State<ProductsMobile> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => productPage(producto: proreq[index])));
+                  builder: (context) => productPage(producto: proreq[index], index: index,)));
         },
         child: SizedBox(
           width: 360,
@@ -309,7 +309,7 @@ class _productsMobile extends State<ProductsMobile> {
         itemCount: proreq.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          return FoodCardW(productReq: proreq, index: index);
+          return FoodCardW(productReq: proreq[index],index: index, );
         }); // r
   }
 

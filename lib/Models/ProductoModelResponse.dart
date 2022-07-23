@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:async';
 
 class ProductoModelResponse {
-
   Future<dynamic> getProductRecList() async {
     var headersList = {
       'Accept-Language': Config.language,
@@ -25,6 +24,9 @@ class ProductoModelResponse {
 
       ProductoSec body = ProductoSec.fromJson(jsonDecode(resBody));
       List<ProductoAct>? pro = body.data;
+      if (pro != null) {
+        Config.AllProducts = pro;
+      }
       return pro;
     } else {
       print(res.reasonPhrase);

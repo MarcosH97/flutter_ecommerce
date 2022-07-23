@@ -110,7 +110,7 @@ class _AllProductsPageState extends State<allProductsPage> {
                         delegate: SliverChildBuilderDelegate(
                           ((context, index) {
                             return FoodCardW(
-                                productReq: snapshot.data, index: index);
+                                productReq: snapshot.data[index], index: index,);
                             // return foodCard(index, snapshot.data);
                             // return FoodCardWidget(
                             //     pr: snapshot.data, index: index);
@@ -137,7 +137,7 @@ class _AllProductsPageState extends State<allProductsPage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => productPage(producto: proreq[index])));
+                  builder: (context) => productPage(producto: proreq[index], index: index,)));
         },
         child: SizedBox(
           width: 360,

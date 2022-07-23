@@ -22,6 +22,7 @@ class myAppBar {
               style:
                   TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
+            ignorePointer: true,
             child: IconButton(
                 onPressed: () {
                   Navigator.of(context)
@@ -51,6 +52,7 @@ class myAppBar {
               icon: const Icon(Icons.shopping_cart_outlined),
               iconSize: 40,
             ),
+            ignorePointer: true,
             animationType: BadgeAnimationType.scale,
             showBadge: Config.carrito.length > 0,
             position: BadgePosition.center(),

@@ -19,6 +19,7 @@ class Componente {
 
   void incrementCantidad() {
     cantidad = cantidad! + 1;
+    print('cantidad+: $cantidad');
   }
 
   void decrementCantidad() {
@@ -70,8 +71,7 @@ class ComponenteCreate {
     // });
     Componente c = Config.carrito[index];
     
-
-    double value = 0;
+    double value = c.cantidad! * double.parse(Config().getProductoLocal(c).precio!.cantidad!);
     Config.carrito[index].setRespaldo(value);
   }
 }

@@ -6,7 +6,9 @@ import 'package:e_commerce/Models/Municipio.dart';
 import 'package:e_commerce/Models/Order.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/User.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
+import '../Models/Carrito.dart';
 import '../Models/Componente.dart';
 import '../Models/MunicipioModelResponse.dart';
 import '../Models/Pais.dart';
@@ -17,6 +19,7 @@ class Config {
   static late List<Municipio> municipios;
   static late List<Componente> carrito;
   static late List<ProductoAct> wishlist;
+  static late List<ProductoAct> AllProducts;
   static late List<Destinatario> destinatarios;
   static late List<Categoria> categories;
   static late List<String> munNames;
@@ -27,6 +30,13 @@ class Config {
   static late List<Provincia> provincias;
   static late List<Orden> ordenes;
   static late List<Pais> paisesT;
+
+  static List locals = [
+    {'name': 'EN', 'locale': Locale('en', 'US')},
+    {'name': 'ES', 'locale': Locale('es', 'ES')}
+  ];
+
+  static List<ComponentePaypal> karrito = [];
 
   static const String appName = "DiploMarket";
   static const String checkoutAPI = "/backend/checkout/";
@@ -45,23 +55,28 @@ class Config {
       "/backend/producto/especiales/"; //lleva mun
 
   static String selectedMun = "Playa";
-  static String selectedCar = "Carnes";
+  static String currentPW = "";
+  static String? selectedCar;
   static String language = "es-es";
   static String currency = "USD";
-  // static String apiURL = "http://www.diplomarket.com";
+  static String provincia = "La Habana";
+  static List<String> currencies = ["USD", "CAD", "EUR"];
   static String apiURL = "https://www.diplomarket.com";
-  static String token = 'token 56bb9a2bd87925b99e9bcd5619a461dcbf15d51f';
+  static String token = 'token 07e3d4a91f7098ad03ab59eede7f5f29a2728a20';
   static bool login = false;
   static int mun = 0;
   static int pais = 0;
   static int destiny = 0;
+
   static bool internet = true;
+  static bool lang = true;
+
+  static Carrito kart = Carrito();
 
   static late Promocion promo;
 
   static const maincolor = Color.fromARGB(255, 177, 32, 36);
   static const secondarycolor = Color.fromARGB(255, 27, 39, 79);
-
   static int get activePais => mun;
   static int get activeMun => mun;
   static int get activeDest => destiny;
@@ -70,17 +85,23 @@ class Config {
   static late User user = User();
   static User get activeUser => user;
 
-  void setAll() {
-    municipios.forEach((element) {
-      if (!munNames.contains(element.nombre)) munNames.add(element.nombre!);
-    });
-    CategoriaModelResponse().getCategorias();
-    if (categories.isNotEmpty) {
-      categories.forEach((element) {
-        if (!categorias.contains(element.nombre!))
-          categorias.add(element.nombre!);
+  Future<void> setAll() async {
+    await MunicipioModelResponse().getMunicipios().then((value) {
+      municipios = value;
+      municipios.forEach((element) {
+        if (!munNames.contains(element.nombre)) munNames.add(element.nombre!);
       });
-    }
+    });
+    CategoriaModelResponse().getCategorias().then((value) => {
+          if (categories.isNotEmpty)
+            {
+              categories.forEach((element) {
+                if (!categorias.contains(element.nombre!))
+                  categorias.add(element.nombre!);
+              }),
+              if (!categorias.contains("Todas")) {categorias.add("Todas")}
+            }
+        });
     PaisRequest().getPaises();
     // print("Municipios: "+municipios.length.toString());
   }
@@ -117,14 +138,6 @@ class Config {
       }
     });
     return d;
-  }
-
-  double getTotalCost() {
-    double total = 0;
-    carrito.forEach((element) {
-      // total +=
-    });
-    return 0;
   }
 
   double getProductFinalPrice(ProductoAct p) {
@@ -189,11 +202,20 @@ class Config {
 
   List<ProductoAct> getProductosCarrito() {
     List<ProductoAct> listado = [];
-    carrito.forEach((element) async {
-      listado.add(await getProducto(element.producto!));
-      // print("product added");
+    carrito.forEach((element) {
+      listado.add(getProductoLocal(element));
     });
     return listado;
+  }
+
+  ProductoAct getProductoLocal(Componente c) {
+    ProductoAct pro = ProductoAct();
+    AllProducts.forEach((element) {
+      if (c.producto == element.id) {
+        pro = element;
+      }
+    });
+    return pro;
   }
 
   double getRespaldo(ProductoAct prod) {
@@ -209,5 +231,63 @@ class Config {
       }
     });
     return inKart;
+  }
+
+  bool inWishlist(ProductoAct producto) {
+    bool inWL = false;
+    wishlist.forEach((element) {
+      if (element.id == producto.id) {
+        inWL = true;
+      }
+    });
+    return inWL;
+  }
+
+  Destinatario getDestinatario() {
+    Destinatario d = Destinatario();
+    destinatarios.forEach((element) {
+      if (element.nombre == destinos[destiny]) {
+        d = element;
+      }
+    });
+    return d;
+  }
+
+  void reducirInventario() {
+    print("entered reducir");
+    carrito.forEach((element) {
+      getProductoLocal(element).substractAmmount(element.cantidad!);
+    });
+    carrito.clear();
+  }
+
+  Map<String, dynamic> addToCarritoPaypal() {
+    bool exists = false;
+    ComponentePaypal cp = ComponentePaypal();
+    carrito.forEach((element) {
+      cp.name = getProductoLocal(element).nombre;
+      cp.quantity = element.cantidad.toString();
+      cp.price = getProductoLocal(element).precio!.cantidad;
+      cp.currency = currency;
+
+      print(cp.toJson());
+      karrito.forEach((e) {
+        if (e.name == cp.name) {
+          exists = true;
+        }
+      });
+      if (!exists) {
+        karrito.add(cp);
+      }
+    });
+    CarritoPayPal paypalkart = CarritoPayPal();
+    paypalkart.items = karrito;
+    // print(karrito.length);
+
+    // print(karrito[0].toJson());
+    print("to map: ${karrito[0].toMap()}");
+    return karrito[0].toMap();
+    // return karrito[0].toJson();
+    // return paypalkart.toJson();
   }
 }
