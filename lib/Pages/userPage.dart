@@ -31,6 +31,7 @@ class _UserPageState extends State<userPage> {
 
   @override
   Widget build(BuildContext context) {
+    lang = Config.lang;
     getlogin();
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -252,7 +253,7 @@ class _UserPageState extends State<userPage> {
                                       lang ? Config.maincolor : Colors.black)),
                           onPressed: () {
                             setState(() {
-                              lang = true;
+                              Config.lang = true;
                               Config.language = 'es-es';
                               Get.updateLocale(Locale('es', 'ES'));
                             });
@@ -270,7 +271,7 @@ class _UserPageState extends State<userPage> {
                           backgroundColor: lang ? Colors.grey : Colors.white,
                           onPressed: () {
                             setState(() {
-                              lang = false;
+                              Config.lang = false;
                               Config.language = 'en-en';
                               Get.updateLocale(Locale('en', 'US'));
                             });
@@ -281,7 +282,6 @@ class _UserPageState extends State<userPage> {
                         ),
                       ],
                     ),
-                    
                     SizedBox(
                       height: 50,
                     ),

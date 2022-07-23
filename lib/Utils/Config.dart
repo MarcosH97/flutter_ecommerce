@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import '../Models/Carrito.dart';
 import '../Models/Componente.dart';
+import '../Models/Faq.dart';
 import '../Models/MunicipioModelResponse.dart';
 import '../Models/Pais.dart';
 import '../Models/ProductoModelResponse.dart';
@@ -30,6 +31,7 @@ class Config {
   static late List<Provincia> provincias;
   static late List<Orden> ordenes;
   static late List<Pais> paisesT;
+  static late List<FAQ> faqs;
 
   static List locals = [
     {'name': 'EN', 'locale': Locale('en', 'US')},
@@ -64,8 +66,8 @@ class Config {
   static String apiURL = "https://www.diplomarket.com";
   static String token = 'token 07e3d4a91f7098ad03ab59eede7f5f29a2728a20';
   static bool login = false;
-  static int mun = 0;
-  static int pais = 0;
+  static int mun = 1;
+  static int pais = 1;
   static int destiny = 0;
 
   static bool internet = true;
@@ -103,6 +105,8 @@ class Config {
             }
         });
     PaisRequest().getPaises();
+
+    faqs = await FAQModelResponse().getFAQ();
     // print("Municipios: "+municipios.length.toString());
   }
 
@@ -128,6 +132,14 @@ class Config {
       }
     }
     return 0;
+  }
+
+  setActiveMunIndex() {
+    for (int i = 0; i < municipios.length; i++) {
+      if (municipios[i].nombre! == selectedMun) {
+        mun = i;
+      }
+    }
   }
 
   double getCostActiveMun() {
@@ -164,7 +176,7 @@ class Config {
   double getTotalPriceKart() {
     double total = 0;
     carrito.forEach((element) {
-      print(element.respaldo);
+      // print(element.respaldo);
       total += element.respaldo!;
     });
     total = double.parse(total.toStringAsFixed(2));
@@ -219,7 +231,7 @@ class Config {
   }
 
   double getRespaldo(ProductoAct prod) {
-    print(prod.id);
+    // print(prod.id);
     return getProductFinalPrice(prod);
   }
 
@@ -259,35 +271,53 @@ class Config {
       getProductoLocal(element).substractAmmount(element.cantidad!);
     });
     carrito.clear();
+    karrito.clear();
   }
 
-  Map<String, dynamic> addToCarritoPaypal() {
+  Items addToCarritoPaypal() {
     bool exists = false;
     ComponentePaypal cp = ComponentePaypal();
     carrito.forEach((element) {
-      cp.name = getProductoLocal(element).nombre;
-      cp.quantity = element.cantidad.toString();
-      cp.price = getProductoLocal(element).precio!.cantidad;
-      cp.currency = currency;
-
-      print(cp.toJson());
+      ComponentePaypal cp = ComponentePaypal(
+          name: getProductoLocal(element).nombre,
+          currency: currency,
+          price: getProductoLocal(element).precio!.cantidad,
+          quantity: element.cantidad.toString());
+      // print(cp.toJson());
       karrito.forEach((e) {
         if (e.name == cp.name) {
           exists = true;
+          print("existe");
         }
       });
       if (!exists) {
         karrito.add(cp);
       }
+      exists = false;
     });
     CarritoPayPal paypalkart = CarritoPayPal();
     paypalkart.items = karrito;
-    // print(karrito.length);
-
-    // print(karrito[0].toJson());
-    print("to map: ${karrito[0].toMap()}");
-    return karrito[0].toMap();
-    // return karrito[0].toJson();
-    // return paypalkart.toJson();
+    Items i = Items(items: karrito);
+    print(i.toJson());
+    return i;
   }
+
+  List<ProductoAct> filter(String key, int type) {
+    List<ProductoAct> list = [];
+
+    switch (type) {
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+    }
+
+    return list;
+  }
+
+  sendCheckout() async {}
 }

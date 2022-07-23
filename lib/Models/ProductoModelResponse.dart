@@ -12,7 +12,7 @@ class ProductoModelResponse {
       'Authorization': Config.token
     };
     var url =
-        Uri.parse('https://www.diplomarket.com/backend/producto/?municipios=2');
+        Uri.parse('https://www.diplomarket.com/backend/producto/?municipios=${Config.activeMun}');
     // print("getting PREC");
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);

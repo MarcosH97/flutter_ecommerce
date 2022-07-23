@@ -56,17 +56,17 @@ class stagePageState extends State<stagePage> {
               Navigator.pushReplacementNamed(context, "/paypal");
               // OrdenRequest().createOrderPayPal();
             } else if (currentStep == 0) {
-              if (_switch) {
-                _globalKey.currentState!.save();
-                // d.nombreRemitente = Config.activeUser.name;
-                d.nombreRemitente = "Vacio";
-                d.activo = false;
-                d.usuario = Config.activeUser.id;
-                if (!Config.destinatarios.contains(d)) {
-                  DestinatarioResponse().createDestinatario(d);
-                  Config.destinatarios.add(d);
-                  Config.destiny = 5;
-                }
+              // if (_switch) {
+              _globalKey.currentState!.save();
+              // d.nombreRemitente = Config.activeUser.name;
+              d.nombreRemitente = "Vacio";
+              d.activo = false;
+              d.usuario = Config.activeUser.id;
+              if (!Config.destinatarios.contains(d)) {
+                DestinatarioResponse().createDestinatario(d);
+                Config.destinatarios.add(d);
+                Config.destiny = 0;
+                // }
               }
               setState(() {
                 currentStep++;
@@ -149,49 +149,49 @@ class stagePageState extends State<stagePage> {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        color: Config.maincolor,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Config.destinos.length > 0
-                        ? DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                            dropdownColor: Config.maincolor,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              overflow: TextOverflow.visible,
-                            ),
-                            isExpanded: true,
-                            itemHeight: null,
-                            value: Config.destinos.length > 0 ? destin : "",
-                            alignment: Alignment.center,
-                            items: _destinos,
-                            icon: Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.white,
-                            ),
-                            onChanged: (String? value) {
-                              if (value != null) {
-                                int id = 0;
-                                Config.destinatarios.forEach(
-                                  (element) {
-                                    if (element.nombre == value) {
-                                      id = element.id!;
-                                    }
-                                  },
-                                );
-                                setState(() {
-                                  Config.destiny = id;
-                                  destin = value;
-                                  print(Config.destiny);
-                                });
-                              }
-                            },
-                          ))
-                        : SizedBox(),
-                  ),
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //       border: Border.all(width: 1, color: Colors.grey),
+                  //       color: Config.maincolor,
+                  //       borderRadius: BorderRadius.circular(5)),
+                  //   child: Config.destinos.length > 0
+                  //       ? DropdownButtonHideUnderline(
+                  //           child: DropdownButton(
+                  //           dropdownColor: Config.maincolor,
+                  //           style: const TextStyle(
+                  //             fontSize: 16,
+                  //             color: Colors.white,
+                  //             overflow: TextOverflow.visible,
+                  //           ),
+                  //           isExpanded: true,
+                  //           itemHeight: null,
+                  //           value: Config.destinos.length > 0 ? destin : "",
+                  //           alignment: Alignment.center,
+                  //           items: _destinos,
+                  //           icon: Icon(
+                  //             Icons.arrow_drop_down,
+                  //             color: Colors.white,
+                  //           ),
+                  //           onChanged: (String? value) {
+                  //             if (value != null) {
+                  //               int id = 0;
+                  //               Config.destinatarios.forEach(
+                  //                 (element) {
+                  //                   if (element.nombre == value) {
+                  //                     id = element.id!;
+                  //                   }
+                  //                 },
+                  //               );
+                  //               setState(() {
+                  //                 Config.destiny = id;
+                  //                 destin = value;
+                  //                 print(Config.destiny);
+                  //               });
+                  //             }
+                  //           },
+                  //         ))
+                  //       : SizedBox(),
+                  // ),
                   // Row(
                   //   children: [
                   //     Text("Crear un destinatario nuevo"),
@@ -321,8 +321,12 @@ class stagePageState extends State<stagePage> {
                         },
                       ),
                     ],
-                  )
-                  // : SizedBox(),
+                  ),
+                  // SizedBox(height: 10,),
+                  // ElevatedButton(onPressed: (){
+
+                  // }, child: Text('Crear Destinatario')),
+                  // SizedBox(height: 10,),
                 ],
               ),
             )),
@@ -432,12 +436,6 @@ class stagePageState extends State<stagePage> {
                                                         FontWeight.bold)),
                                           ),
                                         ),
-                                        // Text(
-                                        //   productos[index].nombre!,
-                                        //   style: TextStyle(
-                                        //       fontWeight: FontWeight.bold,
-                                        //       fontSize: 18),
-                                        // ),
                                         Expanded(
                                             child: Row(
                                                 mainAxisAlignment:
@@ -672,17 +670,34 @@ class stagePageState extends State<stagePage> {
                     SizedBox(
                       height: 10,
                     ),
-                    Expanded(
-                        child: GestureDetector(
-                      onTap: (() {
-                        Navigator.popAndPushNamed(context, '/paypal');
-                      }),
-                      child: Container(
-                        alignment: Alignment.center,
-                        color: Colors.amber,
-                        child: Image.asset('assets/paypallarge.png'),
-                      ),
-                    ))
+                    if (selPayMet)
+                      Expanded(
+                          child: GestureDetector(
+                        onTap: (() {
+                          Navigator.popAndPushNamed(context, '/paypal');
+                          Config.karrito.clear();
+                        }),
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.amber,
+                          child: Image.asset('assets/paypallarge.png'),
+                        ),
+                      ))
+                    else
+                      Expanded(
+                          child: GestureDetector(
+                        onTap: (() {
+                          // Navigator.popAndPushNamed(context, '/paypal');
+                          // Config.karrito.clear();
+                        }),
+                        child: Container(
+                          alignment: Alignment.center,
+                          color: Colors.amber,
+                          child: Image.asset(Config.lang
+                              ? 'assets/tropi_es.png'
+                              : 'assets/tropi_en.png'),
+                        ),
+                      ))
                   ],
                 ))),
       ];

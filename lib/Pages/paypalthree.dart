@@ -25,17 +25,16 @@ class _PayPalLastState extends State<PayPalLast> {
     print('total: ' +
         (Config().getTotalPriceKart() + Config().getCostActiveMun())
             .toString());
-    print('subtotal: '+Config().getTotalPriceKart().toString());
-    print('envio: '+Config().getCostActiveMun().toString());
-
+    print('subtotal: ' + Config().getTotalPriceKart().toString());
+    print('envio: ' + Config().getCostActiveMun().toString());
 
     return paypalW();
   }
 
   Widget testWidget() {
-    String carrito = jsonEncode(Config.carrito).replaceAll(r'\"', "'");
-    carrito = carrito.replaceAll('"', '');
-    print(carrito);
+    // String carrito = jsonEncode(Config.carrito).replaceAll(r'\"', "'");
+    // carrito = carrito.replaceAll('"', '');
+    // print(carrito);
     return Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -126,27 +125,28 @@ class _PayPalLastState extends State<PayPalLast> {
             }
           },
           "description": "The payment transaction description.",
-          "item_list": {
-            "items": [
-              
-              // {
-              //   "name": Config().getProductoLocal(Config.carrito[0]).nombre!,
-              //   "quantity": Config.carrito[0].cantidad!.toString(),
-              //   "price": Config()
-              //       .getProductoLocal(Config.carrito[0])
-              //       .precio!
-              //       .cantidad!,
-              //   "currency": Config.currency
-              // },
-            ],
-          }
+          "item_list": Config().addToCarritoPaypal().toMap()
+          // {
+          //   "items": [
+          //     {"name": "niom", "quantity": "", "price": "", "currency": ""},
+          //   ]
+          // }
+          //  {
+          //       "name": Config().getProductoLocal(Config.carrito[0]).nombre!,
+          //       "quantity": Config.carrito[0].cantidad!.toString(),
+          //       "price": Config()
+          //           .getProductoLocal(Config.carrito[0])
+          //           .precio!
+          //           .cantidad!,
+          //       "currency": Config.currency
+          //     },
         }
       ],
       note: "Contact us for any questions on your order.",
       onSuccess: (Map params) {
         print("onSuccess: $params");
         Config().reducirInventario();
-        Navigator.pop(context);
+        // Navigator.pop(context);
       },
       onError: (error) {
         print("onError: $error");

@@ -45,6 +45,7 @@ class TranslationUtil extends Translations {
           'search': 'Search bar',
           'categories': 'CATEGORIES',
           'contact': 'Contact',
+          'currency':'Currency',
 
           //user
           'close_acc': 'Exit Session',
@@ -76,6 +77,7 @@ class TranslationUtil extends Translations {
           'summary':'Order summary',
           'paymet':'Payment method',
           'payDet':'Payment Details',
+          'outstock':'Out of Stock',
 
           //wishlist
           'fav': 'W I S H L I S T',
@@ -128,6 +130,7 @@ class TranslationUtil extends Translations {
           'search': 'Barra de búsqueda',
           'categories': 'CATEGORÍAS',
           'contact': 'Contacto',
+          'currency':'Moneda',
 
           //user
           'close_acc': 'Cerrar Cuenta',
@@ -159,7 +162,7 @@ class TranslationUtil extends Translations {
           'summary':'Resumen de la orden',
           'paymet':'Forma de pago',
           'payDet':'Detalles del Pago',
-
+          'outstock':'Agotado',
           //wishlist
           'fav': 'F A V O R I T O S',
 

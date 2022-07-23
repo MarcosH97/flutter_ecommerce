@@ -221,7 +221,16 @@ class _FoodCardWState extends State<FoodCardW> {
                 ),
               )
               :
-              Text('Out of Stock')
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('outstock'.tr, 
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold
+                ),),
+              )
             ],
           ),
         ),

@@ -33,6 +33,7 @@ Future<void> main() async {
   Config.ordenes = [];
   Config.paises = [];
   Config.paisesT = [];
+  Config.faqs = [];
   // Config().setAll;
   if (await Config().checkInternetConnection()) {
     if (Platform.isAndroid) {
@@ -72,7 +73,7 @@ class _myApp extends State<MyApp> {
 
     return GetMaterialApp(
       translations: TranslationUtil(),
-      locale: Locale('es','ES'),
+      locale: Locale('es', 'ES'),
       title: 'DiploMarket',
       theme: ThemeData(
         useMaterial3: true,
@@ -88,7 +89,7 @@ class _myApp extends State<MyApp> {
         '/allproducts': (context) => allProductsPage(),
         '/user': (context) => userPage(),
         '/paypal': (context) => PayPalLast(),
-        '/braintree':(context) => PayPage(),
+        '/braintree': (context) => PayPage(),
         '/help': (context) => helpPage(),
       },
     );

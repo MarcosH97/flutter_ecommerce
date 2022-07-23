@@ -495,3 +495,53 @@ class municipio {
     return data;
   }
 }
+
+class ProductoFiltro {
+  Future<List<ProductoAct>> FilteredList(String key, String? subkey) async {
+    List<ProductoAct> filtrado = [];
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/producto/arbol/${Config.activeMun}');
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+    // print(resBody);
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      List<dynamic> body;
+
+      if (subkey != null) {
+        body = jsonDecode(resBody)['$key']['$subkey'];
+      } else {
+        switch (key) {
+          case "Aceites":
+            {
+              subkey = "Pomos";
+              break;
+            }
+
+          case "Bebidas":
+            {
+              subkey = "Aguas";
+              break;
+            }
+          default:
+            {}
+        }
+        body = jsonDecode(resBody)['$key']['$subkey'];
+        print(body);
+      }
+      body.forEach((element) {
+        filtrado.add(ProductoAct.fromJson(element));
+      });
+      print(filtrado);
+    } else {
+      print(res.reasonPhrase);
+    }
+    return filtrado;
+  }
+}

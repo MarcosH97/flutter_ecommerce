@@ -178,8 +178,6 @@ class CarritoPayPal {
   String toJson() => json.encode(toMap());
 
   factory CarritoPayPal.fromJson(String source) => CarritoPayPal.fromMap(json.decode(source));
-
-  
 }
 
 class ComponentePaypal {
@@ -228,3 +226,72 @@ class ComponentePaypal {
   factory ComponentePaypal.fromJson(String source) =>
       ComponentePaypal.fromMap(json.decode(source));
 }
+
+class Items {
+  List<ComponentePaypal>? items;
+
+  Items({this.items});
+
+  Items.fromJson(Map<String, dynamic> json) {
+    if (json['items'] != null) {
+      items = <ComponentePaypal>[];
+      json['items'].forEach((v) {
+        items!.add(new ComponentePaypal.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.items != null) {
+      data['items'] = this.items!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+  
+    if(items != null){
+      result.addAll({'items': items!.map((x) => x.toMap()).toList()});
+    }
+  
+    return result;
+  }
+
+  factory Items.fromMap(Map<String, dynamic> map) {
+    return Items(
+      items: map['items'] != null ? List<ComponentePaypal>.from(map['items']?.map((x) => ComponentePaypal.fromMap(x))) : null,
+    );
+  }
+
+  // String toJson() => json.encode(toMap());
+
+  // factory Items.fromJson(String source) => Items.fromMap(json.decode(source));
+}
+
+class Itemz {
+  String? name;
+  String? quantity;
+  String? price;
+  String? currency;
+
+  Itemz({this.name, this.quantity, this.price, this.currency});
+
+  Itemz.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    quantity = json['quantity'];
+    price = json['price'];
+    currency = json['currency'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['name'] = this.name;
+    data['quantity'] = this.quantity;
+    data['price'] = this.price;
+    data['currency'] = this.currency;
+    return data;
+  }
+}
+
