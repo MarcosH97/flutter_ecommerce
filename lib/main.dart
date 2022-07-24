@@ -6,6 +6,7 @@ import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
 import 'package:e_commerce/Pages/paypalPage.dart';
 import 'package:e_commerce/Pages/paypalthree.dart';
+import 'package:e_commerce/Pages/setupPage.dart';
 import 'package:e_commerce/Pages/stagingPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
 import 'package:e_commerce/Services/SharedService.dart';
@@ -81,6 +82,7 @@ class _myApp extends State<MyApp> {
       initialRoute: Config.isLoggedIn ? '/home' : '/login',
       routes: {
         '/': (context) => homePage(),
+        '/setup':(context)=> setupPage(),
         '/home': (context) => homePage(),
         '/login': (context) => loginPage(),
         '/register': (context) => registerPage(),
