@@ -1,17 +1,12 @@
 import 'dart:ui';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Utils/Config.dart';
-import 'package:e_commerce/Utils/Responsive.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
-import '../Models/Carrito.dart';
-import '../Models/MunicipioModelResponse.dart';
-import '../Widgets/DesktopWidgets/productDesktop.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
 import 'filterPage.dart';
 
@@ -54,6 +49,13 @@ class _homePageState extends State<homePage> {
   void initState() {
     super.initState();
     LoadStuff();
+  }
+
+  callback() {
+    print("callback called");
+    setState(() {
+      
+    });
   }
 
   void LoadStuff() {
@@ -198,46 +200,46 @@ class _homePageState extends State<homePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       // ignore: prefer_const_literals_to_create_immutables
                       children: [
-                        // Expanded(
-                        //     child: Container(
-                        //   padding: EdgeInsets.all(5),
-                        //   decoration: BoxDecoration(
-                        //       border: Border.all(width: 1, color: Colors.grey),
-                        //       color: Config.maincolor,
-                        //       borderRadius: BorderRadius.circular(5)),
-                        //   child: DropdownButtonHideUnderline(
-                        //     child: DropdownButton(
-                        //       dropdownColor: Config.maincolor,
-                        //       value: Config.selectedCar,
-                        //       hint: Text(
-                        //         'categories'.tr,
-                        //         textAlign: TextAlign.center,
-                        //         style: TextStyle(
-                        //           color: Colors.white,
-                        //         ),
-                        //       ),
-                        //       items: _dropDownCatItems,
-                        //       icon: Icon(
-                        //         Icons.arrow_forward_ios,
-                        //         color: Colors.white,
-                        //       ),
-                        //       style: const TextStyle(
-                        //         fontSize: 16,
-                        //         color: Colors.white,
-                        //         overflow: TextOverflow.visible,
-                        //       ),
-                        //       alignment: Alignment.center,
-                        //       onChanged: (String? newValue) {
-                        //         if (newValue != null) {
-                        //           setState(() {
-                        //             Config.selectedCar = newValue;
-                        //           });
-                        //         }
-                        //       },
-                        //     ),
-                        //   ),
-                        // )),
-                        
+                        Expanded(
+                            child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              border: Border.all(width: 1, color: Colors.grey),
+                              color: Config.maincolor,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              dropdownColor: Config.maincolor,
+                              value: Config.selectedCar,
+                              hint: Text(
+                                'categories'.tr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              items: _dropDownCatItems,
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                              ),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                overflow: TextOverflow.visible,
+                              ),
+                              alignment: Alignment.center,
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  setState(() {
+                                    Config.selectedCar = newValue;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        )),
+
                         Expanded(
                             child: Container(
                           padding: EdgeInsets.all(5),
@@ -299,6 +301,7 @@ class _homePageState extends State<homePage> {
                 child: ProductsMobile(
                   id: 3,
                   mun: 1,
+                  callback: callback,
                 ),
               ),
               SizedBox(
@@ -322,6 +325,7 @@ class _homePageState extends State<homePage> {
                   child: ProductsMobile(
                     id: 3,
                     mun: 1,
+                    callback: callback,
                   )),
               SizedBox(
                 height: 24,
@@ -344,6 +348,7 @@ class _homePageState extends State<homePage> {
                   child: ProductsMobile(
                     id: 3,
                     mun: 1,
+                    callback: callback,
                   )),
               SizedBox(
                 height: 24,
@@ -367,6 +372,7 @@ class _homePageState extends State<homePage> {
                   child: ProductsMobile(
                     id: 3,
                     mun: 1,
+                    callback: callback,
                   )),
               SizedBox(
                 height: 24,
@@ -665,7 +671,10 @@ class _homePageState extends State<homePage> {
                         collapsedIconColor: Colors.white,
                         title: drawerText('help'.tr),
                         children: [
-                          ListTile(title: drawerText("F.A.Q"), onTap: () => Navigator.pushNamed(context, '/help')),
+                          ListTile(
+                              title: drawerText("F.A.Q"),
+                              onTap: () =>
+                                  Navigator.pushNamed(context, '/help')),
                           ListTile(title: drawerText('how_to'.tr)),
                         ]),
                     ExpansionTile(
@@ -710,12 +719,19 @@ class _homePageState extends State<homePage> {
                               iconColor: Colors.white,
                               collapsedIconColor: Colors.white,
                               backgroundColor: Color.fromARGB(255, 77, 22, 18),
-                            collapsedBackgroundColor:
-                                Color.fromARGB(255, 143, 34, 34),
+                              collapsedBackgroundColor:
+                                  Color.fromARGB(255, 143, 34, 34),
                               title: drawerText('currency'.tr),
                               children: [
-                                ListTile(title: Text("USD",style: TextStyle(color: Colors.white),)),
-                                ListTile(title: Text("EUR",style: TextStyle(color: Colors.white)),),
+                                ListTile(
+                                    title: Text(
+                                  "USD",
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                                ListTile(
+                                  title: Text("EUR",
+                                      style: TextStyle(color: Colors.white)),
+                                ),
                               ]),
                         ]),
                     ExpansionTile(

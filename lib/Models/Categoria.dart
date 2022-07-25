@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:e_commerce/Models/Categoria.dart';
+import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,4 +50,59 @@ class CategoriaModelResponse {
       print(res.reasonPhrase);
     }
   }
+
+  Future<void> getSubCategorias() async {
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse("https://www.diplomarket.com/backend/subcategoria/");
+
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var cat = List.from(jsonDecode(resBody)['results']);
+      cat.forEach((element) {
+        Subcategoria c = Subcategoria.fromJson(element);
+        if (!Config.subcategories.contains(c)) {
+          Config.subcategories.add(c);
+        }
+      });
+    } else {
+      print(res.reasonPhrase);
+    }
+  }
 }
+class Subcategoria {
+  int? id;
+  List<Etiquetas>? etiquetas;
+  String? nombre;
+  int? categoria;
+
+  Subcategoria({this.id, this.etiquetas, this.nombre, this.categoria});
+
+  Subcategoria.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['etiquetas'] != null) {
+      etiquetas = <Etiquetas>[];
+      json['etiquetas'].forEach((v) {
+        etiquetas!.add(Etiquetas.fromJson(v));
+      });
+    }
+    nombre = json['nombre'];
+    categoria = json['categoria'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    if (etiquetas != null) {
+      data['etiquetas'] = etiquetas!.map((v) => v.toJson()).toList();
+    }
+    data['nombre'] = nombre;
+    data['categoria'] = categoria;
+    return data;
+  }
+}
+

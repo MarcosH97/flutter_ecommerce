@@ -15,6 +15,11 @@ class allProductsPage extends StatefulWidget {
 }
 
 class _AllProductsPageState extends State<allProductsPage> {
+  callback(){
+    setState(() {
+      
+    });
+  }
   @override
   Widget build(BuildContext context) {
     // print(_products.then((value) => value));
@@ -110,7 +115,7 @@ class _AllProductsPageState extends State<allProductsPage> {
                         delegate: SliverChildBuilderDelegate(
                           ((context, index) {
                             return FoodCardW(
-                                productReq: snapshot.data[index], index: index,);
+                                productReq: snapshot.data[index], index: index, callback: callback(),);
                             // return foodCard(index, snapshot.data);
                             // return FoodCardWidget(
                             //     pr: snapshot.data, index: index);

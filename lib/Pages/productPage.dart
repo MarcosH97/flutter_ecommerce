@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../Models/Componente.dart';
+import 'filterPage.dart';
 
 class productPage extends StatefulWidget {
   final ProductoAct producto;
@@ -12,7 +13,8 @@ class productPage extends StatefulWidget {
 
   const productPage({
     required this.producto,
-    Key? key, required this.index,
+    Key? key,
+    required this.index,
   }) : super(key: key);
 
   ProductoAct get prod => producto;
@@ -182,11 +184,11 @@ class _productPageState extends State<productPage> {
                             if (Config.isLoggedIn) {
                               setState(() {
                                 if (!isFav) {
-                                  print('is not fav');
+                                  // print('is not fav');
                                   Config.wishlist.add(widget.producto);
                                   isFav = !isFav;
                                 } else {
-                                  print('is fav');
+                                  // print('is fav');
                                   Config.wishlist.removeAt(widget.index);
                                   isFav = !isFav;
                                 }
@@ -224,7 +226,7 @@ class _productPageState extends State<productPage> {
                   Row(
                     children: [
                       Text(
-                          "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!.cantidad!} US\$",
+                          "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!.cantidad!} \$",
                           style: const TextStyle(
                               fontSize: 30,
                               color: Config.maincolor,
@@ -266,7 +268,32 @@ class _productPageState extends State<productPage> {
                   Divider(
                     thickness: 2,
                   ),
-
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RichText(
+                      text: TextSpan(
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: "${'subcat'.tr}: ",
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: widget.prod.marca!.nombre!,
+                                style: TextStyle(
+                                    color: Colors.grey[800],
+                                    decoration: TextDecoration.underline),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                     Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              productos: Config().filter(widget.prod.marca!.nombre!, 1),
+                                              headerName: widget.prod.marca!.nombre!)));
+                                  })
+                          ]),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RichText(
@@ -283,7 +310,12 @@ class _productPageState extends State<productPage> {
                                     decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.pushNamed(context, "/register");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              productos: Config().filter(widget.prod.marca!.nombre!, 1),
+                                              headerName: widget.prod.marca!.nombre!)));
                                   })
                           ]),
                     ),
@@ -305,7 +337,12 @@ class _productPageState extends State<productPage> {
                                     decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    Navigator.pushNamed(context, "/register");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              productos: Config().filter(widget.prod.proveedor!.nombre!, 2),
+                                              headerName: widget.prod.proveedor!.nombre!)));
                                   })
                           ]),
                     ),

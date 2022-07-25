@@ -6,21 +6,19 @@ import 'package:flutter/material.dart';
 import '../../Models/Producto.dart';
 import '../../Utils/Config.dart';
 
-class ProductsMobile extends StatefulWidget {
+class ProductsMobile extends StatelessWidget {
   final int id;
   final int mun;
+  final Function callback;
 
-  const ProductsMobile({Key? key, required this.id, required this.mun})
+  const ProductsMobile(
+      {Key? key, required this.id, required this.mun, required this.callback})
       : super(key: key);
-  @override
-  State<StatefulWidget> createState() => _productsMobile();
-}
 
-class _productsMobile extends State<ProductsMobile> {
   @override
   Widget build(BuildContext context) {
     Future func;
-    switch (widget.id) {
+    switch (id) {
       case 1:
         {
           func = ProductoModelResponse().getProductRecList();
@@ -28,7 +26,7 @@ class _productsMobile extends State<ProductsMobile> {
         }
       case 2:
         {
-          func = ProductoModelResponse().getProductTopSellList(widget.mun);
+          func = ProductoModelResponse().getProductTopSellList(mun);
           break;
         }
       case 3:
@@ -38,13 +36,14 @@ class _productsMobile extends State<ProductsMobile> {
         }
       case 4:
         {
-          func = ProductoModelResponse().getProductSpecialList(widget.mun);
+          func = ProductoModelResponse().getProductSpecialList(mun);
           break;
         }
 
       default:
         {
-          func = ProductoModelResponse().getProductRecList(); ;
+          func = ProductoModelResponse().getProductRecList();
+          ;
           break;
         }
     }
@@ -113,7 +112,7 @@ class _productsMobile extends State<ProductsMobile> {
                     return Text(snapshot.data.toString());
                   } else if (snapshot.hasData) {
                     final pr = snapshot.data;
-                    switch (widget.id) {
+                    switch (id) {
                       case 1:
                         {
                           return forProductsOnly(pr);
@@ -173,135 +172,142 @@ class _productsMobile extends State<ProductsMobile> {
       itemCount: proreq.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
-        return FoodCardW(productReq: proreq[index], index: index);
+        return FoodCardW(
+          productReq: proreq[index],
+          index: index,
+          callback: callback,
+        );
         // return foodCard(index, proreq);
       },
     );
   }
 
-  Widget foodCard(index, proreq) {
-    return Card(
-      elevation: 15,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => productPage(producto: proreq[index], index: index,)));
-        },
-        child: SizedBox(
-          width: 360,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 300,
-                width: double.infinity,
-                margin: EdgeInsets.all(15),
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                        Config.apiURL + proreq[index].imgPrincipal.toString(),
-                        fit: BoxFit.fill,
-                        loadingBuilder: (context, child, progress) {
-                      return progress == null
-                          ? child
-                          : Container(
-                              width: 50,
-                              height: 50,
-                              child: const Center(
-                                  child: CircularProgressIndicator(
-                                      color: Colors.blue)),
-                            );
-                    }, errorBuilder: (context, error, stacktrace) {
-                      return const Icon(
-                        Icons.error,
-                        size: 50,
-                        color: Colors.grey,
-                      );
-                    })),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  proreq[index].nombre!,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "\$" + proreq[index].precio.toString(),
-                    // +proreq[index].slug!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                  Text(""),
-                  SizedBox(
-                    height: 18,
-                  ),
-                  Container(
-                      height: 55,
-                      width: 42,
-                      alignment: Alignment.topCenter,
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            if (Config.isLoggedIn) {
-                              if (!Config.wishlist.contains(proreq[index])) {
-                                Config.wishlist.add(proreq[index]);
-                              } else {
-                                Config.wishlist.remove(proreq[index]);
-                              }
-                            } else {
-                              AlertDialog();
-                            }
-                          });
-                        },
-                        icon: !Config.wishlist.contains(proreq[index])
-                            ? const Icon(
-                                Icons.favorite_border_outlined,
-                                size: 42,
-                                color: Config.maincolor,
-                              )
-                            : const Icon(
-                                Icons.favorite,
-                                size: 42,
-                                color: Config.maincolor,
-                              ),
-                        alignment: Alignment.center,
-                      )),
-                ],
-              ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                // margin: EdgeInsets.only(bottom: 15),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "C O M P R A R",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  style: ButtonStyle(
-                    alignment: Alignment.center,
-                    backgroundColor:
-                        MaterialStateProperty.all(Config.maincolor),
-                    fixedSize: MaterialStateProperty.all(Size(200, 50)),
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget foodCard(index, proreq) {
+  //   return Card(
+  //     elevation: 15,
+  //     child: InkWell(
+  //       onTap: () {
+  //         Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //                 builder: (context) => productPage(
+  //                       producto: proreq[index],
+  //                       index: index,
+  //                     )));
+  //       },
+  //       child: SizedBox(
+  //         width: 360,
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.center,
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             Container(
+  //               height: 300,
+  //               width: double.infinity,
+  //               margin: EdgeInsets.all(15),
+  //               child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(20),
+  //                   child: Image.network(
+  //                       Config.apiURL + proreq[index].imgPrincipal.toString(),
+  //                       fit: BoxFit.fill,
+  //                       loadingBuilder: (context, child, progress) {
+  //                     return progress == null
+  //                         ? child
+  //                         : Container(
+  //                             width: 50,
+  //                             height: 50,
+  //                             child: const Center(
+  //                                 child: CircularProgressIndicator(
+  //                                     color: Colors.blue)),
+  //                           );
+  //                   }, errorBuilder: (context, error, stacktrace) {
+  //                     return const Icon(
+  //                       Icons.error,
+  //                       size: 50,
+  //                       color: Colors.grey,
+  //                     );
+  //                   })),
+  //             ),
+  //             Container(
+  //               margin: EdgeInsets.symmetric(horizontal: 20),
+  //               alignment: Alignment.topLeft,
+  //               child: Text(
+  //                 proreq[index].nombre!,
+  //                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+  //               ),
+  //             ),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //               crossAxisAlignment: CrossAxisAlignment.center,
+  //               children: [
+  //                 Text(
+  //                   "\$" + proreq[index].precio.toString(),
+  //                   // +proreq[index].slug!,
+  //                   style: const TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     fontSize: 24,
+  //                   ),
+  //                 ),
+  //                 Text(""),
+  //                 SizedBox(
+  //                   height: 18,
+  //                 ),
+  //                 Container(
+  //                     height: 55,
+  //                     width: 42,
+  //                     alignment: Alignment.topCenter,
+  //                     child: IconButton(
+  //                       onPressed: () {
+  //                         setState(() {
+  //                           if (Config.isLoggedIn) {
+  //                             if (!Config.wishlist.contains(proreq[index])) {
+  //                               Config.wishlist.add(proreq[index]);
+  //                             } else {
+  //                               Config.wishlist.remove(proreq[index]);
+  //                             }
+  //                           } else {
+  //                             AlertDialog();
+  //                           }
+  //                         });
+  //                       },
+  //                       icon: !Config.wishlist.contains(proreq[index])
+  //                           ? const Icon(
+  //                               Icons.favorite_border_outlined,
+  //                               size: 42,
+  //                               color: Config.maincolor,
+  //                             )
+  //                           : const Icon(
+  //                               Icons.favorite,
+  //                               size: 42,
+  //                               color: Config.maincolor,
+  //                             ),
+  //                       alignment: Alignment.center,
+  //                     )),
+  //               ],
+  //             ),
+  //             Container(
+  //               alignment: Alignment.bottomCenter,
+  //               // margin: EdgeInsets.only(bottom: 15),
+  //               child: ElevatedButton(
+  //                 onPressed: () {},
+  //                 child: const Text(
+  //                   "C O M P R A R",
+  //                   style: TextStyle(color: Colors.white, fontSize: 18),
+  //                 ),
+  //                 style: ButtonStyle(
+  //                   alignment: Alignment.center,
+  //                   backgroundColor:
+  //                       MaterialStateProperty.all(Config.maincolor),
+  //                   fixedSize: MaterialStateProperty.all(Size(200, 50)),
+  //                 ),
+  //               ),
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget forProductsRecOnly(pr) {
     List<ProductoAct> proreq = pr;
@@ -309,7 +315,11 @@ class _productsMobile extends State<ProductsMobile> {
         itemCount: proreq.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          return FoodCardW(productReq: proreq[index],index: index, );
+          return FoodCardW(
+            productReq: proreq[index],
+            index: index,
+            callback: callback,
+          );
         }); // r
   }
 
@@ -387,26 +397,25 @@ class _productsMobile extends State<ProductsMobile> {
                       alignment: Alignment.topCenter,
                       child: IconButton(
                         onPressed: () {
-                          setState(() {
-                            if (Config.isLoggedIn) {
-                              if (!Config.wishlist.contains(proreq[index])) {
-                                Config.wishlist.add(proreq[index]);
-                              } else {
-                                Config.wishlist.remove(proreq[index]);
-                              }
+                          if (Config.isLoggedIn) {
+                            if (!Config.wishlist.contains(proreq[index])) {
+                              Config.wishlist.add(proreq[index]);
                             } else {
-                              AlertDialog(
-                                title: Text("Debe iniciar sesión"),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        this.dispose();
-                                      },
-                                      child: Text("Cerrar"))
-                                ],
-                              );
+                              Config.wishlist.remove(proreq[index]);
                             }
-                          });
+                          } else {
+                            AlertDialog(
+                              title: Text("Debe iniciar sesión"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text("Cerrar"))
+                              ],
+                            );
+                          }
+                          callback;
                         },
                         icon: !Config.wishlist.contains(proreq[index])
                             ? const Icon(
@@ -521,17 +530,17 @@ class _productsMobile extends State<ProductsMobile> {
                       alignment: Alignment.topCenter,
                       child: IconButton(
                         onPressed: () {
-                          setState(() {
-                            if (Config.isLoggedIn) {
+                          // setState(() {
+                            // if (Config.isLoggedIn) {
                               // if (!Config.wishlist.contains(proreq[index])) {
                               //   Config.wishlist.add(proreq[index]);
                               // } else {
                               //   Config.wishlist.remove(proreq[index]);
                               // }
-                            } else {
-                              AlertDialog();
-                            }
-                          });
+                            // } else {
+                              // AlertDialog();
+                            // }
+                          // });
                         },
                         icon: !Config.wishlist.contains(proreq[index])
                             ? const Icon(

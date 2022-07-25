@@ -23,6 +23,7 @@ class Config {
   static late List<ProductoAct> AllProducts;
   static late List<Destinatario> destinatarios;
   static late List<Categoria> categories;
+  static late List<Subcategoria> subcategories;
   static late List<String> munNames;
   static late List<String> categorias;
   static late List<String> destinos;
@@ -32,6 +33,8 @@ class Config {
   static late List<Orden> ordenes;
   static late List<Pais> paisesT;
   static late List<FAQ> faqs;
+
+  static List<Componente_Carrito> comp_cart = [];
 
   static List locals = [
     {'name': 'EN', 'locale': Locale('en', 'US')},
@@ -105,9 +108,22 @@ class Config {
             }
         });
     PaisRequest().getPaises();
+    print('carrito: ${kart.pk}}');
+    await Componente_Carrito().getCompCart().then((value) => comp_cart = value);
+
+    comp_cart.forEach((element) {
+
+    });
 
     faqs = await FAQModelResponse().getFAQ();
     // print("Municipios: "+municipios.length.toString());
+  }
+
+  updateCarrito() async{
+
+    await Componente_Carrito().getCompCart().then((value) => comp_cart = value);
+
+
   }
 
   Future<bool> checkInternetConnection() async {
@@ -302,22 +318,36 @@ class Config {
     return i;
   }
 
+  validateKart() {}
+
   List<ProductoAct> filter(String key, int type) {
     List<ProductoAct> list = [];
 
-    switch (type) {
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-    }
-
+    AllProducts.forEach((element) {
+      switch (type) {
+        case 1:
+          {
+            if (element.marca!.nombre == key) list.add(element);
+            break;
+          }
+        case 2:
+          {
+            if (element.proveedor!.nombre == key) list.add(element);
+            break;
+          }
+        // case 3:
+        //   {
+        //     if (element == key) list.add(element);
+        //     break;
+        //   }
+        default:
+          break;
+      }
+    });
     return list;
   }
+
+  sendCart() {}
 
   sendCheckout() async {}
 }

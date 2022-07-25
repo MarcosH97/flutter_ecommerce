@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:flutter/material.dart';
@@ -8,27 +9,27 @@ import 'package:get/get.dart';
 import '../Pages/productPage.dart';
 import '../Utils/Config.dart';
 
-class FoodCardW extends StatefulWidget {
+class FoodCardW extends StatelessWidget {
   final ProductoAct productReq;
   final int index;
+  final Function callback;
 
-  FoodCardW({Key? key, required this.productReq, required this.index})
+  FoodCardW(
+      {Key? key,
+      required this.productReq,
+      required this.index,
+      required this.callback})
       : super(key: key);
 
   @override
-  State<FoodCardW> createState() => _FoodCardWState();
-}
-
-class _FoodCardWState extends State<FoodCardW> {
-  bool inKart = false;
-  bool inWL = false;
-  bool outofstock = false;
-  @override
   Widget build(BuildContext context) {
-    ProductoAct producto = widget.productReq;
+    bool inKart;
+    bool inWL;
+    bool outofstock;
+    ProductoAct producto = productReq;
     inKart = Config().inCarrito(producto);
     inWL = Config().inWishlist(producto);
-    outofstock = int.parse(widget.productReq.cantInventario!) > 0;
+    outofstock = int.parse(productReq.cantInventario!) > 0;
 
     return Card(
       elevation: 5,
@@ -39,7 +40,7 @@ class _FoodCardWState extends State<FoodCardW> {
               MaterialPageRoute(
                   builder: (context) => productPage(
                         producto: producto,
-                        index: widget.index,
+                        index: index,
                       )));
         },
         child: SizedBox(
@@ -120,8 +121,7 @@ class _FoodCardWState extends State<FoodCardW> {
                   children: [
                     Expanded(
                       child: Text(
-                        Config().getProductFinalPrice(producto).toString() +
-                            " US\$",
+                        "${Config().getProductFinalPrice(producto).toString()} \$",
                         // +producto[index].slug!,
                         style: const TextStyle(
                           color: Config.maincolor,
@@ -130,107 +130,125 @@ class _FoodCardWState extends State<FoodCardW> {
                         ),
                       ),
                     ),
-                    Container(
-                        height: 55,
-                        width: 42,
-                        alignment: Alignment.topCenter,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            if (Config.isLoggedIn) {
-                              setState(() {
+                    if (Config().getProductFinalPrice(producto) <
+                        double.parse(producto.precio!.cantidad!))
+                      Expanded(
+                        child: Text(
+                          "${producto.precio!.cantidad} \$",
+                          // +producto[index].slug!,
+                          style: const TextStyle(
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                          height: 55,
+                          width: 42,
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            padding: EdgeInsets.all(0),
+                            onPressed: () {
+                              if (Config.isLoggedIn) {
                                 if (!inWL) {
                                   Config.wishlist.add(producto);
+                                  callback();
                                 } else {
-                                  Config.wishlist.removeAt(widget.index);
+                                  Config.wishlist.removeAt(index);
+                                  callback();
                                 }
-                              });
-                            } else {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        title: Text(
-                                            "Debe estar autenticado para realizar esta acción"),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: (() =>
-                                                  Navigator.pop(context)),
-                                              child: Text('Aceptar')),
-                                        ],
-                                      ));
-                            }
-                          },
-                          icon: !inWL
-                              ? const Icon(
-                                  Icons.favorite_border_outlined,
-                                  size: 42,
-                                  color: Config.maincolor,
-                                )
-                              : const Icon(
-                                  Icons.favorite,
-                                  size: 42,
-                                  color: Config.maincolor,
-                                ),
-                          alignment: Alignment.center,
-                        )),
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title: Text(
+                                              "Debe estar autenticado para realizar esta acción"),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: (() =>
+                                                    Navigator.pop(context)),
+                                                child: Text('Aceptar')),
+                                          ],
+                                        ));
+                              }
+                            },
+                            icon: !inWL
+                                ? const Icon(
+                                    Icons.favorite_border_outlined,
+                                    size: 42,
+                                    color: Config.maincolor,
+                                  )
+                                : const Icon(
+                                    Icons.favorite,
+                                    size: 42,
+                                    color: Config.maincolor,
+                                  ),
+                            alignment: Alignment.center,
+                          )),
+                    ),
                   ],
                 ),
               ),
-              outofstock ?
-              Container(
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.bottomCenter,
-                child: 
-                ElevatedButton(
-                  onPressed: !inCarrito(producto)
-                      ? () {
-                          if (Config.isLoggedIn) {
-                            setState(() {
-                              Config.carrito.add(Componente(
-                                  producto: producto.id,
-                                  cantidad: 1,
-                                  respaldo: Config().getRespaldo(producto)));
-                            });
-                          } else {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text(
-                                          "Debe estar autenticado para realizar esta acción"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: (() =>
-                                                Navigator.pop(context)),
-                                            child: Text('Aceptar')),
-                                      ],
-                                    ));
-                          }
-                        }
-                      : null,
-                  child: Text(
-                    !inCarrito(producto) ? "buy".tr : "added".tr,
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  style: ButtonStyle(
-                    alignment: Alignment.center,
-                    backgroundColor: !inCarrito(producto)
-                        ? MaterialStateProperty.all(Config.maincolor)
-                        : MaterialStateProperty.all(Colors.red[100]),
-                    fixedSize: MaterialStateProperty.all(Size(200, 50)),
-                  ),
-                ),
-              )
-              :
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('outstock'.tr, 
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold
-                ),),
-              )
+              outofstock
+                  ? Container(
+                      padding: EdgeInsets.all(10),
+                      alignment: Alignment.bottomCenter,
+                      child: ElevatedButton(
+                        onPressed: !inCarrito(producto)
+                            ? () {
+                                if (Config.isLoggedIn) {
+                                  Componente_Carrito()
+                                      .createCompCart(Componente_Carrito(cantidad: 1, producto: int.parse(producto.id!), carrito: Config.kart.pk));
+                                  Config.carrito.add(Componente(
+                                      producto: producto.id,
+                                      cantidad: 1,
+                                      respaldo:
+                                          Config().getRespaldo(producto)));
+                                  callback();
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            title: Text(
+                                                "Debe estar autenticado para realizar esta acción"),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: (() =>
+                                                      Navigator.pop(context)),
+                                                  child: Text('Aceptar')),
+                                            ],
+                                          ));
+                                }
+                              }
+                            : null,
+                        child: Text(
+                          !inCarrito(producto) ? "buy".tr : "added".tr,
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        style: ButtonStyle(
+                          alignment: Alignment.center,
+                          backgroundColor: !inCarrito(producto)
+                              ? MaterialStateProperty.all(Config.maincolor)
+                              : MaterialStateProperty.all(Colors.red[100]),
+                          fixedSize: MaterialStateProperty.all(Size(200, 50)),
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'outstock'.tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    )
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Utils/Config.dart';
@@ -251,6 +252,8 @@ class _checkOutPageState extends State<checkOutPage> {
                                   onPressed: () {
                                     setState(() {
                                       Config.carrito.removeAt(index);
+                                      Config.comp_cart[index].deleteCompcart();
+                                      Config.comp_cart.removeAt(index);
                                     });
                                   },
                                   icon: const Icon(

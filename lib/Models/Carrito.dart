@@ -7,11 +7,10 @@ import 'package:e_commerce/Utils/Config.dart';
 
 class Carrito {
   int? pk;
-  int? id;
   int? user;
   List<Componente>? componentes;
 
-  Carrito({this.pk, this.id, this.user});
+  Carrito({this.pk, this.user});
 
   Carrito.fromJson(Map<String, dynamic> json) {
     pk = json['pk'];
@@ -110,6 +109,59 @@ class Componente_Carrito {
       return false;
     }
   }
+
+  Future<List<Componente_Carrito>> getCompCart() async {
+    List<Componente_Carrito> lista = [];
+
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url =
+        Uri.parse('https://www.diplomarket.com/backend/componente_carrito/');
+
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      List<dynamic> body = jsonDecode(resBody)['results'];
+      body.forEach((element) {
+        Componente_Carrito cc = Componente_Carrito.fromJson(element);
+        if (cc.carrito == Config.kart.pk) {
+          lista.add(cc);
+          print("added to kart");
+        }
+      });
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
+    return lista;
+  }
+
+  Future<void> deleteCompcart() async {
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url =
+        Uri.parse('https://www.diplomarket.com/backend/componente_carrito/$id');
+
+    var req = http.Request('DELETE', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
+  }
 }
 
 class CarritoModelResponse {
@@ -134,6 +186,7 @@ class CarritoModelResponse {
           var c = Carrito.fromJson(element);
           if (c.user == id) {
             carrito = c;
+            print('carrito encontrado');
           }
         },
       );
@@ -161,23 +214,27 @@ class CarritoPayPal {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
-    if(items != null){
+
+    if (items != null) {
       result.addAll({'items': items!.map((x) => x.toMap()).toList()});
     }
-  
+
     return result;
   }
 
   factory CarritoPayPal.fromMap(Map<String, dynamic> map) {
     return CarritoPayPal(
-      items: map['items'] != null ? List<ComponentePaypal>.from(map['items']?.map((x) => ComponentePaypal.fromMap(x))) : null,
+      items: map['items'] != null
+          ? List<ComponentePaypal>.from(
+              map['items']?.map((x) => ComponentePaypal.fromMap(x)))
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory CarritoPayPal.fromJson(String source) => CarritoPayPal.fromMap(json.decode(source));
+  factory CarritoPayPal.fromJson(String source) =>
+      CarritoPayPal.fromMap(json.decode(source));
 }
 
 class ComponentePaypal {
@@ -251,17 +308,20 @@ class Items {
 
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
-    if(items != null){
+
+    if (items != null) {
       result.addAll({'items': items!.map((x) => x.toMap()).toList()});
     }
-  
+
     return result;
   }
 
   factory Items.fromMap(Map<String, dynamic> map) {
     return Items(
-      items: map['items'] != null ? List<ComponentePaypal>.from(map['items']?.map((x) => ComponentePaypal.fromMap(x))) : null,
+      items: map['items'] != null
+          ? List<ComponentePaypal>.from(
+              map['items']?.map((x) => ComponentePaypal.fromMap(x)))
+          : null,
     );
   }
 
@@ -294,4 +354,3 @@ class Itemz {
     return data;
   }
 }
-

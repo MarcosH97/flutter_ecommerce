@@ -185,8 +185,10 @@ class _loginPageState extends State<loginPage> {
               ),
               ElevatedButton(
                 style: ButtonStyle(
-                    padding: MaterialStateProperty.all(const EdgeInsets.all(20)),
-                    backgroundColor: MaterialStateProperty.all(Colors.indigo[900]),
+                    padding:
+                        MaterialStateProperty.all(const EdgeInsets.all(20)),
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.indigo[900]),
                     fixedSize: MaterialStateProperty.all(Size(
                         Device().isMobile(context)
                             ? MediaQuery.of(context).size.width / 1.5
@@ -199,22 +201,26 @@ class _loginPageState extends State<loginPage> {
                   if (_globalKey.currentState!.validate()) {
                     _globalKey.currentState!.save();
                     // _username = textController.text.toString();
-            
-                    bool s = await LoginModelResponse.login(
-                        _username.toString(), _password.toString());
-                    if (s) {
-                      Navigator.of(context).popAndPushNamed("/home");
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text("login_yes".tr)));
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              content: Text("login_no".tr),
-                            );
-                          });
-                    }
+
+                    // bool s = await LoginModelResponse.login(
+                    //     _username.toString(), _password.toString());
+                    // if (s) {
+                    //   Navigator.of(context).popAndPushNamed("/home");
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //       SnackBar(content: Text("login_yes".tr)));
+                    // } else {
+                    //   showDialog(
+                    //       context: context,
+                    //       builder: (context) {
+                    //         return AlertDialog(
+                    //           content: Text("login_no".tr),
+                    //         );
+                    //       });
+                    // }
+                    showDialog(
+                      context: context,
+                      builder: (context) => loadingDialog(),
+                    );
                   }
                 },
                 child: Text(
@@ -251,7 +257,8 @@ class _loginPageState extends State<loginPage> {
                     backgroundColor: Config.lang ? Colors.white : Colors.grey,
                     label: Text('Esp',
                         style: TextStyle(
-                            color: Config.lang ? Config.maincolor : Colors.black)),
+                            color:
+                                Config.lang ? Config.maincolor : Colors.black)),
                     onPressed: () {
                       setState(() {
                         Config.lang = true;
@@ -263,7 +270,9 @@ class _loginPageState extends State<loginPage> {
                         backgroundImage: NetworkImage(
                             'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Simplified_Flag_of_Spain_%28civil_variant%29.svg/1024px-Simplified_Flag_of_Spain_%28civil_variant%29.svg.png')),
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   ActionChip(
                     label: Text(
                       'Eng',
@@ -288,6 +297,72 @@ class _loginPageState extends State<loginPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget loadingDialog() {
+    return FutureBuilder(
+      future:
+          LoginModelResponse.login(_username.toString(), _password.toString()),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          case ConnectionState.done:
+            {
+              if (snapshot.data == true) {
+                return AlertDialog(title: Text('login_yes'.tr, style: TextStyle(fontSize: 16), textAlign: TextAlign.center), actions: [
+                  TextButton(onPressed: () =>  Navigator.of(context).popAndPushNamed("/home"), child: Text("Enter"))
+                ],);
+                // Container(
+                //   height: 300,
+                //   width: 300,
+                //   child: Card(
+                //     child: Column(children: [
+                //       Text('login_yes'.tr),
+                //       OutlinedButton(
+                //           onPressed: () {
+                //             Navigator.of(context).popAndPushNamed("/home");
+                //           },
+                //           child: Text("enter"))
+                //     ]),
+                //   ),
+                // );
+              } else {
+                return AlertDialog(title: Text('login_no'.tr, style: TextStyle(fontSize: 16), textAlign: TextAlign.center), actions: [
+                  TextButton(onPressed: () => Navigator.pop(context), child: Text("Ok"))
+                ],);
+                // Container(
+                //   margin: EdgeInsets.all(20),
+                //   child: Card(
+                //     child: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: [
+                //       Text('login_no'.tr),
+                //       OutlinedButton(
+                //           onPressed: () {
+                //             Navigator.pop(context);
+                //           },
+                //           child: Text("enter"))
+                //     ]),
+                //   ),
+                // );
+
+              }
+            }
+          default:
+            {
+              break;
+            }
+        }
+        return Text("null");
+      },
     );
   }
 }

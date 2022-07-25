@@ -149,37 +149,7 @@ class Proveedor {
   }
 }
 
-class Subcategoria {
-  int? id;
-  List<Etiquetas>? etiquetas;
-  String? nombre;
-  int? categoria;
 
-  Subcategoria({this.id, this.etiquetas, this.nombre, this.categoria});
-
-  Subcategoria.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    if (json['etiquetas'] != null) {
-      etiquetas = <Etiquetas>[];
-      json['etiquetas'].forEach((v) {
-        etiquetas!.add(Etiquetas.fromJson(v));
-      });
-    }
-    nombre = json['nombre'];
-    categoria = json['categoria'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
-    if (etiquetas != null) {
-      data['etiquetas'] = etiquetas!.map((v) => v.toJson()).toList();
-    }
-    data['nombre'] = nombre;
-    data['categoria'] = categoria;
-    return data;
-  }
-}
 
 class Etiquetas {
   int? id;
