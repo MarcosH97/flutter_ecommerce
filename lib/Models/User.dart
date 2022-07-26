@@ -1,3 +1,8 @@
+import 'dart:convert';
+
+import '../Utils/Config.dart';
+import 'package:http/http.dart' as http;
+
 class UserRequest {
   int? count;
   Null? next;
@@ -95,5 +100,30 @@ class User {
     data['is_superuser'] = this.isSuperuser;
     data['last_login'] = this.lastLogin;
     return data;
+  }
+
+  Future<bool> changePassword(String newpw) async {
+    var headersList = {
+      'Authorization': Config.token,
+      'Content-Type': 'application/json'
+    };
+    var url =
+        Uri.parse('https://www.diplomarket.com/backend/user/password/change/');
+
+    var body = {"id": id, "password": "$newpw"};
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print(resBody);
+      return true;
+    } else {
+      print(res.reasonPhrase);
+      return false;
+    }
   }
 }

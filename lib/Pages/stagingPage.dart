@@ -20,9 +20,7 @@ class stagePage extends StatefulWidget {
 }
 
 class stagePageState extends State<stagePage> {
-  var destin = Config.destinos.length > 0 ? Config.destinos[0] : "empty";
-
-  static final List<String> backup = ["empty", "empty2", "empty3"];
+  var destin = "";
 
   late bool _activo;
 
@@ -34,12 +32,30 @@ class stagePageState extends State<stagePage> {
 
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
+  late List<DropdownMenuItem<String>> _destinos;
+
   var carrito = Config.carrito;
   var config = Config();
   int currentStep = 0;
   Destinatario d = Destinatario();
+
   @override
   Widget build(BuildContext context) {
+    if (Config.destinos.length > 0) {
+      destin = Config.destinos[0];
+      _destinos = Config.destinos
+          .map((String value) => DropdownMenuItem<String>(
+                child: Center(child: Text(value, textAlign: TextAlign.center)),
+                value: value,
+              ))
+          .toList();
+    } else {
+      _destinos = [];
+      setState(() {
+        _switch = true;
+      });
+    }
+
     _activo = (destin != null);
     return Scaffold(
       appBar: AppBar(),
@@ -53,26 +69,18 @@ class stagePageState extends State<stagePage> {
           onStepContinue: () {
             final isLast = currentStep == getSteps().length - 1;
             if (isLast) {
+              if()
               Navigator.pushReplacementNamed(context, "/paypal");
               // OrdenRequest().createOrderPayPal();
             } else if (currentStep == 0) {
               // if (_switch) {
-              _globalKey.currentState!.save();
-              // d.nombreRemitente = Config.activeUser.name;
-              d.nombreRemitente = "Vacio";
-              d.activo = false;
-              d.usuario = Config.activeUser.id;
-              if (!Config.destinatarios.contains(d)) {
-                DestinatarioResponse().createDestinatario(d);
-                Config.destinatarios.add(d);
-                Config.destiny = 0;
-                // }
-              }
+              // }
               setState(() {
                 currentStep++;
               });
             } else {
               setState(() {
+                DestinatarioResponse().getDestinatarios();
                 currentStep++;
               });
             }
@@ -126,14 +134,6 @@ class stagePageState extends State<stagePage> {
     );
   }
 
-  List<DropdownMenuItem<String>> _destinos =
-      (Config.destinos.isNotEmpty ? Config.destinos : backup)
-          .map((String value) => DropdownMenuItem<String>(
-                child: Center(child: Text(value, textAlign: TextAlign.center)),
-                value: value,
-              ))
-          .toList();
-
   List<Step> getSteps() => [
         Step(
             title: currentStep == 0 ? Text('destins'.tr) : Text(""),
@@ -149,184 +149,235 @@ class stagePageState extends State<stagePage> {
                   SizedBox(
                     height: 10,
                   ),
-                  // Container(
-                  //   decoration: BoxDecoration(
-                  //       border: Border.all(width: 1, color: Colors.grey),
-                  //       color: Config.maincolor,
-                  //       borderRadius: BorderRadius.circular(5)),
-                  //   child: Config.destinos.length > 0
-                  //       ? DropdownButtonHideUnderline(
-                  //           child: DropdownButton(
-                  //           dropdownColor: Config.maincolor,
-                  //           style: const TextStyle(
-                  //             fontSize: 16,
-                  //             color: Colors.white,
-                  //             overflow: TextOverflow.visible,
-                  //           ),
-                  //           isExpanded: true,
-                  //           itemHeight: null,
-                  //           value: Config.destinos.length > 0 ? destin : "",
-                  //           alignment: Alignment.center,
-                  //           items: _destinos,
-                  //           icon: Icon(
-                  //             Icons.arrow_drop_down,
-                  //             color: Colors.white,
-                  //           ),
-                  //           onChanged: (String? value) {
-                  //             if (value != null) {
-                  //               int id = 0;
-                  //               Config.destinatarios.forEach(
-                  //                 (element) {
-                  //                   if (element.nombre == value) {
-                  //                     id = element.id!;
-                  //                   }
-                  //                 },
-                  //               );
-                  //               setState(() {
-                  //                 Config.destiny = id;
-                  //                 destin = value;
-                  //                 print(Config.destiny);
-                  //               });
-                  //             }
-                  //           },
-                  //         ))
-                  //       : SizedBox(),
-                  // ),
-                  // Row(
-                  //   children: [
-                  //     Text("Crear un destinatario nuevo"),
-                  //     Switch(
-                  //         value: _switch,
-                  //         onChanged: (bool b) {
-                  //           setState(() => _switch = b);
-                  //         },
-                  //         activeColor: Config.maincolor),
-                  //   ],
-                  // ),
-                  // _switch
-                  // ?
-                  Column(
+                  if (Config.destinatarios.isNotEmpty)
+                    Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.grey),
+                            color: Config.maincolor,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                          dropdownColor: Config.maincolor,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            overflow: TextOverflow.visible,
+                          ),
+                          isExpanded: true,
+                          itemHeight: null,
+                          value: destin,
+                          alignment: Alignment.center,
+                          items: _destinos,
+                          icon: Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
+                          onChanged: (String? value) {
+                            if (value != null) {
+                              int id = 0;
+                              Config.destinatarios.forEach(
+                                (element) {
+                                  if (element.nombre == value) {
+                                    id = element.id!;
+                                  }
+                                },
+                              );
+                              setState(() {
+                                Config.destiny = id;
+                                destin = value;
+                                print(Config.destiny);
+                              });
+                            }
+                          },
+                        ))),
+                  Row(
                     children: [
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Nombre*"),
-                        onSaved: (value) {
-                          d.nombre = value;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Apellido 1*"),
-                        onSaved: (value) {
-                          d.apellido1 = value;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Apellido 2*"),
-                        onSaved: (value) {
-                          d.apellido2 = value;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Email*"),
-                        onSaved: (value) {
-                          d.email = value;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "CI*"),
-                        onSaved: (value) {
-                          d.ci = value;
-                        },
-                      ),
-                      IntlPhoneField(
-                        // autovalidateMode: AutovalidateMode.always,
-                        invalidNumberMessage: "Formato de telefono incorrecto",
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: const InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          labelText: 'Teléfono',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        initialCountryCode: 'US',
-                        onChanged: (phone) {
-                          print(phone.completeNumber);
-                          d.telefono = phone.completeNumber;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "País*"),
-                        onSaved: (value) {
-                          d.pais = 1;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Provincia*"),
-                        onSaved: (value) {
-                          d.provincia = 2;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Municipio*"),
-                        onSaved: (value) {
-                          d.municipio = 2;
-                        },
-                      ),
-                      TextFormField(
-                        decoration:
-                            InputDecoration(labelText: "Reparto o Ciudad*"),
-                        onSaved: (value) {
-                          d.ciudad = value;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Dirección*"),
-                        onSaved: (value) {
-                          d.direccion = value;
-                        },
-                      ),
-                      Divider(),
-                      Text("Campos alternativos"),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Otro Nombre"),
-                        onSaved: (value) {
-                          d.nombreAlternativo = value;
-                        },
-                      ),
-                      IntlPhoneField(
-                        // autovalidateMode: AutovalidateMode.always,
-                        invalidNumberMessage: "Formato de telefono incorrecto",
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: const InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                          labelText: 'Teléfono Alternativo',
-                          border: OutlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        initialCountryCode: 'US',
-                        onChanged: (phone) {
-                          d.telefonoAlternativo =
-                              phone.completeNumber.toString();
-                        },
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(labelText: "Nota"),
-                        onSaved: (value) {
-                          d.notaEntrega = value;
-                        },
-                      ),
+                      Text("Crear un destinatario nuevo"),
+                      Switch(
+                          value: _switch,
+                          onChanged: _destinos.length > 0
+                              ? (bool b) {
+                                  setState(() {
+                                    setState(() {
+                                      _switch = b;
+                                    });
+                                  });
+                                }
+                              : null,
+                          activeColor: Config.maincolor),
                     ],
                   ),
-                  // SizedBox(height: 10,),
-                  // ElevatedButton(onPressed: (){
-
-                  // }, child: Text('Crear Destinatario')),
-                  // SizedBox(height: 10,),
+                  if (_switch)
+                    Column(
+                      children: [
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Nombre*"),
+                          onSaved: (value) {
+                            d.nombre = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Apellido 1*"),
+                          onSaved: (value) {
+                            d.apellido1 = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Apellido 2*"),
+                          onSaved: (value) {
+                            d.apellido2 = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Email*"),
+                          onSaved: (value) {
+                            d.email = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "CI*"),
+                          onSaved: (value) {
+                            d.ci = value;
+                          },
+                        ),
+                        IntlPhoneField(
+                          // autovalidateMode: AutovalidateMode.always,
+                          invalidNumberMessage:
+                              "Formato de telefono incorrecto",
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            labelText: 'Teléfono',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          initialCountryCode: 'US',
+                          onChanged: (phone) {
+                            print(phone.completeNumber);
+                            d.telefono = phone.completeNumber;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "País*"),
+                          onSaved: (value) {
+                            d.pais = 1;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Provincia*"),
+                          onSaved: (value) {
+                            d.provincia = 1;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Municipio*"),
+                          onSaved: (value) {
+                            d.municipio = 2;
+                          },
+                        ),
+                        TextFormField(
+                          decoration:
+                              InputDecoration(labelText: "Reparto o Ciudad*"),
+                          onSaved: (value) {
+                            d.ciudad = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Dirección*"),
+                          onSaved: (value) {
+                            d.direccion = value;
+                          },
+                        ),
+                        Divider(),
+                        Text("Campos alternativos"),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Otro Nombre"),
+                          onSaved: (value) {
+                            d.nombreAlternativo = value;
+                          },
+                        ),
+                        IntlPhoneField(
+                          // autovalidateMode: AutovalidateMode.always,
+                          invalidNumberMessage:
+                              "Formato de telefono incorrecto",
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                            labelText: 'Teléfono Alternativo',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          initialCountryCode: 'US',
+                          onChanged: (phone) {
+                            d.telefonoAlternativo =
+                                phone.completeNumber.toString();
+                          },
+                        ),
+                        TextFormField(
+                          decoration: InputDecoration(labelText: "Nota"),
+                          onSaved: (value) {
+                            d.notaEntrega = value;
+                          },
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        ElevatedButton(
+                            onPressed: () async {
+                              _globalKey.currentState!.save();
+                              // d.nombreRemitente = Config.activeUser.name;
+                              d.nombreRemitente = "Vacio";
+                              d.activo = false;
+                              d.usuario = Config.activeUser.id;
+                              if (!Config.destinatarios.contains(d)) {
+                                if (await DestinatarioResponse()
+                                    .createDestinatario(d)) {
+                                  await Config().setupDestinatarios;
+                                  setState(() {});
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                          "Destinatario creado correctamente"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Ok'))
+                                      ],
+                                    ),
+                                  );
+                                  Config.destinatarios.add(d);
+                                  Config.destiny = 0;
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text("Error creando destinatario"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text('Ok'))
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+                              ;
+                            },
+                            child: Text('Crear Destinatario')),
+                        SizedBox(
+                          height: 15,
+                        ),
+                      ],
+                    ),
                 ],
               ),
             )),

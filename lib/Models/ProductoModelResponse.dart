@@ -11,8 +11,8 @@ class ProductoModelResponse {
       'Accept-Language': Config.language,
       'Authorization': Config.token
     };
-    var url =
-        Uri.parse('https://www.diplomarket.com/backend/producto/?municipios=${Config.activeMun}');
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/producto/?municipios=${Config.activeMun}');
     // print("getting PREC");
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
@@ -33,6 +33,29 @@ class ProductoModelResponse {
       // print("error");
       throw Exception();
     }
+  }
+
+  Future<int> getSpecificProductStock(String id) async {
+    var headersList = {
+      'Authorization': Config.token,
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('https://www.diplomarket.com/backend/producto/$id');
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    int result = jsonDecode(resBody)['cant_inventario'];
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print(result);
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
+    return result;
   }
 
   Future<void> getProductTopSellList(municipioID) async {

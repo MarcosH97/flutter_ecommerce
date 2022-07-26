@@ -53,9 +53,7 @@ class _homePageState extends State<homePage> {
 
   callback() {
     print("callback called");
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   void LoadStuff() {
@@ -81,67 +79,8 @@ class _homePageState extends State<homePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     ToastContext().init(context);
-    var drawerHeader = UserAccountsDrawerHeader(
-        currentAccountPicture: CircleAvatar(
-          backgroundColor: Colors.amber,
-          child: Icon(Icons.person, size: 50),
-        ),
-        accountName: Config.isLoggedIn
-            ? Text(
-                Config.user.name!,
-                textScaleFactor: 1,
-              )
-            : Text(
-                "<No User>",
-                textScaleFactor: 1,
-              ),
-        accountEmail: Config.isLoggedIn
-            ? Text(Config.activeUser.email!)
-            : Text("no email"));
-
-    var w = MediaQuery.of(context).size.width;
-
-    final _drawerItems = ListView(
-      // ignore: prefer_const_literals_to_create_immutables
-      children: <Widget>[
-        drawerHeader,
-        ListTile(
-          title: Text('account'.tr),
-          onTap: () {
-            Config.isLoggedIn
-                ? Navigator.pushNamed(context, '/user')
-                : Navigator.popAndPushNamed(context, '/login');
-          },
-        ),
-        ListTile(
-          title: Text('all_products'.tr),
-          onTap: () {
-            Navigator.of(context).pushNamed('/allproducts');
-          },
-        ),
-        ExpansionTile(title: Text('help'), children: [
-          ListTile(
-            title: Text("F.A.Q"),
-          ),
-          ListTile(
-            title: Text("¿Cómo usar Diplomarket?"),
-          ),
-        ]),
-        ListTile(title: Text('to_know'.tr)),
-        ExpansionTile(title: Text('contact'.tr), children: []),
-        ListTile(
-            title: Text('Pagar'),
-            onTap: () {
-              Navigator.pushNamed(context, '/paypal');
-            }),
-        ListTile(
-            title: Text('Pagar Braintree'),
-            onTap: () {
-              Navigator.pushNamed(context, '/braintree');
-            }),
-      ],
-    );
 
     return Scaffold(
       appBar: myAppBar(context: context).AppBarM(),
@@ -156,6 +95,34 @@ class _homePageState extends State<homePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              GestureDetector(
+                onTap: () =>Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              productos: Config().filter("DM", 2),
+                                              headerName: "DM"))),
+                child: Container(
+                  child: Image.network("https://www.diplomarket.com/backend/media/carruseles/diplomarket_z7mlRnz.png",
+                      loadingBuilder: (context, child, loadingProgress) =>
+                          loadingProgress == null
+                              ? child
+                              : Container(
+                                  width: 50,
+                                  height: 50,
+                                  child: const Center(
+                                      child: CircularProgressIndicator(
+                                          color: Config.maincolor)),
+                                ),
+                      errorBuilder: (context, error, stacktrace) {
+                        return const Icon(
+                          Icons.error,
+                          size: 50,
+                          color: Colors.grey,
+                        );
+                      }),
+                ),
+              ),
               Column(
                 children: [
                   Container(
@@ -231,15 +198,22 @@ class _homePageState extends State<homePage> {
                               alignment: Alignment.center,
                               onChanged: (String? newValue) {
                                 if (newValue != null) {
-                                  setState(() {
-                                    Config.selectedCar = newValue;
+                                  setState(() async {
+                                    filter = await ProductoFiltro()
+                                        .FilteredList(newValue, null);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => filterPage(
+                                                productos: filter,
+                                                headerName: "$newValue")));
+                                    // Config.selectedCar = newValue;
                                   });
                                 }
                               },
                             ),
                           ),
                         )),
-
                         Expanded(
                             child: Container(
                           padding: EdgeInsets.all(5),
@@ -268,6 +242,7 @@ class _homePageState extends State<homePage> {
                                 if (newValue != null) {
                                   setState(() {
                                     Config.selectedMun = newValue;
+                                    Config.carrito.clear;
                                     Config().setActiveMunIndex();
                                   });
                                 }

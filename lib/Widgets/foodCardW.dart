@@ -50,7 +50,7 @@ class FoodCardW extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: 300,
+                height: 280,
                 width: 400,
                 padding: EdgeInsets.all(15),
                 margin: EdgeInsets.only(top: 15, right: 20, left: 20),
@@ -201,13 +201,17 @@ class FoodCardW extends StatelessWidget {
                         onPressed: !inCarrito(producto)
                             ? () {
                                 if (Config.isLoggedIn) {
-                                  Componente_Carrito()
-                                      .createCompCart(Componente_Carrito(cantidad: 1, producto: int.parse(producto.id!), carrito: Config.kart.pk));
+                                  Componente_Carrito().createCompCart(
+                                      Componente_Carrito(
+                                          cantidad: 1,
+                                          producto: int.parse(producto.id!),
+                                          carrito: Config.kart.pk));
                                   Config.carrito.add(Componente(
                                       producto: producto.id,
                                       cantidad: 1,
                                       respaldo:
                                           Config().getRespaldo(producto)));
+                                  Config().updateCarrito();
                                   callback();
                                 } else {
                                   showDialog(

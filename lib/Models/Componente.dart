@@ -70,8 +70,33 @@ class ComponenteCreate {
     //   }
     // });
     Componente c = Config.carrito[index];
-    
-    double value = c.cantidad! * double.parse(Config().getProductoLocal(c).precio!.cantidad!);
+
+    double value = c.cantidad! *
+        double.parse(Config().getProductoLocal(c).precio!.cantidad!);
     Config.carrito[index].setRespaldo(value);
   }
+}
+
+class ComponenteSec {
+  ProductoAct? producto;
+  String? cantidad;
+  ComponenteSec({
+    this.producto,
+    this.cantidad,
+  });
+
+  
+ComponenteSec.fromJson(Map<String, dynamic> json) {
+		producto = json['producto'] != null ? new ProductoAct.fromJson(json['producto']) : null;
+		cantidad = json['cantidad'];
+	}
+
+	Map<String, dynamic> toJson() {
+		final Map<String, dynamic> data = new Map<String, dynamic>();
+		if (this.producto != null) {
+      data['producto'] = this.producto!.toJson();
+    }
+		data['cantidad'] = this.cantidad;
+		return data;
+	}
 }

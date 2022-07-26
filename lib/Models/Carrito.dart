@@ -8,7 +8,7 @@ import 'package:e_commerce/Utils/Config.dart';
 class Carrito {
   int? pk;
   int? user;
-  List<Componente>? componentes;
+  List<ComponenteSec>? componentes;
 
   Carrito({this.pk, this.user});
 
@@ -16,9 +16,9 @@ class Carrito {
     pk = json['pk'];
     user = json['user'];
     if (json['componentes'] != null) {
-      componentes = <Componente>[];
+      componentes = <ComponenteSec>[];
       json['componentes'].forEach((v) {
-        componentes!.add(new Componente.fromJson(v));
+        componentes!.add(new ComponenteSec.fromJson(v));
       });
     }
     ;
@@ -158,8 +158,10 @@ class Componente_Carrito {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
+      print("eliminado compcart");
     } else {
       print(res.reasonPhrase);
+      print("no eliminado compcart");
     }
   }
 }
@@ -179,6 +181,8 @@ class CarritoModelResponse {
     final resBody = await res.stream.bytesToString();
 
     Carrito carrito = Carrito();
+
+    // print("entered carrito");
     if (res.statusCode >= 200 && res.statusCode < 300) {
       List<dynamic> body = jsonDecode(resBody)['results'];
       body.forEach(
@@ -186,13 +190,13 @@ class CarritoModelResponse {
           var c = Carrito.fromJson(element);
           if (c.user == id) {
             carrito = c;
-            print('carrito encontrado');
+            // print('carrito encontrado');
           }
         },
       );
       if (carrito.user == null) {
         if (await Carrito().createCarrito(id)) {
-          print("carrito en obtencion");
+          // print("carrito en obtencion");
           return getCarrito(id);
         }
       } else {

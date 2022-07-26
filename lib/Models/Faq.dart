@@ -48,9 +48,9 @@ class FAQModelResponse {
           lista.add(FAQ.fromJson(element));
         },
       );
-      print(resBody);
+      // print(resBody);
     } else {
-      print(res.reasonPhrase);
+      print("FAQ Fail: ${res.reasonPhrase}");
     }
     return lista;
   }

@@ -95,7 +95,6 @@ class _loginPageState extends State<loginPage> {
                                   validator: validateName,
                                   onSaved: (String? value) {
                                     this._username = value;
-                                    // print(value);
                                   },
                                   // controller: textController,
                                   decoration: InputDecoration(
@@ -196,27 +195,9 @@ class _loginPageState extends State<loginPage> {
                         60)),
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)))),
-                onPressed: () async {
-                  // print("Entered login");
+                onPressed: () {
                   if (_globalKey.currentState!.validate()) {
-                    _globalKey.currentState!.save();
-                    // _username = textController.text.toString();
-
-                    // bool s = await LoginModelResponse.login(
-                    //     _username.toString(), _password.toString());
-                    // if (s) {
-                    //   Navigator.of(context).popAndPushNamed("/home");
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //       SnackBar(content: Text("login_yes".tr)));
-                    // } else {
-                    //   showDialog(
-                    //       context: context,
-                    //       builder: (context) {
-                    //         return AlertDialog(
-                    //           content: Text("login_no".tr),
-                    //         );
-                    //       });
-                    // }
+                    _globalKey.currentState!.save();                  
                     showDialog(
                       context: context,
                       builder: (context) => loadingDialog(),
@@ -315,9 +296,17 @@ class _loginPageState extends State<loginPage> {
           case ConnectionState.done:
             {
               if (snapshot.data == true) {
-                return AlertDialog(title: Text('login_yes'.tr, style: TextStyle(fontSize: 16), textAlign: TextAlign.center), actions: [
-                  TextButton(onPressed: () =>  Navigator.of(context).popAndPushNamed("/home"), child: Text("Enter"))
-                ],);
+                return AlertDialog(
+                  title: Text('login_yes'.tr,
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center),
+                  actions: [
+                    TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).popAndPushNamed("/home"),
+                        child: Text("Enter"))
+                  ],
+                );
                 // Container(
                 //   height: 300,
                 //   width: 300,
@@ -333,9 +322,16 @@ class _loginPageState extends State<loginPage> {
                 //   ),
                 // );
               } else {
-                return AlertDialog(title: Text('login_no'.tr, style: TextStyle(fontSize: 16), textAlign: TextAlign.center), actions: [
-                  TextButton(onPressed: () => Navigator.pop(context), child: Text("Ok"))
-                ],);
+                return AlertDialog(
+                  title: Text('login_no'.tr,
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Ok"))
+                  ],
+                );
                 // Container(
                 //   margin: EdgeInsets.all(20),
                 //   child: Card(
@@ -366,3 +362,4 @@ class _loginPageState extends State<loginPage> {
     );
   }
 }
+

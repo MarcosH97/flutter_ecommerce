@@ -1,12 +1,8 @@
 import 'package:e_commerce/Services/SharedService.dart';
-import 'package:e_commerce/Widgets/addToPopupCard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Utils/Config.dart';
-import '../Utils/HeroDialogRoute.dart';
-import '../Widgets/myAppBar.dart';
 
 class userPage extends StatefulWidget {
   userPage({Key? key}) : super(key: key);
@@ -16,10 +12,8 @@ class userPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<userPage> {
-  final GlobalKey<FormFieldState> _globalKey = GlobalKey<FormFieldState>();
   var _controller = TextEditingController();
 
-  String oldpw = '', newpw = '';
   bool ckbox = false, changes = false;
   bool lang = true;
 
@@ -170,72 +164,13 @@ class _UserPageState extends State<userPage> {
                   collapsedBackgroundColor: Config.maincolor,
                   children: [
                     Container(
-                      margin: EdgeInsets.all(10),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.white,
-                      ),
-                      child: Form(
-                          key: _globalKey,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'pw_old'.tr,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    focusColor: Config.maincolor,
-                                    border: OutlineInputBorder(),
-                                    fillColor: Colors.white),
-                                obscureText: true,
-                                onSaved: (newValue) {
-                                  oldpw = newValue ?? '';
-                                },
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'pw_new'.tr,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                    focusColor: Config.maincolor,
-                                    border: OutlineInputBorder(),
-                                    fillColor: Colors.white),
-                                obscureText: true,
-                                onSaved: (newValue) {
-                                  newpw = newValue ?? '';
-                                },
-                              ),
-                            ],
-                          )),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'chg_pw'.tr,
-                        style: TextStyle(color: Config.maincolor),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          fixedSize: Size(200, 50),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10))),
-                    ),
+                        margin: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                        ),
+                        child: changePass()),
                     SizedBox(
                       height: 20,
                     ),
@@ -354,4 +289,135 @@ class _UserPageState extends State<userPage> {
         endIndent: 10,
         color: Config.maincolor,
       ));
+}
+
+class changePass extends StatefulWidget {
+  changePass({Key? key}) : super(key: key);
+
+  @override
+  State<changePass> createState() => _changePassState();
+}
+
+class _changePassState extends State<changePass> {
+  String oldpw = '', newpw = '';
+
+  final _globalKey = GlobalKey<FormState>();
+
+  String? ValidateNPW(String? s) {
+    if (s!.length == 0) {
+      return "Campo vacio";
+    } else if (Config.currentPW == s) {
+      return "Las contraseñas son iguales";
+    } else if (s.length < 8) {
+      return "Contraseña demasiado corta";
+    }
+    return null;
+  }
+
+  String? ValidateOPW(String? s) {
+    if (s!.length == 0) {
+      return "Campo vacio";
+    } else if (Config.currentPW != s) {
+      return "Contraseña incorrecta";
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _globalKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'pw_old'.tr,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextFormField(
+            validator: ValidateOPW,
+            decoration: InputDecoration(
+                focusColor: Config.maincolor,
+                border: OutlineInputBorder(),
+                fillColor: Colors.white),
+            obscureText: true,
+            onSaved: (newValue) {
+              oldpw = newValue ?? '';
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            'pw_new'.tr,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          TextFormField(
+            validator: ValidateNPW,
+            decoration: InputDecoration(
+                focusColor: Config.maincolor,
+                border: OutlineInputBorder(),
+                fillColor: Colors.white),
+            obscureText: true,
+            onSaved: (newValue) {
+              newpw = newValue ?? '';
+            },
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () async {
+                if (_globalKey.currentState!.validate()) {
+                  _globalKey.currentState!.save();
+                  print('validated');
+                  if (await Config.user.changePassword(newpw)) {
+                    Config.currentPW = newpw;
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                          title: Text('Cambiada exitosamente'),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Ok"))
+                          ]),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                          title: Text('Hubo un error'),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Ok"))
+                          ]),
+                    );
+                  }
+                }
+              },
+              child: Text(
+                'chg_pw'.tr,
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                  primary: Config.maincolor,
+                  fixedSize: Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -122,7 +122,7 @@ class Destinatario {
 }
 
 class DestinatarioResponse {
-  Future<void> createDestinatario(Destinatario d) async {
+  Future<bool> createDestinatario(Destinatario d) async {
     var headersList = {
       'Authorization': Config.token,
       'Content-Type': 'application/json'
@@ -158,8 +158,10 @@ class DestinatarioResponse {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
+      return true;
     } else {
       print(res.reasonPhrase);
+      return false;
     }
   }
 

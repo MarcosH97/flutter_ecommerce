@@ -65,7 +65,7 @@ class Config {
   static String language = "es-es";
   static String currency = "USD";
   static String provincia = "La Habana";
-  static List<String> currencies = ["USD", "CAD", "EUR"];
+  static List<String> currencies = ["USD", "EUR"];
   static String apiURL = "https://www.diplomarket.com";
   static String token = 'token 07e3d4a91f7098ad03ab59eede7f5f29a2728a20';
   static bool login = false;
@@ -108,22 +108,39 @@ class Config {
             }
         });
     PaisRequest().getPaises();
-    print('carrito: ${kart.pk}}');
-    await Componente_Carrito().getCompCart().then((value) => comp_cart = value);
-
-    comp_cart.forEach((element) {
-
-    });
+    // print('carrito: ${kart.pk}}');
 
     faqs = await FAQModelResponse().getFAQ();
     // print("Municipios: "+municipios.length.toString());
   }
 
-  updateCarrito() async{
-
+  updateCarrito() async {
     await Componente_Carrito().getCompCart().then((value) => comp_cart = value);
+    comp_cart.forEach((element) {
+      bool found = false;
+      carrito.forEach((element2) {
+        if (element2.producto == element.id.toString()) {
+          found = true;
+        }
+      });
+      if (!found) {
+        carrito.add(Componente(
+            cantidad: 1,
+            producto: element.producto.toString(),
+            respaldo:
+                getRespaldo(findProdyctByID(element.producto.toString()))));
+      }
+    });
+  }
 
-
+  ProductoAct findProdyctByID(id) {
+    ProductoAct pa = ProductoAct();
+    AllProducts.forEach((element) {
+      if (element.id == id) {
+        pa = element;
+      }
+    });
+    return pa;
   }
 
   Future<bool> checkInternetConnection() async {
@@ -272,12 +289,12 @@ class Config {
   }
 
   Destinatario getDestinatario() {
-    Destinatario d = Destinatario();
-    destinatarios.forEach((element) {
+    Destinatario d = Destinatario(email: "", direccion: "", nombre: "");
+    for (var element in destinatarios) {
       if (element.nombre == destinos[destiny]) {
         d = element;
       }
-    });
+    }
     return d;
   }
 
@@ -318,7 +335,16 @@ class Config {
     return i;
   }
 
-  validateKart() {}
+  bool validateKart() {
+    bool b = false;
+    kart.componentes!.forEach((element) async {
+      ProductoAct futuro = await getProducto(element.producto!.id!);
+      if (int.parse(element.cantidad!) <= int.parse(futuro.cantInventario!)) {
+        b = true;
+      }
+    });
+    return b;
+  }
 
   List<ProductoAct> filter(String key, int type) {
     List<ProductoAct> list = [];

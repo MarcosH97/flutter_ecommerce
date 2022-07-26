@@ -251,8 +251,8 @@ class _checkOutPageState extends State<checkOutPage> {
                               IconButton(
                                   onPressed: () {
                                     setState(() {
+                                      print("length: ${Config.comp_cart.length}");
                                       Config.carrito.removeAt(index);
-                                      Config.comp_cart[index].deleteCompcart();
                                       Config.comp_cart.removeAt(index);
                                     });
                                   },

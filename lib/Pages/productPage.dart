@@ -224,19 +224,35 @@ class _productPageState extends State<productPage> {
                     ],
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                          "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!.cantidad!} \$",
-                          style: const TextStyle(
-                              fontSize: 30,
-                              color: Config.maincolor,
-                              fontFamily: "Arial",
-                              fontWeight: FontWeight.w600)),
-                      SizedBox(
-                        width: 10,
+                      Expanded(
+                        child: Text(
+                            "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!.cantidad!} \$",
+                            style: const TextStyle(
+                                fontSize: 30,
+                                color: Config.maincolor,
+                                fontFamily: "Arial",
+                                fontWeight: FontWeight.w600)),
                       ),
-                      getDiscount() > 0
-                          ? Container(
+                      
+                      if(getDiscount() > 0)
+                      Expanded(
+                        child: Text(
+                            "${widget.producto.precio!.cantidad!} \$",
+                            style: const TextStyle(
+                                fontSize: 24,
+                                color: Colors.grey,
+                                fontFamily: "Arial",
+                                decoration: TextDecoration.lineThrough,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                      Expanded(
+                        child: SizedBox(
+                          width: 10,
+                        ),
+                      ),
+                      if (getDiscount() > 0) Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   color: Colors.red[700],
@@ -252,8 +268,7 @@ class _productPageState extends State<productPage> {
                                       fontSize: 24,
                                       color: Colors.white,
                                       decoration: TextDecoration.none)),
-                            )
-                          : SizedBox(),
+                            ) else SizedBox(),
                     ],
                   ),
                   Text(
