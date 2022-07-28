@@ -184,10 +184,12 @@ class DestinatarioResponse {
         if (element.usuario == Config.activeUser.id &&
             !Config.destinatarios.contains(element)) {
           Config.destinatarios.add(element);
-          Config.destinos.add(element.nombre!);
-          print(Config.destinos);
+          // Config.destinos.add(element.nombre!);
+          // print(Config.destinos);
         }
       });
+      Config().setupDestinatarios();
+      Config().setDestinIndexes(Config.destinos[0]);
     } else {
       print(res.reasonPhrase);
     }

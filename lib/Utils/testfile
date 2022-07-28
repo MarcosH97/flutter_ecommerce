@@ -1,0 +1,121 @@
+{
+  payerID: 6NV4GFMBVT83C,
+  paymentId: PAYID-MLQUIGQ23T9126900074314C, 
+  token: EC-5N538731M57086525, 
+  status: success, 
+  data: {
+    id: PAYID-MLQUIGQ23T9126900074314C, 
+    intent: sale, state: approved, 
+    cart: 5N538731M57086525, 
+    payer: {
+      payment_method: paypal, 
+      status: VERIFIED, 
+      payer_info: {
+        email: person@personal00.com, 
+        first_name: John, 
+        last_name: Doe, 
+        payer_id: 6NV4GFMBVT83C, 
+        shipping_address: {
+          recipient_name: John Doe, 
+          line1: 1 Main St, 
+          city: San Jose, 
+          state: CA, 
+          postal_code: 95131, 
+          country_code: US
+            }, 
+          country_code: US
+          }
+    }, 
+    transactions: [
+      {
+        amount: {total: 34.00, currency: USD, 
+        details: {
+          subtotal: 26.00, 
+          shipping: 8.00, 
+          insurance: 0.00, 
+          handling_fee: 0.00, 
+          shipping_discount: 0.00, 
+          discount: 0.00
+          }
+          }, 
+        payee: {
+          merchant_id: 5JN87M94JXTSS, 
+          email: sb-ztalt18823903@business.example.com
+          }, 
+        description: The payment transaction description., 
+        item_list: {
+          items: [{
+              name: Agua potable purificada Kirkland / Caja, 
+              price: 26.00, 
+              currency: USD, 
+              tax: 0.00, 
+              quantity: 1
+              }], 
+          shipping_address: {
+            recipient_name: John Doe, 
+            line1: 1 Main St, 
+            city: San Jose, 
+            state: CA, 
+            postal_code: 95131, 
+            country_code: US
+            }
+          }, 
+        related_resources: [{
+          sale: {
+            id: 2JC463457L945874G, 
+            state: completed, 
+            amount: {
+                total: 34.00, 
+                currency: USD, 
+                details: {
+                  subtotal: 26.00, 
+                  shipping: 8.00, 
+                  insurance: 0.00, 
+                  handling_fee: 0.00, 
+                  shipping_discount: 0.00, 
+                  discount: 0.00
+                      }
+                  }, 
+            payment_mode: INSTANT_TRANSFER, 
+            protection_eligibility: ELIGIBLE, 
+            protection_eligibility_type: ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE,
+            transaction_fee: {
+                value: 1.68, currency: USD
+                }, 
+            parent_payment: PAYID-MLQUIGQ23T9126900074314C, 
+            create_time: 2022-07-27T13:57:14Z, 
+            update_time: 2022-07-27T13:57:14Z, 
+            links: [
+              {
+                href: https://api.sandbox.paypal.com/v1/payments/sale/2JC463457L945874G, 
+                rel: self, 
+                method: GET
+              }, 
+              {
+                href: https://api.sandbox.paypal.com/v1/payments/sale/2JC463457L945874G/refund, 
+                rel: refund, 
+                method: POST
+              }, 
+              {
+                href: https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MLQUIGQ23T9126900074314C, 
+                rel: parent_payment, 
+                method: GET
+              }
+            ]
+          }
+        }]
+      }
+    ], 
+    failed_transactions: [], 
+    create_time: 2022-07-27T13:56:41Z, 
+    update_time: 2022-07-27T13:57:14Z, 
+    links: [
+      {
+        href: https://api.sandbox.paypal.com/v1/payments/payment/PAYID-MLQUIGQ23T9126900074314C, 
+        rel: self, 
+        method: GET
+      }
+    ]
+}
+}
+

@@ -40,6 +40,7 @@ class PaisRequest {
       paises.forEach((element) {
         Pais p = Pais.fromJson(element);
         if (!Config.paisesT.contains(p)) Config.paisesT.add(p);
+        if (!Config.paises.contains(p.nombre)) Config.paises.add(p.nombre!);
       });
       // print(resBody);
     } else {
@@ -71,7 +72,7 @@ class Provincia {
 }
 
 class ProvinciaRequest {
-  Future<void> getProvincias() async {
+  Future<void> getProvincias(int pais) async {
     var headersList = {'Authorization': Config.token};
     var url = Uri.parse('https://www.diplomarket.com/backend/provincia/');
 
@@ -81,8 +82,23 @@ class ProvinciaRequest {
     var res = await req.send();
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      Config.provincias = List.from(jsonDecode(resBody).results);
-      print(resBody);
+      List<dynamic> body = jsonDecode(resBody)['results'];
+      print(body);
+      List<Provincia> prov = [];
+      body.forEach((element) {
+        prov.add(Provincia.fromJson(element));
+      });
+
+      prov.forEach((element) {
+        if (element.pais == pais) {
+          Provincia p = element;
+          if (!Config.provincias.contains(p)) Config.provincias.add(p);
+          if (!Config.provinciaL.contains(p.nombre))
+            Config.provinciaL.add(p.nombre!);
+        }
+      });
+      // print(prov);
+      // print(resBody);
     } else {
       print(res.reasonPhrase);
     }

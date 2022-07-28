@@ -307,20 +307,6 @@ class _loginPageState extends State<loginPage> {
                         child: Text("Enter"))
                   ],
                 );
-                // Container(
-                //   height: 300,
-                //   width: 300,
-                //   child: Card(
-                //     child: Column(children: [
-                //       Text('login_yes'.tr),
-                //       OutlinedButton(
-                //           onPressed: () {
-                //             Navigator.of(context).popAndPushNamed("/home");
-                //           },
-                //           child: Text("enter"))
-                //     ]),
-                //   ),
-                // );
               } else {
                 return AlertDialog(
                   title: Text('login_no'.tr,
@@ -332,24 +318,6 @@ class _loginPageState extends State<loginPage> {
                         child: Text("Ok"))
                   ],
                 );
-                // Container(
-                //   margin: EdgeInsets.all(20),
-                //   child: Card(
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.center,
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       mainAxisSize: MainAxisSize.min,
-                //       children: [
-                //       Text('login_no'.tr),
-                //       OutlinedButton(
-                //           onPressed: () {
-                //             Navigator.pop(context);
-                //           },
-                //           child: Text("enter"))
-                //     ]),
-                //   ),
-                // );
-
               }
             }
           default:

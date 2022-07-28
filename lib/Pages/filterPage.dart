@@ -15,18 +15,20 @@ class filterPage extends StatefulWidget {
 
 class _FilterPageState extends State<filterPage> {
 
-  callback(){
-    setState(() {
+  // callback(){
+  //   setState(() {
       
-    });
-  }
+  //   });
+  // }
   
   List<ProductoAct> productos = [];
   @override
   Widget build(BuildContext context) {
     productos = widget.productos;
     return Scaffold(
-      appBar: myAppBar(context: context).AppBarM(),
+      appBar: myAppBar(context: context, 
+      // callback: callback
+      ).AppBarM(),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 10),
           height: MediaQuery.of(context).size.height,
@@ -43,7 +45,9 @@ class _FilterPageState extends State<filterPage> {
                 child: ListView.builder(
                     itemCount: productos.length,
                     itemBuilder: (context, index) =>
-                        FoodCardW(productReq: productos[index], index: index, callback: callback,)),
+                        FoodCardW(productReq: productos[index], index: index, 
+                        // callback: callback,
+                        )),
               ),
             ],
           )),

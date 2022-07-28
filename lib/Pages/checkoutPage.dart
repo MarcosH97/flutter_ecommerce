@@ -4,7 +4,9 @@ import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
+import '../Providers/cartProvider.dart';
 import '../Widgets/myAppBar.dart';
 
 class checkOutPage extends StatefulWidget {
@@ -16,13 +18,23 @@ class checkOutPage extends StatefulWidget {
 
 class _checkOutPageState extends State<checkOutPage> {
   bool buttonActive = Config.carrito.length > 0;
-  List<ProductoAct> productos = Config().getProductosCarrito();
+  List<ProductoAct> productos = [];
+
+  // callback(){
+  //   setState(() {
+
+  //   });
+  // }
   @override
   Widget build(BuildContext context) {
+    productos = Config().getProductosCarrito(context);
     var carrito = Config.carrito;
     var config = Config();
     return Scaffold(
-        appBar: myAppBar(context: context).AppBarM(),
+        appBar: myAppBar(
+          context: context,
+          // callback: callback
+        ).AppBarM(),
         body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
@@ -36,7 +48,7 @@ class _checkOutPageState extends State<checkOutPage> {
                     child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   child: ListView.builder(
-                    itemCount: carrito.length,
+                    itemCount: productos.length,
                     itemBuilder: (context, index) {
                       return Card(
                         child: Container(
@@ -123,10 +135,7 @@ class _checkOutPageState extends State<checkOutPage> {
                                                   .precio!
                                                   .cantidad!))
                                           ? Text(
-                                              "\$" +
-                                                  productos[index]
-                                                      .precio!
-                                                      .cantidad!,
+                                              "\$ ${productos[index].precio!.cantidad}",
                                               style: TextStyle(
                                                   decoration: TextDecoration
                                                       .lineThrough,
@@ -154,18 +163,21 @@ class _checkOutPageState extends State<checkOutPage> {
                                             Expanded(
                                               child: ElevatedButton(
                                                 onPressed:
-                                                    carrito[index].cantidad != 1
+                                                    context.watch<Cart>().getCantidad(index) != 1
                                                         ? () {
-                                                            if (carrito[index]
-                                                                    .cantidad! >
+                                                            if (context.watch<Cart>().getCantidad(index)  >
                                                                 1) {
-                                                              setState(() {
-                                                                carrito[index]
-                                                                    .decrementCantidad();
+                                                              context
+                                                                  .read<Cart>()
+                                                                  .decreaseAmmount(
+                                                                      index);
+                                                              // setState(() {
+                                                              //   carrito[index]
+                                                              //       .decrementCantidad();
                                                                 ComponenteCreate()
                                                                     .updateRespaldo(
                                                                         index);
-                                                              });
+                                                              // });
                                                             }
                                                           }
                                                         : null,
@@ -199,8 +211,9 @@ class _checkOutPageState extends State<checkOutPage> {
                                                   height: 50,
                                                   width: 40,
                                                   child: Text(
-                                                    carrito[index]
-                                                        .cantidad
+                                                    context
+                                                        .watch<Cart>()
+                                                        .getCantidad(index)
                                                         .toString(),
                                                     style: TextStyle(
                                                         fontWeight:
@@ -213,18 +226,24 @@ class _checkOutPageState extends State<checkOutPage> {
                                             Expanded(
                                               child: ElevatedButton(
                                                   onPressed: () {
-                                                    if (carrito[index]
-                                                            .cantidad! <=
+                                                    if (context
+                                                            .watch<Cart>()
+                                                            .getCantidad(
+                                                                index) <=
                                                         int.parse(productos[
                                                                 index]
                                                             .cantInventario!)) {
-                                                      setState(() {
-                                                        carrito[index]
-                                                            .incrementCantidad();
-                                                        ComponenteCreate()
-                                                            .updateRespaldo(
-                                                                index);
-                                                      });
+                                                      context
+                                                          .read<Cart>()
+                                                          .increaseAmmount(
+                                                              index);
+                                                      // setState(() {
+                                                      //   carrito[index]
+                                                      //       .incrementCantidad();
+                                                      ComponenteCreate()
+                                                          .updateRespaldo(
+                                                              index);
+                                                      // });
                                                     }
                                                   },
                                                   style: ElevatedButton.styleFrom(
@@ -250,10 +269,15 @@ class _checkOutPageState extends State<checkOutPage> {
                               ),
                               IconButton(
                                   onPressed: () {
+                                    context.read<Cart>().removeProduct(index);
                                     setState(() {
-                                      print("length: ${Config.comp_cart.length}");
-                                      Config.carrito.removeAt(index);
-                                      Config.comp_cart.removeAt(index);
+                                      // print(
+                                      //     "length: ${Config.comp_cart.length}");
+                                      // Config.carrito.removeAt(index);
+                                      // CarritoModelResponse().deleteCompcart(
+                                      //     Config.comp_cart[index].id!);
+                                      Componente_Carrito().deleteCompCart();
+                                      // Config.comp_cart.removeAt(index);
                                     });
                                   },
                                   icon: const Icon(
@@ -281,7 +305,7 @@ class _checkOutPageState extends State<checkOutPage> {
                     padding: EdgeInsets.all(5),
                     height: 70,
                     decoration: BoxDecoration(
-                        color: Config.carrito.length > 0
+                        color: context.watch<Cart>().listaSize > 0
                             ? Config.maincolor
                             : Colors.grey,
                         borderRadius: BorderRadius.circular(100)),
@@ -303,7 +327,11 @@ class _checkOutPageState extends State<checkOutPage> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(100)),
                             child: Text(
-                              Config().getTotalPriceKart().toString() + ' US\$',
+                              context
+                                      .watch<Cart>()
+                                      .getTotalPriceKart()
+                                      .toString() +
+                                  ' US\$',
                               softWrap: true,
                               style: TextStyle(
                                   color: Config.maincolor,

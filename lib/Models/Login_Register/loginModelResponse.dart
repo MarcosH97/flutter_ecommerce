@@ -28,6 +28,7 @@ class LoginModelResponse {
       final data = jsonDecode(resBody);
       getUserInfo(username);
       Config.token = "token " + data['token'];
+      // Config().updateCarrito();
       return (true);
     } else {
       // print('login false');

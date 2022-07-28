@@ -31,6 +31,8 @@ class TranslationUtil extends Translations {
           'phone': 'Phone',
           'reg_yes': 'Register Successful',
           'reg_no': 'Register Failed',
+          'verify':'Verify your email',
+          'verify_txt':'Head to your email and verify your account to start shopping! Check in your inbox ,or the spam folder, it might have ended up there ',
 
           //home
           'top_products': 'Top Products',
@@ -60,6 +62,10 @@ class TranslationUtil extends Translations {
           'pw_new':'New Password',
           'notify':'Do yo wish to receive notifications?',
           'lang': 'Language',
+          'payment':'PAYMENT',
+          'status':'STATUS',
+          'purchase':'PURCHASE ID',
+          'date':'DATE OF PURCHASE',
 
           //kart
           'kart': 'My Kart',
@@ -116,6 +122,8 @@ class TranslationUtil extends Translations {
           'phone': 'Teléfono',
           'reg_yes': 'Registro Exitoso',
           'reg_no': 'Register Fallido',
+          'verify':'Verifique su correo',
+          'verify_txt':'Vaya a su correo y verifique su cuenta para entrar al sitio. Diríjase a su bandeja de entrada, de no estar ahí, revise en spam, puede su correo lo haya enviado ahí 😅.',
 
            //home
           'top_products': 'Productos Destacados',
@@ -145,11 +153,15 @@ class TranslationUtil extends Translations {
           'pw_new':'Contraseña Nueva',
           'notify':'¿Desea recibir notificaciones?',
           'lang': 'Lenguaje',
+          'payment':'PASARELA',
+          'status':'ESTADO',
+          'purchase':'ID DE COMPRA',
+          'date':'FECHA DE COMPRA',
 
           //kart
           'kart': 'My Carrito',
           'delivery': 'envío',
-          'added': 'A Ñ A D I R',
+          'added': 'A Ñ A D I D O',
           'buy': 'C O M P R A R',
           'stock': 'EXISTENCIAS',
           'desc': 'Descripción',

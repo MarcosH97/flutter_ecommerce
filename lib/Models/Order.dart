@@ -1,14 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:e_commerce/Models/Carrito.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Destinatario.dart';
-
-import 'package:intl/intl.dart';
-
-import 'package:http/http.dart' as http;
 
 import '../Utils/Config.dart';
 
@@ -129,3 +127,69 @@ class OrdenRequest {
     }
   }
 }
+
+class OrderPaypal {
+  String? precio_envio;
+  String? uuid;
+  String? status;
+  String? currency;
+  String? comerciante;
+  String? comprador;
+  String? enlace;
+
+  OrderPaypal({
+    this.precio_envio,
+    this.uuid,
+    this.status,
+    this.currency,
+    this.comerciante,
+    this.comprador,
+    this.enlace,
+  });
+
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+  
+    if(precio_envio != null){
+      result.addAll({'precio_envio': precio_envio});
+    }
+    if(uuid != null){
+      result.addAll({'uuid': uuid});
+    }
+    if(status != null){
+      result.addAll({'status': status});
+    }
+    if(currency != null){
+      result.addAll({'currency': currency});
+    }
+    if(comerciante != null){
+      result.addAll({'comerciante': comerciante});
+    }
+    if(comprador != null){
+      result.addAll({'comprador': comprador});
+    }
+    if(enlace != null){
+      result.addAll({'enlace': enlace});
+    }
+  
+    return result;
+  }
+
+  factory OrderPaypal.fromMap(Map<String, dynamic> map) {
+    return OrderPaypal(
+      precio_envio: map['precio_envio'],
+      uuid: map['uuid'],
+      status: map['status'],
+      currency: map['currency'],
+      comerciante: map['comerciante'],
+      comprador: map['comprador'],
+      enlace: map['enlace'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory OrderPaypal.fromJson(String source) => OrderPaypal.fromMap(json.decode(source));
+}
+

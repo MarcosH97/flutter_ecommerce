@@ -9,10 +9,13 @@ import '../../Utils/Config.dart';
 class ProductsMobile extends StatelessWidget {
   final int id;
   final int mun;
-  final Function callback;
+  // final Function callback;
+  final Axis axis;
 
   const ProductsMobile(
-      {Key? key, required this.id, required this.mun, required this.callback})
+      {Key? key, required this.id, required this.mun, 
+      // required this.callback, 
+      required this.axis})
       : super(key: key);
 
   @override
@@ -36,7 +39,7 @@ class ProductsMobile extends StatelessWidget {
         }
       case 4:
         {
-          func = ProductoModelResponse().getProductSpecialList(mun);
+          func = ProductoModelResponse().getProductSpecialList();
           break;
         }
 
@@ -55,7 +58,7 @@ class ProductsMobile extends StatelessWidget {
               {
                 return ListView.builder(
                   itemCount: 10,
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: axis,
                   itemBuilder: (context, index) {
                     return Card(
                       elevation: 10,
@@ -80,7 +83,7 @@ class ProductsMobile extends StatelessWidget {
               {
                 return ListView.builder(
                   itemCount: 10,
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: axis,
                   itemBuilder: (context, index) {
                     return Card(
                       margin: EdgeInsets.all(10),
@@ -127,7 +130,7 @@ class ProductsMobile extends StatelessWidget {
                         }
                       case 4:
                         {
-                          return forProductsOnly(pr);
+                          return forProductsSpecialOnly(pr);
                         }
                       default:
                         {
@@ -138,7 +141,7 @@ class ProductsMobile extends StatelessWidget {
                 } else {
                   return ListView.builder(
                     itemCount: 10,
-                    scrollDirection: Axis.horizontal,
+                    scrollDirection: axis,
                     itemBuilder: (context, index) {
                       return Card(
                         margin: EdgeInsets.all(10),
@@ -175,7 +178,7 @@ class ProductsMobile extends StatelessWidget {
         return FoodCardW(
           productReq: proreq[index],
           index: index,
-          callback: callback,
+          // callback: callback,
         );
         // return foodCard(index, proreq);
       },
@@ -313,15 +316,29 @@ class ProductsMobile extends StatelessWidget {
     List<ProductoAct> proreq = pr;
     return ListView.builder(
         itemCount: proreq.length,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: axis,
         itemBuilder: (context, index) {
           return FoodCardW(
             productReq: proreq[index],
             index: index,
-            callback: callback,
+            // callback: callback,
           );
         }); // r
   }
+  Widget forProductsSpecialOnly(pr) {
+    List<ProductoAct> proreq = pr;
+    return ListView.builder(
+        itemCount: proreq.length,
+        scrollDirection: axis,
+        itemBuilder: (context, index) {
+          return FoodCardW(
+            productReq: proreq[index],
+            index: index,
+            // callback: callback,
+          );
+        }); // r
+  }
+
 
   Widget forProductsOfDayOnly(pr) {
     List<ProductoAct> proreq = pr.results!;
@@ -415,7 +432,7 @@ class ProductsMobile extends StatelessWidget {
                               ],
                             );
                           }
-                          callback;
+                          // callback;
                         },
                         icon: !Config.wishlist.contains(proreq[index])
                             ? const Icon(
@@ -531,15 +548,15 @@ class ProductsMobile extends StatelessWidget {
                       child: IconButton(
                         onPressed: () {
                           // setState(() {
-                            // if (Config.isLoggedIn) {
-                              // if (!Config.wishlist.contains(proreq[index])) {
-                              //   Config.wishlist.add(proreq[index]);
-                              // } else {
-                              //   Config.wishlist.remove(proreq[index]);
-                              // }
-                            // } else {
-                              // AlertDialog();
-                            // }
+                          // if (Config.isLoggedIn) {
+                          // if (!Config.wishlist.contains(proreq[index])) {
+                          //   Config.wishlist.add(proreq[index]);
+                          // } else {
+                          //   Config.wishlist.remove(proreq[index]);
+                          // }
+                          // } else {
+                          // AlertDialog();
+                          // }
                           // });
                         },
                         icon: !Config.wishlist.contains(proreq[index])

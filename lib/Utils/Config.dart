@@ -7,6 +7,7 @@ import 'package:e_commerce/Models/Order.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/User.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import '../Models/Carrito.dart';
 import '../Models/Componente.dart';
@@ -15,6 +16,8 @@ import '../Models/MunicipioModelResponse.dart';
 import '../Models/Pais.dart';
 import '../Models/ProductoModelResponse.dart';
 import 'package:http/http.dart' as http;
+
+import '../Providers/cartProvider.dart';
 
 class Config {
   static late List<Municipio> municipios;
@@ -34,6 +37,7 @@ class Config {
   static late List<Pais> paisesT;
   static late List<FAQ> faqs;
 
+  static List<String> provinciaL = [];
   static List<Componente_Carrito> comp_cart = [];
 
   static List locals = [
@@ -70,8 +74,14 @@ class Config {
   static String token = 'token 07e3d4a91f7098ad03ab59eede7f5f29a2728a20';
   static bool login = false;
   static int mun = 1;
+  static int prov = 1;
   static int pais = 1;
-  static int destiny = 0;
+  static int destiny = -1;
+  static int destinIndex = 0;
+
+  static int cantWL = 0;
+
+  static String params = "";
 
   static bool internet = true;
   static bool lang = true;
@@ -91,10 +101,13 @@ class Config {
   static User get activeUser => user;
 
   Future<void> setAll() async {
+    await PaisRequest().getPaises();
+    await ProvinciaRequest().getProvincias(pais);
     await MunicipioModelResponse().getMunicipios().then((value) {
       municipios = value;
       municipios.forEach((element) {
-        if (!munNames.contains(element.nombre)) munNames.add(element.nombre!);
+        if (element.provincia == prov) if (!munNames.contains(element.nombre))
+          munNames.add(element.nombre!);
       });
     });
     CategoriaModelResponse().getCategorias().then((value) => {
@@ -107,7 +120,7 @@ class Config {
               if (!categorias.contains("Todas")) {categorias.add("Todas")}
             }
         });
-    PaisRequest().getPaises();
+
     // print('carrito: ${kart.pk}}');
 
     faqs = await FAQModelResponse().getFAQ();
@@ -130,6 +143,7 @@ class Config {
             respaldo:
                 getRespaldo(findProdyctByID(element.producto.toString()))));
       }
+      print("carrito: $carrito");
     });
   }
 
@@ -186,16 +200,15 @@ class Config {
   }
 
   double getProductFinalPrice(ProductoAct p) {
+    double preciof = double.parse(p.precio!.cantidad!);
     if (p.promocion!.activo != null) {
       if (p.promocion!.activo!) {
-        return double.parse(p.precio!.cantidad!) *
-            p.promocion!.descuento! /
-            100;
-      } else if (p.precio != null) {
-        return double.parse(p.precio!.cantidad!);
+        preciof =
+            double.parse(p.precio!.cantidad!) * p.promocion!.descuento! / 100;
       }
     }
-    return double.parse(p.precio!.cantidad!);
+    // print(preciof);
+    return preciof;
   }
 
   void setupDestinatarios() {
@@ -204,6 +217,27 @@ class Config {
         destinos.add(element.nombre!);
       }
     });
+    // print("Lista dests: $destinos");
+  }
+
+  setDestinIndexes(String name) {
+    for (int i = 0; i < destinos.length; i++) {
+      if (name == destinos[i]) {
+        destinIndex = i;
+        destiny = getDestinatario().id!;
+      }
+    }
+  }
+
+  Destinatario getDestinatario() {
+    Destinatario d = Destinatario(email: "", direccion: "", nombre: "");
+    for (var element in destinatarios) {
+      if (element.nombre == destinos[destinIndex]) {
+        d = element;
+      }
+    }
+    // print(d.nombre);
+    return d;
   }
 
   double getTotalPriceKart() {
@@ -213,7 +247,7 @@ class Config {
       total += element.respaldo!;
     });
     total = double.parse(total.toStringAsFixed(2));
-
+    print(total);
     return total;
   }
 
@@ -245,8 +279,9 @@ class Config {
     return ProductoAct();
   }
 
-  List<ProductoAct> getProductosCarrito() {
+  List<ProductoAct> getProductosCarrito(BuildContext context) {
     List<ProductoAct> listado = [];
+    carrito = context.watch<Cart>().getLista;
     carrito.forEach((element) {
       listado.add(getProductoLocal(element));
     });
@@ -288,16 +323,6 @@ class Config {
     return inWL;
   }
 
-  Destinatario getDestinatario() {
-    Destinatario d = Destinatario(email: "", direccion: "", nombre: "");
-    for (var element in destinatarios) {
-      if (element.nombre == destinos[destiny]) {
-        d = element;
-      }
-    }
-    return d;
-  }
-
   void reducirInventario() {
     print("entered reducir");
     carrito.forEach((element) {
@@ -314,7 +339,7 @@ class Config {
       ComponentePaypal cp = ComponentePaypal(
           name: getProductoLocal(element).nombre,
           currency: currency,
-          price: getProductoLocal(element).precio!.cantidad,
+          price: getProductFinalPrice(getProductoLocal(element)).toString(),
           quantity: element.cantidad.toString());
       // print(cp.toJson());
       karrito.forEach((e) {
@@ -330,16 +355,31 @@ class Config {
     });
     CarritoPayPal paypalkart = CarritoPayPal();
     paypalkart.items = karrito;
-    Items i = Items(items: karrito);
-    print(i.toJson());
+
+    Destinatario d = getDestinatario();
+
+    ShippingAddress sa = ShippingAddress(
+        recipientName: d.nombre,
+        city: d.ciudad,
+        countryCode: "CU",
+        line1: d.direccion,
+        line2: "",
+        phone: d.telefono,
+        postalCode: "10400",
+        state: "La Habana");
+
+    Items i = Items(items: karrito, shipping_address: sa);
+    // print(i.toJson());
     return i;
   }
 
   bool validateKart() {
+    print('entered validation');
     bool b = false;
     kart.componentes!.forEach((element) async {
       ProductoAct futuro = await getProducto(element.producto!.id!);
       if (int.parse(element.cantidad!) <= int.parse(futuro.cantInventario!)) {
+        print('validated');
         b = true;
       }
     });
@@ -376,4 +416,65 @@ class Config {
   sendCart() {}
 
   sendCheckout() async {}
+
+  Future<List<String>> searchBar(String key) async {
+    List<String> lista = [];
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token,
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/buscar/${Config.activeMun}/$key');
+
+    var req = http.Request('GET', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      List<dynamic> body = jsonDecode(resBody);
+
+      body.forEach((element) {
+        lista.add(element['nombre']);
+      });
+      print(resBody);
+      return lista;
+    } else {
+      print(res.reasonPhrase);
+      return lista;
+    }
+  }
+
+  int getMunicipioID(String name) {
+    int id = -1;
+    for (Municipio m in municipios) {
+      if (m.nombre == name) {
+        id = m.id!;
+      }
+    }
+
+    return id;
+  }
+
+  int getPaisID(String name) {
+    int id = -1;
+    for (Pais m in paisesT) {
+      if (m.nombre == name) {
+        id = m.id!;
+      }
+    }
+    return id;
+  }
+
+  int getProvinciaID(String name) {
+    int id = -1;
+    for (Provincia m in provincias) {
+      if (m.nombre == name) {
+        id = m.id!;
+      }
+    }
+    return id;
+  }
 }

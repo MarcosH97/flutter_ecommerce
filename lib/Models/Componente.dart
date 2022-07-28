@@ -53,6 +53,7 @@ class Componente {
 }
 
 class ComponenteCreate {
+  
   Componente createAndAddComponente(ProductoAct producto) {
     double respaldop = double.parse(producto.precio!.cantidad!);
     return Componente(producto: producto.id, cantidad: 1, respaldo: respaldop);
@@ -72,7 +73,7 @@ class ComponenteCreate {
     Componente c = Config.carrito[index];
 
     double value = c.cantidad! *
-        double.parse(Config().getProductoLocal(c).precio!.cantidad!);
+        Config().getProductFinalPrice(Config().getProductoLocal(c));
     Config.carrito[index].setRespaldo(value);
   }
 }

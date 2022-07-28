@@ -1,11 +1,14 @@
 import 'dart:ui';
 import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
 import 'filterPage.dart';
@@ -20,28 +23,6 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   late var textController = TextEditingController();
   late List<ProductoAct> filter;
-  // Future openDialog() => showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //           title: Text('Nuevo IP'),
-  //           content: TextField(
-  //             controller: textController,
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () async {
-  //                 SharedPreferences sh = await SharedPreferences.getInstance();
-  //                 Config.apiURL = "http://${textController.text}:8000";
-  //                 sh.setString("ip", Config.apiURL);
-  //                 setState(() {
-  //                   Config().setAll();
-  //                 });
-  //                 Navigator.pop(context);
-  //               },
-  //               child: Text('SUBMIT'),
-  //             )
-  //           ],
-  //         ));
   List<DropdownMenuItem<String>> _dropDownCatItems = [];
   List<DropdownMenuItem<String>> _dropDownMenuItems = [];
 
@@ -51,10 +32,10 @@ class _homePageState extends State<homePage> {
     LoadStuff();
   }
 
-  callback() {
-    print("callback called");
-    setState(() {});
-  }
+  // callback() {
+  //   print("callback called");
+  //   setState(() {});
+  // }
 
   void LoadStuff() {
     setState(() {
@@ -79,11 +60,13 @@ class _homePageState extends State<homePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     ToastContext().init(context);
 
     return Scaffold(
-      appBar: myAppBar(context: context).AppBarM(),
+      appBar: myAppBar(
+        context: context,
+        // callback: callback
+      ).AppBarM(),
       body: RefreshIndicator(
         onRefresh: () async {
           setState(() {
@@ -96,14 +79,15 @@ class _homePageState extends State<homePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                onTap: () =>Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => filterPage(
-                                              productos: Config().filter("DM", 2),
-                                              headerName: "DM"))),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => filterPage(
+                            productos: Config().filter("DM", 2),
+                            headerName: "DM"))),
                 child: Container(
-                  child: Image.network("https://www.diplomarket.com/backend/media/carruseles/diplomarket_z7mlRnz.png",
+                  child: Image.network(
+                      "https://www.diplomarket.com/backend/media/carruseles/diplomarket_z7mlRnz.png",
                       loadingBuilder: (context, child, loadingProgress) =>
                           loadingProgress == null
                               ? child
@@ -133,13 +117,29 @@ class _homePageState extends State<homePage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: TextField(
-                            autofocus: false,
-                            maxLines: 1,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'carne',
-                                labelText: 'search'.tr),
+                          child: TypeAheadField(
+                            textFieldConfiguration: TextFieldConfiguration(
+                                autofocus: false,
+                                style: TextStyle(color: Colors.black),
+                                decoration: InputDecoration(
+                                    label: Text('search'.tr),
+                                    border: OutlineInputBorder())),
+                            itemBuilder: (context, itemData) => ListTile(
+                              title: Text(itemData.toString()),
+                            ),
+                            onSuggestionSelected: (suggestion) async {
+                              filter = await ProductoFiltro()
+                                  .FilteredList(suggestion.toString(), null);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => filterPage(
+                                          productos: filter,
+                                          headerName: "$suggestion")));
+                            },
+                            suggestionsCallback: (pattern) async {
+                              return await Config().searchBar(pattern);
+                            },
                           ),
                         ),
                         ElevatedButton(
@@ -242,8 +242,10 @@ class _homePageState extends State<homePage> {
                                 if (newValue != null) {
                                   setState(() {
                                     Config.selectedMun = newValue;
-                                    Config.carrito.clear;
                                     Config().setActiveMunIndex();
+                                    context.read<Cart>().cleanCart();
+                                    context.read<Wishlist>().cleanCart();
+                                    // Config.carrito.clear();
                                   });
                                 }
                               },
@@ -276,7 +278,8 @@ class _homePageState extends State<homePage> {
                 child: ProductsMobile(
                   id: 3,
                   mun: 1,
-                  callback: callback,
+                  // callback: callback,
+                  axis: Axis.horizontal,
                 ),
               ),
               SizedBox(
@@ -300,7 +303,8 @@ class _homePageState extends State<homePage> {
                   child: ProductsMobile(
                     id: 3,
                     mun: 1,
-                    callback: callback,
+                    // callback: callback,
+                    axis: Axis.horizontal,
                   )),
               SizedBox(
                 height: 24,
@@ -323,7 +327,8 @@ class _homePageState extends State<homePage> {
                   child: ProductsMobile(
                     id: 3,
                     mun: 1,
-                    callback: callback,
+                    // callback: callback,
+                    axis: Axis.horizontal,
                   )),
               SizedBox(
                 height: 24,
@@ -345,9 +350,10 @@ class _homePageState extends State<homePage> {
                   height: 500,
                   width: MediaQuery.of(context).size.width,
                   child: ProductsMobile(
-                    id: 3,
+                    id: 4,
                     mun: 1,
-                    callback: callback,
+                    // callback: callback,
+                    axis: Axis.horizontal,
                   )),
               SizedBox(
                 height: 24,

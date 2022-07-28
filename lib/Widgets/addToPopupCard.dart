@@ -1,24 +1,26 @@
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Pages/productPage.dart';
+import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../Utils/Config.dart';
 
 // const String _heroAddTodo = 'add-todo-hero';
 
-class AddTodoPopupCard extends StatefulWidget {
+class AddTodoPopupCard extends StatelessWidget {
   /// {@macro add_todo_popup_card}
-  ///
-  const AddTodoPopupCard({Key? key}) : super(key: key);
+  // final Function callback;
 
-  @override
-  State<StatefulWidget> createState() => _addToPopupCard();
-}
+  const AddTodoPopupCard({
+    Key? key,
+    // required this.callback
+  }) : super(key: key);
 
-class _addToPopupCard extends State<AddTodoPopupCard> {
   @override
   Widget build(BuildContext context) {
-    List<ProductoAct> deseos = Config.wishlist;
+    List<ProductoAct> deseos = context.watch<Wishlist>().getLista;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -37,8 +39,8 @@ class _addToPopupCard extends State<AddTodoPopupCard> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    "F A V O R I T O S",
+                  Text(
+                    'fav'.tr,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -57,16 +59,16 @@ class _addToPopupCard extends State<AddTodoPopupCard> {
                         borderRadius: BorderRadius.circular(30)),
                     child: deseos.length > 0
                         ? ListView.builder(
-                            itemCount: Config.wishlist.length,
+                            itemCount: deseos.length,
                             itemBuilder: (context, index) => ListTile(
                               title: Text(deseos[index].nombre!),
-                              subtitle: Text(deseos[index].descripcion!),
+                              // subtitle: Text(deseos[index].descripcion!),
                               trailing: IconButton(
                                 icon: Icon(Icons.cancel_outlined),
                                 onPressed: () {
-                                  setState(() {
-                                    Config.wishlist.removeAt(index);
-                                  });
+                                  context.read<Wishlist>().removeProduct(index);
+                                  // Config.wishlist.removeAt(index);
+                                  // callback;
                                 },
                               ),
                               leading: ClipRRect(
@@ -77,7 +79,9 @@ class _addToPopupCard extends State<AddTodoPopupCard> {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => productPage(
-                                          producto: deseos[index], index: index,
+                                          producto: deseos[index],
+                                          index: index,
+                                          // callback: callback,
                                         )));
                               },
                             ),

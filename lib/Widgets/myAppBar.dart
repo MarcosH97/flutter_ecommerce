@@ -1,24 +1,31 @@
 import 'package:badges/badges.dart';
+import 'package:e_commerce/Models/payload.dart';
+import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../Utils/Config.dart';
 import '../Utils/HeroDialogRoute.dart';
 import 'addToPopupCard.dart';
 
 class myAppBar {
-  final context;
-
-  myAppBar({required this.context});
+  final BuildContext context;
+  // final Function callback;
+  myAppBar({
+    required this.context,
+    // required this.callback
+  });
 
   AppBar AppBarM() {
-
+    int count = context.watch<Wishlist>().listaSize;
+    int countK = context.watch<Cart>().listaSize;
     return AppBar(
       actions: [
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Badge(
             badgeContent: Text(
-              Config.wishlist.length.toString(),
+              "$count",
               style:
                   TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
@@ -30,20 +37,25 @@ class myAppBar {
                     return AddTodoPopupCard();
                   }));
                 },
-                icon: Config.wishlist.length>0 ? Icon(Icons.favorite, color: Colors.red,) : Icon(Icons.favorite_border_outlined),
+                icon: count > 0
+                    ? Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      )
+                    : Icon(Icons.favorite_border_outlined),
                 iconSize: 40,
                 padding: EdgeInsets.all(0)),
             animationType: BadgeAnimationType.scale,
-            showBadge: Config.wishlist.length > 0,
+            showBadge: count > 0,
             position: BadgePosition.center(),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: 
-          Badge(
-            badgeContent: Text(Config.carrito.length.toString(),  style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          child: Badge(
+            badgeContent: Text("$countK",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.white)),
             child: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/checkout');
@@ -54,7 +66,7 @@ class myAppBar {
             ),
             ignorePointer: true,
             animationType: BadgeAnimationType.scale,
-            showBadge: Config.carrito.length > 0,
+            showBadge: countK > 0,
             position: BadgePosition.center(),
           ),
         ),

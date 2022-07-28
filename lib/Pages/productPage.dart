@@ -1,8 +1,10 @@
 import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../Models/Componente.dart';
 import 'filterPage.dart';
@@ -10,6 +12,7 @@ import 'filterPage.dart';
 class productPage extends StatefulWidget {
   final ProductoAct producto;
   final int index;
+  // final Function callback;
 
   const productPage({
     required this.producto,
@@ -25,10 +28,11 @@ class productPage extends StatefulWidget {
 class _productPageState extends State<productPage> {
   bool expanded = false;
   bool isFav = false;
+  bool inkart = false;
 
   @override
   void initState() {
-    isFav = Config().inWishlist(widget.prod);
+    // isFav = context.watch<Wishlist>().getLista.contains(widget.producto);
     print('reloaded');
     super.initState();
   }
@@ -47,6 +51,8 @@ class _productPageState extends State<productPage> {
 
   @override
   Widget build(BuildContext context) {
+    inkart = context.watch<Cart>().inKart(widget.producto.id!);
+    isFav = context.watch<Wishlist>().inWL(widget.prod.id!);
     return Scaffold(
       appBar: AppBar(),
       floatingActionButton: !expanded
@@ -54,17 +60,17 @@ class _productPageState extends State<productPage> {
               height: 75,
               width: 75,
               child: FloatingActionButton(
-                onPressed: !Config().inCarrito(widget.producto)
-                    ? (() => setState(() {
-                          expanded = !expanded;
-                        }))
-                    : null,
+                onPressed:
+                    // !Config().inCarrito(widget.producto)
+                    !inkart
+                        ? (() => setState(() {
+                              expanded = !expanded;
+                            }))
+                        : null,
                 child: Icon(Icons.shopping_cart_checkout, size: 30),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100)),
-                backgroundColor: !Config().inCarrito(widget.producto)
-                    ? Config.maincolor
-                    : Colors.grey[400],
+                backgroundColor: !inkart ? Config.maincolor : Colors.grey[400],
                 elevation: 10,
               ),
             )
@@ -76,11 +82,16 @@ class _productPageState extends State<productPage> {
                   if (Config.isLoggedIn) {
                     setState(() {
                       expanded = !expanded;
-                      Config.carrito.add(Componente(
-                          producto: widget.producto.id,
-                          cantidad: 1,
-                          respaldo: Config().getRespaldo(widget.producto)));
+                      // Config.carrito.add(Componente(
+                      //     producto: widget.producto.id,
+                      //     cantidad: 1,
+                      //     respaldo: Config().getRespaldo(widget.producto)));
+                      // widget.callback;
                     });
+                    context.read<Cart>().addProduct(Componente(
+                        producto: widget.producto.id,
+                        cantidad: 1,
+                        respaldo: Config().getRespaldo(widget.producto)));
                   } else {
                     showDialog(
                         context: context,
@@ -182,17 +193,23 @@ class _productPageState extends State<productPage> {
                           alignment: Alignment.center,
                           onPressed: () {
                             if (Config.isLoggedIn) {
-                              setState(() {
-                                if (!isFav) {
-                                  // print('is not fav');
-                                  Config.wishlist.add(widget.producto);
-                                  isFav = !isFav;
-                                } else {
-                                  // print('is fav');
-                                  Config.wishlist.removeAt(widget.index);
-                                  isFav = !isFav;
-                                }
-                              });
+                              // setState(() {
+                              if (!isFav) {
+                                // print('is not fav');
+                                context
+                                    .read<Wishlist>()
+                                    .addProduct(widget.producto);
+                                // Config.wishlist.add(widget.producto);
+                              } else {
+                                // print('is fav');
+                                context
+                                    .read<Wishlist>()
+                                    .removeProduct(widget.index);
+                                // Config.wishlist.removeAt(widget.index);
+                                // isFav = !isFav;
+                              }
+                              // widget.callback;
+                              // });
                             } else {
                               showDialog(
                                   context: context,
@@ -235,40 +252,41 @@ class _productPageState extends State<productPage> {
                                 fontFamily: "Arial",
                                 fontWeight: FontWeight.w600)),
                       ),
-                      
-                      if(getDiscount() > 0)
-                      Expanded(
-                        child: Text(
-                            "${widget.producto.precio!.cantidad!} \$",
-                            style: const TextStyle(
-                                fontSize: 24,
-                                color: Colors.grey,
-                                fontFamily: "Arial",
-                                decoration: TextDecoration.lineThrough,
-                                fontWeight: FontWeight.w600)),
-                      ),
+                      if (getDiscount() > 0)
+                        Expanded(
+                          child: Text("${widget.producto.precio!.cantidad!} \$",
+                              style: const TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.grey,
+                                  fontFamily: "Arial",
+                                  decoration: TextDecoration.lineThrough,
+                                  fontWeight: FontWeight.w600)),
+                        ),
                       Expanded(
                         child: SizedBox(
                           width: 10,
                         ),
                       ),
-                      if (getDiscount() > 0) Container(
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                  color: Colors.red[700],
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(
-                                  widget.producto.promocion!.descuento != null
-                                      ? ('-' +
-                                          widget.producto.promocion!.descuento
-                                              .toString() +
-                                          '%')
-                                      : " ",
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                      decoration: TextDecoration.none)),
-                            ) else SizedBox(),
+                      if (getDiscount() > 0)
+                        Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Colors.red[700],
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(
+                              widget.producto.promocion!.descuento != null
+                                  ? ('-' +
+                                      widget.producto.promocion!.descuento
+                                          .toString() +
+                                      '%')
+                                  : " ",
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  color: Colors.white,
+                                  decoration: TextDecoration.none)),
+                        )
+                      else
+                        SizedBox(),
                     ],
                   ),
                   Text(
@@ -299,12 +317,15 @@ class _productPageState extends State<productPage> {
                                     decoration: TextDecoration.underline),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                     Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => filterPage(
-                                              productos: Config().filter(widget.prod.marca!.nombre!, 1),
-                                              headerName: widget.prod.marca!.nombre!)));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => filterPage(
+                                                productos: Config().filter(
+                                                    widget.prod.marca!.nombre!,
+                                                    1),
+                                                headerName: widget
+                                                    .prod.marca!.nombre!)));
                                   })
                           ]),
                     ),
@@ -326,11 +347,14 @@ class _productPageState extends State<productPage> {
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => filterPage(
-                                              productos: Config().filter(widget.prod.marca!.nombre!, 1),
-                                              headerName: widget.prod.marca!.nombre!)));
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => filterPage(
+                                                productos: Config().filter(
+                                                    widget.prod.marca!.nombre!,
+                                                    1),
+                                                headerName: widget
+                                                    .prod.marca!.nombre!)));
                                   })
                           ]),
                     ),
@@ -353,11 +377,15 @@ class _productPageState extends State<productPage> {
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => filterPage(
-                                              productos: Config().filter(widget.prod.proveedor!.nombre!, 2),
-                                              headerName: widget.prod.proveedor!.nombre!)));
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => filterPage(
+                                                productos: Config().filter(
+                                                    widget.prod.proveedor!
+                                                        .nombre!,
+                                                    2),
+                                                headerName: widget
+                                                    .prod.proveedor!.nombre!)));
                                   })
                           ]),
                     ),

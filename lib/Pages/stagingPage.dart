@@ -2,14 +2,17 @@ import 'dart:convert';
 
 import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Models/Order.dart';
+import 'package:e_commerce/Widgets/createDestin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../Models/Componente.dart';
 import '../Models/Producto.dart';
+import '../Providers/cartProvider.dart';
 import '../Utils/Config.dart';
 
 class stagePage extends StatefulWidget {
@@ -28,9 +31,7 @@ class stagePageState extends State<stagePage> {
 
   bool selPayMet = true;
 
-  List<ProductoAct> productos = Config().getProductosCarrito();
-
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+  List<ProductoAct> productos = [];
 
   late List<DropdownMenuItem<String>> _destinos;
 
@@ -38,11 +39,21 @@ class stagePageState extends State<stagePage> {
   var config = Config();
   int currentStep = 0;
   Destinatario d = Destinatario();
+  int itemCount = 0;
+
+  callback() {
+    setState(() {
+      currentStep++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<Cart>(context, listen: false);
+    productos = Config().getProductosCarrito(context);
     if (Config.destinos.length > 0) {
-      destin = Config.destinos[0];
+      destin = Config.destinos[Config.destinIndex];
+      // print(Config.destinos);
       _destinos = Config.destinos
           .map((String value) => DropdownMenuItem<String>(
                 child: Center(child: Text(value, textAlign: TextAlign.center)),
@@ -56,7 +67,7 @@ class stagePageState extends State<stagePage> {
       });
     }
 
-    _activo = (destin != null);
+    itemCount = context.watch<Cart>().listaSize;
     return Scaffold(
       appBar: AppBar(),
       body: Theme(
@@ -69,18 +80,37 @@ class stagePageState extends State<stagePage> {
           onStepContinue: () {
             final isLast = currentStep == getSteps().length - 1;
             if (isLast) {
-              if()
-              Navigator.pushReplacementNamed(context, "/paypal");
+              if (Config().validateKart()) {
+                print("validation passed");
+                Navigator.pushReplacementNamed(context, "/paypal");
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title:
+                        Text("Cantidad de un producto excede las existencias"),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('ok')),
+                    ],
+                  ),
+                );
+              }
               // OrdenRequest().createOrderPayPal();
             } else if (currentStep == 0) {
               // if (_switch) {
               // }
+              Provider.of<Cart>(context, listen: false);
               setState(() {
                 currentStep++;
               });
             } else {
+              Provider.of<Cart>(context, listen: false);
               setState(() {
-                DestinatarioResponse().getDestinatarios();
+                // DestinatarioResponse().getDestinatarios();
                 currentStep++;
               });
             }
@@ -138,248 +168,68 @@ class stagePageState extends State<stagePage> {
         Step(
             title: currentStep == 0 ? Text('destins'.tr) : Text(""),
             isActive: currentStep >= 0,
-            content: Form(
-              key: _globalKey,
-              child: Column(
-                children: [
-                  Text(
-                    "Seleccione un destinatario",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  if (Config.destinatarios.isNotEmpty)
-                    Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.grey),
-                            color: Config.maincolor,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                          dropdownColor: Config.maincolor,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            overflow: TextOverflow.visible,
-                          ),
-                          isExpanded: true,
-                          itemHeight: null,
-                          value: destin,
-                          alignment: Alignment.center,
-                          items: _destinos,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          onChanged: (String? value) {
-                            if (value != null) {
-                              int id = 0;
-                              Config.destinatarios.forEach(
-                                (element) {
-                                  if (element.nombre == value) {
-                                    id = element.id!;
-                                  }
-                                },
-                              );
-                              setState(() {
-                                Config.destiny = id;
-                                destin = value;
-                                print(Config.destiny);
-                              });
-                            }
-                          },
-                        ))),
-                  Row(
-                    children: [
-                      Text("Crear un destinatario nuevo"),
-                      Switch(
-                          value: _switch,
-                          onChanged: _destinos.length > 0
-                              ? (bool b) {
-                                  setState(() {
-                                    setState(() {
-                                      _switch = b;
-                                    });
-                                  });
-                                }
-                              : null,
-                          activeColor: Config.maincolor),
-                    ],
-                  ),
-                  if (_switch)
-                    Column(
-                      children: [
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Nombre*"),
-                          onSaved: (value) {
-                            d.nombre = value;
-                          },
+            content: Column(
+              children: [
+                Text(
+                  "Seleccione un destinatario",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                if (Config.destinatarios.isNotEmpty)
+                  Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.grey),
+                          color: Config.maincolor,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                        dropdownColor: Config.maincolor,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          overflow: TextOverflow.visible,
                         ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Apellido 1*"),
-                          onSaved: (value) {
-                            d.apellido1 = value;
-                          },
+                        isExpanded: true,
+                        itemHeight: null,
+                        value: destin,
+                        alignment: Alignment.center,
+                        items: _destinos,
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
                         ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Apellido 2*"),
-                          onSaved: (value) {
-                            d.apellido2 = value;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Email*"),
-                          onSaved: (value) {
-                            d.email = value;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "CI*"),
-                          onSaved: (value) {
-                            d.ci = value;
-                          },
-                        ),
-                        IntlPhoneField(
-                          // autovalidateMode: AutovalidateMode.always,
-                          invalidNumberMessage:
-                              "Formato de telefono incorrecto",
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          decoration: const InputDecoration(
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            labelText: 'Teléfono',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          initialCountryCode: 'US',
-                          onChanged: (phone) {
-                            print(phone.completeNumber);
-                            d.telefono = phone.completeNumber;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "País*"),
-                          onSaved: (value) {
-                            d.pais = 1;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Provincia*"),
-                          onSaved: (value) {
-                            d.provincia = 1;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Municipio*"),
-                          onSaved: (value) {
-                            d.municipio = 2;
-                          },
-                        ),
-                        TextFormField(
-                          decoration:
-                              InputDecoration(labelText: "Reparto o Ciudad*"),
-                          onSaved: (value) {
-                            d.ciudad = value;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Dirección*"),
-                          onSaved: (value) {
-                            d.direccion = value;
-                          },
-                        ),
-                        Divider(),
-                        Text("Campos alternativos"),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Otro Nombre"),
-                          onSaved: (value) {
-                            d.nombreAlternativo = value;
-                          },
-                        ),
-                        IntlPhoneField(
-                          // autovalidateMode: AutovalidateMode.always,
-                          invalidNumberMessage:
-                              "Formato de telefono incorrecto",
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          decoration: const InputDecoration(
-                            floatingLabelBehavior: FloatingLabelBehavior.never,
-                            labelText: 'Teléfono Alternativo',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          initialCountryCode: 'US',
-                          onChanged: (phone) {
-                            d.telefonoAlternativo =
-                                phone.completeNumber.toString();
-                          },
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(labelText: "Nota"),
-                          onSaved: (value) {
-                            d.notaEntrega = value;
-                          },
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              _globalKey.currentState!.save();
-                              // d.nombreRemitente = Config.activeUser.name;
-                              d.nombreRemitente = "Vacio";
-                              d.activo = false;
-                              d.usuario = Config.activeUser.id;
-                              if (!Config.destinatarios.contains(d)) {
-                                if (await DestinatarioResponse()
-                                    .createDestinatario(d)) {
-                                  await Config().setupDestinatarios;
-                                  setState(() {});
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text(
-                                          "Destinatario creado correctamente"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Ok'))
-                                      ],
-                                    ),
-                                  );
-                                  Config.destinatarios.add(d);
-                                  Config.destiny = 0;
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text("Error creando destinatario"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text('Ok'))
-                                      ],
-                                    ),
-                                  );
-                                }
+                        onChanged: (String? value) {
+                          if (value != null) {
+                            setState(() {
+                              destin = value;
+                              // print(value);
+                              Config().setDestinIndexes(value);
+                              // print(
+                              //     "destinatario: ${Config().getDestinatario()}");
+                              // print(Config.destiny);
+                            });
+                          }
+                        },
+                      ))),
+                Row(
+                  children: [
+                    Text("Crear un destinatario nuevo"),
+                    Switch(
+                        value: _switch,
+                        onChanged: _destinos.length > 0
+                            ? (bool b) {
+                                setState(() {
+                                  _switch = b;
+                                });
                               }
-                              ;
-                            },
-                            child: Text('Crear Destinatario')),
-                        SizedBox(
-                          height: 15,
-                        ),
-                      ],
-                    ),
-                ],
-              ),
+                            : null,
+                        activeColor: Config.maincolor),
+                  ],
+                ),
+                if (_switch) createDestin(callback: callback),
+              ],
             )),
         Step(
             isActive: currentStep >= 1,
@@ -454,7 +304,8 @@ class stagePageState extends State<stagePage> {
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(10)),
                       child: ListView.builder(
-                        itemCount: carrito.length,
+                        itemCount: itemCount,
+                        //  context.watch<Cart>().listaSize,
                         itemBuilder: (context, index) {
                           return Card(
                             child: Container(
@@ -505,7 +356,9 @@ class stagePageState extends State<stagePage> {
                                                   // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
                                                   ),
                                               Text(
-                                                "${carrito[index].respaldo!.toStringAsFixed(2)} US\$",
+                                                "",
+                                                // "${context.watch<Cart>().getLista[index].respaldo!.toStringAsFixed(2)} US\$",
+                                                // carrito[index].respaldo!.toStringAsFixed(2)} US\$",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 20,
@@ -529,21 +382,37 @@ class stagePageState extends State<stagePage> {
                                               children: [
                                                 Expanded(
                                                   child: ElevatedButton(
-                                                    onPressed: carrito[index]
-                                                                .cantidad !=
+                                                    onPressed: context
+                                                                .watch<Cart>()
+                                                                .getLista[index]
+                                                                .cantidad! !=
                                                             1
                                                         ? () {
-                                                            if (carrito[index]
+                                                            if (context
+                                                                    .watch<
+                                                                        Cart>()
+                                                                    .getLista[
+                                                                        index]
                                                                     .cantidad! >
                                                                 1) {
-                                                              setState(() {
-                                                                carrito[index]
-                                                                    .decrementCantidad();
-                                                                ComponenteCreate()
-                                                                    .updateRespaldo(
-                                                                        index);
-                                                              });
+                                                              context
+                                                                  .read<Cart>()
+                                                                  .getLista[
+                                                                      index]
+                                                                  .incrementCantidad();
+                                                              ComponenteCreate()
+                                                                  .updateRespaldo(
+                                                                      index);
                                                             }
+
+                                                            // if (carrito[index].cantidad! >1) {
+
+                                                            // setState(() {
+                                                            //   carrito[index]
+                                                            // .decrementCantidad();
+
+                                                            // });
+                                                            // }
                                                           }
                                                         : null,
                                                     style: ElevatedButton.styleFrom(
@@ -596,13 +465,17 @@ class stagePageState extends State<stagePage> {
                                                             int.parse(productos[
                                                                     index]
                                                                 .cantInventario!)) {
-                                                          setState(() {
-                                                            carrito[index]
-                                                                .incrementCantidad();
-                                                            ComponenteCreate()
-                                                                .updateRespaldo(
-                                                                    index);
-                                                          });
+                                                          context
+                                                              .read<Cart>()
+                                                              .increaseAmmount(
+                                                                  index);
+                                                          // setState(() {
+                                                          //   carrito[index]
+                                                          //       .incrementCantidad();
+                                                          //   ComponenteCreate()
+                                                          //       .updateRespaldo(
+                                                          //           index);
+                                                          // });
                                                         }
                                                       },
                                                       style: ElevatedButton.styleFrom(
@@ -627,9 +500,12 @@ class stagePageState extends State<stagePage> {
                                   ),
                                   IconButton(
                                       onPressed: () {
-                                        setState(() {
-                                          Config.carrito.removeAt(index);
-                                        });
+                                        context
+                                            .watch<Cart>()
+                                            .removeProduct(index);
+                                        // setState(() {
+                                        //   Config.carrito.removeAt(index);
+                                        // });
                                       },
                                       icon: const Icon(
                                         Icons.delete,

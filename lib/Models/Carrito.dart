@@ -142,27 +142,13 @@ class Componente_Carrito {
     return lista;
   }
 
-  Future<void> deleteCompcart() async {
-    var headersList = {
-      'Accept-Language': Config.language,
-      'Authorization': Config.token
-    };
-    var url =
-        Uri.parse('https://www.diplomarket.com/backend/componente_carrito/$id');
-
-    var req = http.Request('DELETE', url);
-    req.headers.addAll(headersList);
-
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
-
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      print(resBody);
-      print("eliminado compcart");
-    } else {
-      print(res.reasonPhrase);
-      print("no eliminado compcart");
-    }
+  Future<void> deleteCompCart() async {
+    final http.Response response = await http.delete(
+      Uri.parse('https://www.diplomarket.com/backend/componente_carrito/29'),
+      headers: <String, String>{'Authorization': Config.token},
+    );
+    print(response.statusCode);
+    print(response.reasonPhrase);
   }
 }
 
@@ -206,6 +192,32 @@ class CarritoModelResponse {
       print("ERROR CarritoResp: ${res.reasonPhrase}");
     }
     return Carrito();
+  }
+
+  deleteCompcart(int id) async {
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url =
+        Uri.parse('https://www.diplomarket.com/backend/componente_carrito/27');
+
+    var req = http.Request('DELETE', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    // print();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print(resBody);
+      print("eliminado compcart");
+    } else {
+      print(res.statusCode);
+      print(res.reasonPhrase);
+      print("no eliminado compcart");
+    }
   }
 }
 
@@ -290,8 +302,9 @@ class ComponentePaypal {
 
 class Items {
   List<ComponentePaypal>? items;
+  ShippingAddress? shipping_address;
 
-  Items({this.items});
+  Items({this.items, this.shipping_address});
 
   Items.fromJson(Map<String, dynamic> json) {
     if (json['items'] != null) {
@@ -299,6 +312,9 @@ class Items {
       json['items'].forEach((v) {
         items!.add(new ComponentePaypal.fromJson(v));
       });
+    }
+    if (json['shipping_address'] != null) {
+      shipping_address = json['shipping_address'];
     }
   }
 
@@ -316,6 +332,10 @@ class Items {
     if (items != null) {
       result.addAll({'items': items!.map((x) => x.toMap()).toList()});
     }
+    if (shipping_address != null) {
+      result.addAll({'shipping_address': shipping_address!.toMap()});
+    }
+    
 
     return result;
   }
@@ -334,27 +354,102 @@ class Items {
   // factory Items.fromJson(String source) => Items.fromMap(json.decode(source));
 }
 
-class Itemz {
-  String? name;
-  String? quantity;
-  String? price;
-  String? currency;
+class ShippingAddress {
+  String? recipientName;
+  String? line1;
+  String? line2;
+  String? city;
+  String? countryCode;
+  String? postalCode;
+  String? phone;
+  String? state;
 
-  Itemz({this.name, this.quantity, this.price, this.currency});
+  ShippingAddress(
+      {this.recipientName,
+      this.line1,
+      this.line2,
+      this.city,
+      this.countryCode,
+      this.postalCode,
+      this.phone,
+      this.state});
 
-  Itemz.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-    quantity = json['quantity'];
-    price = json['price'];
-    currency = json['currency'];
+  ShippingAddress.fromJson(Map<String, dynamic> json) {
+    recipientName = json['recipient_name'];
+    line1 = json['line1'];
+    line2 = json['line2'];
+    city = json['city'];
+    countryCode = json['country_code'];
+    postalCode = json['postal_code'];
+    phone = json['phone'];
+    state = json['state'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    data['quantity'] = this.quantity;
-    data['price'] = this.price;
-    data['currency'] = this.currency;
+    data['recipient_name'] = this.recipientName;
+    data['line1'] = this.line1;
+    data['line2'] = this.line2;
+    data['city'] = this.city;
+    data['country_code'] = this.countryCode;
+    data['postal_code'] = this.postalCode;
+    data['phone'] = this.phone;
+    data['state'] = this.state;
     return data;
   }
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+
+    if (recipientName != null) {
+      result.addAll({'recipient_name': recipientName});
+    }
+    if (line1 != null) {
+      result.addAll({'line1': line1});
+    }
+    if (line2 != null) {
+      result.addAll({'line2': line2});
+    }
+    if (city != null) {
+      result.addAll({'city': city});
+    }
+    if (countryCode != null) {
+      result.addAll({'country_code': countryCode});
+    }
+    if (postalCode != null) {
+      result.addAll({'postal_code': postalCode});
+    }
+    if (phone != null) {
+      result.addAll({'phone': phone});
+    }
+    if (state != null) {
+      result.addAll({'state': state});
+    }
+
+    return result;
+  }
+}
+
+class SuperPaypal {
+  Items? items;
+  ShippingAddress? shipping_address;
+  SuperPaypal({
+    this.items,
+    this.shipping_address,
+  });
+
+  Map<String, dynamic> toMap() {
+    final result = <String, dynamic>{};
+
+    if (items != null) {
+      result.addAll({'items': items!.toMap()});
+    }
+    if (shipping_address != null) {
+      result.addAll({'shipping_address': shipping_address!.toMap()});
+    }
+
+    return result;
+  }
+
+  String toJson() => json.encode(toMap());
 }

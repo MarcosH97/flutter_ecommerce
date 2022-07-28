@@ -1,6 +1,9 @@
+import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils/Config.dart';
 
@@ -13,10 +16,13 @@ class userPage extends StatefulWidget {
 
 class _UserPageState extends State<userPage> {
   var _controller = TextEditingController();
-
+  final _globalKey = GlobalKey<FormState>();
+  bool _switch = false;
   bool ckbox = false, changes = false;
   bool lang = true;
-
+  var destin = "";
+  int _rowperpage = PaginatedDataTable.defaultRowsPerPage;
+  late List<DropdownMenuItem<String>> _destinos;
   Future<void> getlogin() async {
     var sh = await SharedPreferences.getInstance();
     bool b = sh.getBool('login')!;
@@ -25,19 +31,34 @@ class _UserPageState extends State<userPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (Config.destinos.length > 0) {
+      destin = Config.destinos[0];
+      print(Config.destinos);
+      _destinos = Config.destinos
+          .map((String value) => DropdownMenuItem<String>(
+                child: Center(child: Text(value, textAlign: TextAlign.center)),
+                value: value,
+              ))
+          .toList();
+    } else {
+      _destinos = [];
+      setState(() {
+        _switch = true;
+      });
+    }
+    Destinatario d = Destinatario();
     lang = Config.lang;
     getlogin();
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Column(children: [
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(),
+        body: SingleChildScrollView(
+            child: Column(children: [
           Container(
-            color: Config.maincolor,
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
+              color: Config.maincolor,
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              child: Column(children: [
                 ExpansionTile(
                     leading: Icon(Icons.person, color: Colors.white),
                     collapsedBackgroundColor: Config.maincolor,
@@ -138,15 +159,284 @@ class _UserPageState extends State<userPage> {
                       ),
                     ]),
                 ExpansionTile(
-                  title: Text('destins'.tr,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white)),
-                  leading: Icon(Icons.person_add, color: Colors.white),
-                  backgroundColor: Config.maincolor,
-                  collapsedBackgroundColor: Config.maincolor,
-                  children: [],
-                ),
+                    iconColor: Colors.white,
+                    collapsedIconColor: Colors.white,
+                    title: Text('destins'.tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.person_add, color: Colors.white),
+                    backgroundColor: Config.maincolor,
+                    collapsedBackgroundColor: Config.maincolor,
+                    children: [
+                      Form(
+                          key: _globalKey,
+                          child: Container(
+                            margin: EdgeInsets.all(10),
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Column(children: [
+                              Text(
+                                "Seleccione un destinatario",
+                                style: TextStyle(
+                                    fontSize: 28, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              if (Config.destinatarios.isNotEmpty)
+                                Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey),
+                                        color: Config.maincolor,
+                                        borderRadius: BorderRadius.circular(5)),
+                                    child: DropdownButtonHideUnderline(
+                                        child: DropdownButton(
+                                      dropdownColor: Config.maincolor,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                      isExpanded: true,
+                                      itemHeight: null,
+                                      value: Config.destinos[0],
+                                      alignment: Alignment.center,
+                                      items: _destinos,
+                                      icon: Icon(
+                                        Icons.arrow_drop_down,
+                                        color: Colors.white,
+                                      ),
+                                      onChanged: (String? value) {
+                                        if (value != null) {
+                                          int id = 0;
+                                          Config.destinatarios.forEach(
+                                            (element) {
+                                              if (element.nombre == value) {
+                                                id = element.id!;
+                                              }
+                                            },
+                                          );
+                                          setState(() {
+                                            Config.destiny = id;
+                                            destin = value;
+                                            print(Config.destiny);
+                                          });
+                                        }
+                                      },
+                                    ))),
+                              Row(
+                                children: [
+                                  Text("Crear un destinatario nuevo"),
+                                  Switch(
+                                      value: _switch,
+                                      onChanged: _destinos.length > 0
+                                          ? (bool b) {
+                                              setState(() {
+                                                _switch = b;
+                                              });
+                                            }
+                                          : null,
+                                      activeColor: Colors.red[100]),
+                                ],
+                              ),
+                              if (_switch)
+                                Column(
+                                  children: [
+                                    TextFormField(
+                                      decoration:
+                                          InputDecoration(labelText: "Nombre*"),
+                                      onSaved: (value) {
+                                        d.nombre = value;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Apellido 1*"),
+                                      onSaved: (value) {
+                                        d.apellido1 = value;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Apellido 2*"),
+                                      onSaved: (value) {
+                                        d.apellido2 = value;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration:
+                                          InputDecoration(labelText: "Email*"),
+                                      onSaved: (value) {
+                                        d.email = value;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration:
+                                          InputDecoration(labelText: "CI*"),
+                                      onSaved: (value) {
+                                        d.ci = value;
+                                      },
+                                    ),
+                                    IntlPhoneField(
+                                      // autovalidateMode: AutovalidateMode.always,
+                                      invalidNumberMessage:
+                                          "Formato de telefono incorrecto",
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      decoration: const InputDecoration(
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.never,
+                                        labelText: 'Teléfono',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      initialCountryCode: 'US',
+                                      onChanged: (phone) {
+                                        print(phone.completeNumber);
+                                        d.telefono = phone.completeNumber;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration:
+                                          InputDecoration(labelText: "País*"),
+                                      onSaved: (value) {
+                                        d.pais = 1;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Provincia*"),
+                                      onSaved: (value) {
+                                        d.provincia = 1;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Municipio*"),
+                                      onSaved: (value) {
+                                        d.municipio = 2;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Reparto o Ciudad*"),
+                                      onSaved: (value) {
+                                        d.ciudad = value;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Dirección*"),
+                                      onSaved: (value) {
+                                        d.direccion = value;
+                                      },
+                                    ),
+                                    Divider(),
+                                    Text("Campos alternativos"),
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                          labelText: "Otro Nombre"),
+                                      onSaved: (value) {
+                                        d.nombreAlternativo = value;
+                                      },
+                                    ),
+                                    IntlPhoneField(
+                                      // autovalidateMode: AutovalidateMode.always,
+                                      invalidNumberMessage:
+                                          "Formato de telefono incorrecto",
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly
+                                      ],
+                                      decoration: const InputDecoration(
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.never,
+                                        labelText: 'Teléfono Alternativo',
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      initialCountryCode: 'US',
+                                      onChanged: (phone) {
+                                        d.telefonoAlternativo =
+                                            phone.completeNumber.toString();
+                                      },
+                                    ),
+                                    TextFormField(
+                                      decoration:
+                                          InputDecoration(labelText: "Nota"),
+                                      onSaved: (value) {
+                                        d.notaEntrega = value;
+                                      },
+                                    ),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          _globalKey.currentState!.save();
+                                          // d.nombreRemitente = Config.activeUser.name;
+                                          d.nombreRemitente = "Vacio";
+                                          d.activo = false;
+                                          d.usuario = Config.activeUser.id;
+                                          if (!Config.destinatarios
+                                              .contains(d)) {
+                                            if (await DestinatarioResponse()
+                                                .createDestinatario(d)) {
+                                              await Config().setupDestinatarios;
+
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      "Destinatario creado correctamente"),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        child: Text('Ok'))
+                                                  ],
+                                                ),
+                                              );
+                                              setState(() {
+                                                Config.destinatarios.add(d);
+                                              });
+                                              // Config.destiny = ;
+                                            } else {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  title: Text(
+                                                      "Error creando destinatario"),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                        child: Text('Ok'))
+                                                  ],
+                                                ),
+                                              );
+                                            }
+                                          }
+                                          ;
+                                        },
+                                        child: Text('Crear Destinatario')),
+                                  ],
+                                ),
+                            ]),
+                          ))
+                    ]),
                 ExpansionTile(
+                  iconColor: Colors.white,
+                  collapsedIconColor: Colors.white,
                   title: Text('orders'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white)),
@@ -156,6 +446,8 @@ class _UserPageState extends State<userPage> {
                   children: [],
                 ),
                 ExpansionTile(
+                  iconColor: Colors.white,
+                  collapsedIconColor: Colors.white,
                   title: Text('settings'.tr,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.white)),
@@ -221,10 +513,8 @@ class _UserPageState extends State<userPage> {
                       height: 50,
                     ),
                   ],
-                )
-              ],
-            ),
-          ),
+                ),
+              ])),
           SizedBox(
             height: 20,
           ),
@@ -247,10 +537,8 @@ class _UserPageState extends State<userPage> {
               )),
           SizedBox(
             height: 20,
-          )
-        ]),
-      ),
-    );
+          ),
+        ])));
   }
 
   AlertDialog alertBuilder(name) => AlertDialog(
@@ -289,6 +577,18 @@ class _UserPageState extends State<userPage> {
         endIndent: 10,
         color: Config.maincolor,
       ));
+
+  // Widget dataTable() => PaginatedDataTable(
+  //     header: Text('orders'.tr), columns: KtableColumns, source: );
+  
+  var KtableColumns = <DataColumn>[
+      DataColumn(label: Text('payment'.tr)),
+      DataColumn(label: Text('status'.tr)),
+      DataColumn(label: Text('purchase'.tr), numeric: true),
+      DataColumn(label: Text('date'.tr)),
+      
+
+  ];
 }
 
 class changePass extends StatefulWidget {

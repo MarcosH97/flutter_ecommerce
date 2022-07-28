@@ -85,25 +85,31 @@ class ProductoModelResponse {
     }
   }
 
-  Future<List<ProductoRec>> getProductSpecialList(municipioID) async {
-    var headersList = {'Authorization': Config.token};
-    var url = Uri.parse(Config.apiURL + Config.masvendidosAPI + "1");
+  Future<List<ProductoAct>> getProductSpecialList() async {
+    List<ProductoAct> lista = [];
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
+    };
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/producto/especiales/${Config.activeMun}');
 
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
-    var res = await req.send().timeout(const Duration(seconds: 5));
-    final resBody = await res.stream.bytesToString();
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      // var body = jsonDecode(resBody)['results'][0]['municipios'];
-      // List<ProductoRec> body = jsonDecode(resBody)
-      var body = jsonDecode(resBody);
 
-      return body;
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      List<dynamic> body = jsonDecode(resBody);
+      for(var v in body){
+          lista.add(ProductoAct.fromJson(v));
+      }
+      // print(resBody);
     } else {
       print(res.reasonPhrase);
-      // print("error");
-      throw Exception();
     }
+    return lista;
   }
 
   Future<Promocion> getPromo() async {

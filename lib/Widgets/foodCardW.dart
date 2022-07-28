@@ -1,34 +1,34 @@
 import 'dart:convert';
-
-import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 
 import '../Pages/productPage.dart';
+import '../Providers/cartProvider.dart';
 import '../Utils/Config.dart';
 
 class FoodCardW extends StatelessWidget {
   final ProductoAct productReq;
   final int index;
-  final Function callback;
+  // final Function callback;
 
   FoodCardW(
       {Key? key,
       required this.productReq,
       required this.index,
-      required this.callback})
+      })
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    bool inKart;
-    bool inWL;
+    bool inKart = context.watch<Cart>().inKart(productReq.id!);
+    bool inWL = context.watch<Wishlist>().inWL(productReq.id!);
     bool outofstock;
     ProductoAct producto = productReq;
-    inKart = Config().inCarrito(producto);
-    inWL = Config().inWishlist(producto);
+    // inKart = Config().inCarrito(producto);
+    // inWL = Config().inWishlist(producto);
     outofstock = int.parse(productReq.cantInventario!) > 0;
 
     return Card(
@@ -155,11 +155,13 @@ class FoodCardW extends StatelessWidget {
                             onPressed: () {
                               if (Config.isLoggedIn) {
                                 if (!inWL) {
-                                  Config.wishlist.add(producto);
-                                  callback();
+                                  context
+                                      .read<Wishlist>()
+                                      .addProduct(productReq);
+                                  // callback();
                                 } else {
-                                  Config.wishlist.removeAt(index);
-                                  callback();
+                                  context.read<Wishlist>().removeProduct(index);
+                                  // callback();
                                 }
                               } else {
                                 showDialog(
@@ -198,21 +200,27 @@ class FoodCardW extends StatelessWidget {
                       padding: EdgeInsets.all(10),
                       alignment: Alignment.bottomCenter,
                       child: ElevatedButton(
-                        onPressed: !inCarrito(producto)
+                        onPressed: !inKart
                             ? () {
                                 if (Config.isLoggedIn) {
-                                  Componente_Carrito().createCompCart(
-                                      Componente_Carrito(
-                                          cantidad: 1,
-                                          producto: int.parse(producto.id!),
-                                          carrito: Config.kart.pk));
-                                  Config.carrito.add(Componente(
+
+                                  context.read<Cart>().addProduct(Componente(
                                       producto: producto.id,
                                       cantidad: 1,
                                       respaldo:
                                           Config().getRespaldo(producto)));
-                                  Config().updateCarrito();
-                                  callback();
+                                  // Componente_Carrito().createCompCart(
+                                  //     Componente_Carrito(
+                                  //         cantidad: 1,
+                                  //         producto: int.parse(producto.id!),
+                                  //         carrito: Config.kart.pk));
+                                  // Config.carrito.add(Componente(
+                                  //     producto: producto.id,
+                                  //     cantidad: 1,
+                                  //     respaldo:
+                                  //         Config().getRespaldo(producto)));
+                                  // Config().updateCarrito();
+                                  // callback();
                                 } else {
                                   showDialog(
                                       context: context,
@@ -230,12 +238,12 @@ class FoodCardW extends StatelessWidget {
                               }
                             : null,
                         child: Text(
-                          !inCarrito(producto) ? "buy".tr : "added".tr,
+                          !inKart ? "buy".tr : "added".tr,
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                         style: ButtonStyle(
                           alignment: Alignment.center,
-                          backgroundColor: !inCarrito(producto)
+                          backgroundColor: !inKart
                               ? MaterialStateProperty.all(Config.maincolor)
                               : MaterialStateProperty.all(Colors.red[100]),
                           fixedSize: MaterialStateProperty.all(Size(200, 50)),

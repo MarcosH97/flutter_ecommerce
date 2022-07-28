@@ -9,6 +9,7 @@ import 'package:e_commerce/Pages/paypalthree.dart';
 import 'package:e_commerce/Pages/setupPage.dart';
 import 'package:e_commerce/Pages/stagingPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
+import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Services/pushNotificationsProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
@@ -16,6 +17,7 @@ import 'package:e_commerce/Utils/Translation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
@@ -34,6 +36,7 @@ Future<void> main() async {
   Config.ordenes = [];
   Config.paises = [];
   Config.paisesT = [];
+  Config.provincias = [];
   Config.faqs = [];
   // Config().setAll;
   if (await Config().checkInternetConnection()) {
@@ -44,7 +47,10 @@ Future<void> main() async {
   } else {
     Config.internet = false;
   }
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_)=> Wishlist()),
+    ChangeNotifierProvider(create: (_)=> Cart())
+  ], child: MyApp(),));
 }
 
 class MyApp extends StatefulWidget {
@@ -59,7 +65,6 @@ class _myApp extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
     if (Platform.isAndroid && Config.internet) {
       final pushprov = new PushNProvider();
       pushprov.initNotifications();
@@ -68,6 +73,7 @@ class _myApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    
     Widget _defaultHome = loginPage();
     // loadLogin();
     SharedService().LoadData;
