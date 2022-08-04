@@ -78,35 +78,6 @@ class _homePageState extends State<homePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => filterPage(
-                            productos: Config().filter("DM", 2),
-                            headerName: "DM"))),
-                child: Container(
-                  child: Image.network(
-                      "https://www.diplomarket.com/backend/media/carruseles/diplomarket_z7mlRnz.png",
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : Container(
-                                  width: 50,
-                                  height: 50,
-                                  child: const Center(
-                                      child: CircularProgressIndicator(
-                                          color: Config.maincolor)),
-                                ),
-                      errorBuilder: (context, error, stacktrace) {
-                        return const Icon(
-                          Icons.error,
-                          size: 50,
-                          color: Colors.grey,
-                        );
-                      }),
-                ),
-              ),
               Column(
                 children: [
                   Container(

@@ -3,6 +3,7 @@ import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
@@ -54,9 +55,13 @@ class LoginModelResponse {
 
       users.forEach((usuario) async {
         if (usuario.email == umail) {
+          SharedPreferences sh = await SharedPreferences.getInstance();
           Config.user = usuario;
           Config.login = true;
-          SharedService().SaveData();
+          // sh.setInt('id', usuario.id!);
+          sh.setString('user', jsonEncode(usuario.toJson()));
+          sh.setBool('login', true);
+          // SharedService().SaveData();
           // Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
           Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
         }

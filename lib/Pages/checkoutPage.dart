@@ -27,9 +27,8 @@ class _checkOutPageState extends State<checkOutPage> {
   // }
   @override
   Widget build(BuildContext context) {
-    productos = Config().getProductosCarrito(context);
-    var carrito = Config.carrito;
     var config = Config();
+    productos = Config().getProductosCarrito(context);
     return Scaffold(
         appBar: myAppBar(
           context: context,
@@ -162,25 +161,31 @@ class _checkOutPageState extends State<checkOutPage> {
                                           children: [
                                             Expanded(
                                               child: ElevatedButton(
-                                                onPressed:
-                                                    context.watch<Cart>().getCantidad(index) != 1
-                                                        ? () {
-                                                            if (context.watch<Cart>().getCantidad(index)  >
-                                                                1) {
-                                                              context
-                                                                  .read<Cart>()
-                                                                  .decreaseAmmount(
-                                                                      index);
-                                                              // setState(() {
-                                                              //   carrito[index]
-                                                              //       .decrementCantidad();
-                                                                ComponenteCreate()
-                                                                    .updateRespaldo(
-                                                                        index);
-                                                              // });
-                                                            }
-                                                          }
-                                                        : null,
+                                                onPressed: context
+                                                            .watch<Cart>()
+                                                            .getCantidad(
+                                                                index) !=
+                                                        1
+                                                    ? () {
+                                                        if (context
+                                                                .watch<Cart>()
+                                                                .getCantidad(
+                                                                    index) >
+                                                            1) {
+                                                          context
+                                                              .read<Cart>()
+                                                              .decreaseAmmount(
+                                                                  index);
+                                                          // setState(() {
+                                                          //   carrito[index]
+                                                          //       .decrementCantidad();
+                                                          ComponenteCreate()
+                                                              .updateRespaldo(
+                                                                  index);
+                                                          // });
+                                                        }
+                                                      }
+                                                    : null,
                                                 style: ElevatedButton.styleFrom(
                                                     primary: Config.maincolor,
                                                     shape:
@@ -270,15 +275,15 @@ class _checkOutPageState extends State<checkOutPage> {
                               IconButton(
                                   onPressed: () {
                                     context.read<Cart>().removeProduct(index);
-                                    setState(() {
-                                      // print(
-                                      //     "length: ${Config.comp_cart.length}");
-                                      // Config.carrito.removeAt(index);
-                                      // CarritoModelResponse().deleteCompcart(
-                                      //     Config.comp_cart[index].id!);
-                                      Componente_Carrito().deleteCompCart();
-                                      // Config.comp_cart.removeAt(index);
-                                    });
+                                    // setState(() {
+                                    // print(
+                                    //     "length: ${Config.comp_cart.length}");
+                                    // Config.carrito.removeAt(index);
+                                    // CarritoModelResponse().deleteCompcart(
+                                    //     Config.comp_cart[index].id!);
+                                    Componente_Carrito().deleteCompCart();
+                                    // Config.comp_cart.removeAt(index);
+                                    // });
                                   },
                                   icon: const Icon(
                                     Icons.delete,

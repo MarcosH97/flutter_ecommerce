@@ -1,4 +1,5 @@
-import 'package:e_commerce/Models/Destinatario.dart';
+import 'dart:convert';
+import 'package:e_commerce/Models/User.dart';
 import 'package:e_commerce/Pages/allProductsPage.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/helpPage.dart';
@@ -39,6 +40,9 @@ Future<void> main() async {
   Config.provincias = [];
   Config.faqs = [];
   // Config().setAll;
+  // SharedPreferences sh = await SharedPreferences.getInstance();
+  // bool _login = sh.getBool('login')!;
+  // Config.login = _login;
   if (await Config().checkInternetConnection()) {
     if (Platform.isAndroid) {
       WidgetsFlutterBinding.ensureInitialized();
@@ -47,14 +51,19 @@ Future<void> main() async {
   } else {
     Config.internet = false;
   }
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_)=> Wishlist()),
-    ChangeNotifierProvider(create: (_)=> Cart())
-  ], child: MyApp(),));
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => Wishlist()),
+      ChangeNotifierProvider(create: (_) => Cart())
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _myApp();
@@ -62,9 +71,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _myApp extends State<MyApp> {
+  bool _login = false;
+
   @override
   void initState() {
     super.initState();
+
+    loadLogin();
+
     if (Platform.isAndroid && Config.internet) {
       final pushprov = new PushNProvider();
       pushprov.initNotifications();
@@ -73,7 +87,6 @@ class _myApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    
     Widget _defaultHome = loginPage();
     // loadLogin();
     SharedService().LoadData;
@@ -85,10 +98,10 @@ class _myApp extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      initialRoute: Config.isLoggedIn ? '/home' : '/login',
+      initialRoute: _login ? '/home' : '/login',
       routes: {
         '/': (context) => homePage(),
-        '/setup':(context)=> setupPage(),
+        '/setup': (context) => setupPage(),
         '/home': (context) => homePage(),
         '/login': (context) => loginPage(),
         '/register': (context) => registerPage(),
@@ -105,15 +118,9 @@ class _myApp extends State<MyApp> {
 
   Future loadLogin() async {
     SharedPreferences sh = await SharedPreferences.getInstance();
-    if (sh.getString('ip') != null) {
-      setState(() {
-        Config().setAll;
-      });
-      // print(Config.apiURL);
-    } else {
-      setState(() {
-        Config().setAll;
-      });
+    _login = sh.getBool('login')!;
+    if (_login) {
+      Config.user = User.fromJson(jsonDecode(sh.getString('user')!));
     }
   }
 }
