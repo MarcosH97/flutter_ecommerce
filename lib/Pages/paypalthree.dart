@@ -38,11 +38,11 @@ class _PayPalLastState extends State<PayPalLast> {
         {
           "amount": {
             "total":
-                (Config().getTotalPriceKart() + Config().getCostActiveMun())
+                (Config().getTotalPriceKart(context: context) + Config().getCostActiveMun())
                     .toString(),
             "currency": Config.currency,
             "details": {
-              "subtotal": Config().getTotalPriceKart().toString(),
+              "subtotal": Config().getTotalPriceKart(context: context).toString(),
               "shipping": Config().getCostActiveMun(),
               "shipping_discount": 0
             }

@@ -67,7 +67,8 @@ class _homePageState extends State<homePage> {
         context: context,
         // callback: callback
       ).AppBarM(),
-      body: RefreshIndicator(
+      body: 
+      RefreshIndicator(
         onRefresh: () async {
           setState(() {
             LoadStuff();
@@ -771,5 +772,20 @@ class _homePageState extends State<homePage> {
         color: Colors.grey,
       ),
     );
+  }
+}
+
+
+class mainPage extends StatefulWidget {
+  mainPage({Key? key}) : super(key: key);
+
+  @override
+  State<mainPage> createState() => _mainPageState();
+}
+
+class _mainPageState extends State<mainPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

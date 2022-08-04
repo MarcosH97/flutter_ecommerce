@@ -50,7 +50,8 @@ class _loginPageState extends State<loginPage> {
     return Scaffold(
 
       body: SingleChildScrollView(
-        child: Column(
+        child: 
+        Column(
           children: [
             Container(
               width: Device().isMobile(context)
@@ -255,6 +256,7 @@ class _loginPageState extends State<loginPage> {
             ),
           ],
         ),
+      
       ),
     );
   }

@@ -15,5 +15,9 @@ class PushNProvider {
     _firebaseMessagingOnMessage.listen((event) {});
 
     _firebaseMessagingOnResume.listen((event) {});
+
+      FirebaseMessaging.onBackgroundMessage((message) async {
+      print(message.data);
+    });
   }
 }

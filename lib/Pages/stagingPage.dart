@@ -49,7 +49,6 @@ class stagePageState extends State<stagePage> {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<Cart>(context, listen: false);
     productos = Config().getProductosCarrito(context);
     if (Config.destinos.length > 0) {
       destin = Config.destinos[Config.destinIndex];
@@ -103,12 +102,10 @@ class stagePageState extends State<stagePage> {
             } else if (currentStep == 0) {
               // if (_switch) {
               // }
-              Provider.of<Cart>(context, listen: false);
               setState(() {
                 currentStep++;
               });
             } else {
-              Provider.of<Cart>(context, listen: false);
               setState(() {
                 // DestinatarioResponse().getDestinatarios();
                 currentStep++;
@@ -384,35 +381,29 @@ class stagePageState extends State<stagePage> {
                                                   child: ElevatedButton(
                                                     onPressed: context
                                                                 .watch<Cart>()
-                                                                .getLista[index]
-                                                                .cantidad! !=
+                                                                .getCantidad(
+                                                                    index) !=
                                                             1
                                                         ? () {
-                                                            if (context
-                                                                    .watch<
-                                                                        Cart>()
-                                                                    .getLista[
-                                                                        index]
-                                                                    .cantidad! >
+                                                            if (Provider.of<Cart>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .getCantidad(
+                                                                        index) >
                                                                 1) {
                                                               context
                                                                   .read<Cart>()
-                                                                  .getLista[
-                                                                      index]
-                                                                  .incrementCantidad();
+                                                                  .decreaseAmmount(
+                                                                      index);
+                                                              // setState(() {
+                                                              //   carrito[index]
+                                                              //       .decrementCantidad();
                                                               ComponenteCreate()
                                                                   .updateRespaldo(
                                                                       index);
+                                                              // });
                                                             }
-
-                                                            // if (carrito[index].cantidad! >1) {
-
-                                                            // setState(() {
-                                                            //   carrito[index]
-                                                            // .decrementCantidad();
-
-                                                            // });
-                                                            // }
                                                           }
                                                         : null,
                                                     style: ElevatedButton.styleFrom(
@@ -446,8 +437,9 @@ class stagePageState extends State<stagePage> {
                                                       height: 50,
                                                       width: 40,
                                                       child: Text(
-                                                        carrito[index]
-                                                            .cantidad
+                                                        context
+                                                            .watch<Cart>()
+                                                            .getCantidad(index)
                                                             .toString(),
                                                         style: TextStyle(
                                                             fontWeight:
@@ -460,8 +452,12 @@ class stagePageState extends State<stagePage> {
                                                 Expanded(
                                                   child: ElevatedButton(
                                                       onPressed: () {
-                                                        if (carrito[index]
-                                                                .cantidad! <=
+                                                        if (Provider.of<Cart>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .getCantidad(
+                                                                    index) <=
                                                             int.parse(productos[
                                                                     index]
                                                                 .cantInventario!)) {
@@ -472,9 +468,9 @@ class stagePageState extends State<stagePage> {
                                                           // setState(() {
                                                           //   carrito[index]
                                                           //       .incrementCantidad();
-                                                          //   ComponenteCreate()
-                                                          //       .updateRespaldo(
-                                                          //           index);
+                                                          ComponenteCreate()
+                                                              .updateRespaldo(
+                                                                  index);
                                                           // });
                                                         }
                                                       },
@@ -501,7 +497,7 @@ class stagePageState extends State<stagePage> {
                                   IconButton(
                                       onPressed: () {
                                         context
-                                            .watch<Cart>()
+                                            .read<Cart>()
                                             .removeProduct(index);
                                         // setState(() {
                                         //   Config.carrito.removeAt(index);
@@ -541,7 +537,8 @@ class stagePageState extends State<stagePage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text("Subtotal", style: TextStyle(fontSize: 14)),
-                            Text("\$${Config().getTotalPriceKart()}",
+                            Text(
+                                "\$${Config().getTotalPriceKart(context: context)}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18))
                           ],
@@ -551,7 +548,7 @@ class stagePageState extends State<stagePage> {
                           children: [
                             Text("Total", style: TextStyle(fontSize: 14)),
                             Text(
-                                "\$${(Config().getTotalPriceKart() + Config().getCostActiveMun()).toStringAsFixed(2)}",
+                                "\$${(Config().getTotalPriceKart(context: context) + Config().getCostActiveMun()).toStringAsFixed(2)}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 18))
                           ],
@@ -601,8 +598,19 @@ class stagePageState extends State<stagePage> {
                       Expanded(
                           child: GestureDetector(
                         onTap: (() {
-                          Navigator.popAndPushNamed(context, '/paypal');
-                          Config.karrito.clear();
+                          if (!Config.karrito.isEmpty) {
+                            Navigator.popAndPushNamed(context, '/paypal');
+                            Config.karrito.clear();
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text("Carrito vacio"),
+                                  actions: [
+                                    TextButton(onPressed: ()=>Navigator.pop(context), child: Text("ok"))
+                                  ],
+                                ));
+                          }
                         }),
                         child: Container(
                           alignment: Alignment.center,

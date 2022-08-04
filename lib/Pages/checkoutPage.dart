@@ -18,7 +18,6 @@ class checkOutPage extends StatefulWidget {
 
 class _checkOutPageState extends State<checkOutPage> {
   bool buttonActive = Config.carrito.length > 0;
-  List<ProductoAct> productos = [];
 
   // callback(){
   //   setState(() {
@@ -28,7 +27,7 @@ class _checkOutPageState extends State<checkOutPage> {
   @override
   Widget build(BuildContext context) {
     var config = Config();
-    productos = Config().getProductosCarrito(context);
+
     return Scaffold(
         appBar: myAppBar(
           context: context,
@@ -45,259 +44,8 @@ class _checkOutPageState extends State<checkOutPage> {
                 ),
                 Expanded(
                     child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ListView.builder(
-                    itemCount: productos.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Container(
-                          height: 100,
-                          margin: EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    Config.apiURL +
-                                        productos[index].imgPrincipal!,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      }
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    SizedBox(
-                                      width: 150,
-                                      child: RichText(
-                                        overflow: TextOverflow.ellipsis,
-                                        strutStyle: StrutStyle(fontSize: 20),
-                                        text: TextSpan(
-                                            text: productos[index].nombre!,
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold)),
-                                      ),
-                                    ),
-                                    // Text(
-                                    //   productos[index].nombre!,
-                                    //   style: TextStyle(
-                                    //       fontWeight: FontWeight.bold,
-                                    //       fontSize: 18),
-                                    // ),
-                                    Expanded(
-                                        child: Row(children: [
-                                      Center(
-                                          child: Text(
-                                        "${config.getProductFinalPrice(productos[index])} US\$",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 24,
-                                            color: Config.maincolor),
-                                        textAlign: TextAlign.center,
-                                      )
-                                          // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
-                                          ),
-                                      biggerThan(
-                                              config.getProductFinalPrice(
-                                                  productos[index]),
-                                              double.parse(productos[index]
-                                                  .precio!
-                                                  .cantidad!))
-                                          ? Text(
-                                              "\$ ${productos[index].precio!.cantidad}",
-                                              style: TextStyle(
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20,
-                                                  color: Colors.grey),
-                                              textAlign: TextAlign.center,
-                                            )
-                                          : Text(""),
-                                    ])),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                        height: 200,
-                                        decoration: BoxDecoration(
-                                            color: Config.maincolor,
-                                            borderRadius:
-                                                BorderRadius.circular(60)),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: context
-                                                            .watch<Cart>()
-                                                            .getCantidad(
-                                                                index) !=
-                                                        1
-                                                    ? () {
-                                                        if (context
-                                                                .watch<Cart>()
-                                                                .getCantidad(
-                                                                    index) >
-                                                            1) {
-                                                          context
-                                                              .read<Cart>()
-                                                              .decreaseAmmount(
-                                                                  index);
-                                                          // setState(() {
-                                                          //   carrito[index]
-                                                          //       .decrementCantidad();
-                                                          ComponenteCreate()
-                                                              .updateRespaldo(
-                                                                  index);
-                                                          // });
-                                                        }
-                                                      }
-                                                    : null,
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Config.maincolor,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10))),
-                                                child: const Icon(
-                                                  Icons.remove,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    border: Border.all(
-                                                        width: 2,
-                                                        color:
-                                                            Config.maincolor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10),
-                                                  ),
-                                                  alignment: Alignment.center,
-                                                  height: 50,
-                                                  width: 40,
-                                                  child: Text(
-                                                    context
-                                                        .watch<Cart>()
-                                                        .getCantidad(index)
-                                                        .toString(),
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 18,
-                                                        color:
-                                                            Config.maincolor),
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                  onPressed: () {
-                                                    if (context
-                                                            .watch<Cart>()
-                                                            .getCantidad(
-                                                                index) <=
-                                                        int.parse(productos[
-                                                                index]
-                                                            .cantInventario!)) {
-                                                      context
-                                                          .read<Cart>()
-                                                          .increaseAmmount(
-                                                              index);
-                                                      // setState(() {
-                                                      //   carrito[index]
-                                                      //       .incrementCantidad();
-                                                      ComponenteCreate()
-                                                          .updateRespaldo(
-                                                              index);
-                                                      // });
-                                                    }
-                                                  },
-                                                  style: ElevatedButton.styleFrom(
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
-                                                      primary:
-                                                          Config.maincolor),
-                                                  child: const Icon(
-                                                    Icons.add,
-                                                    color: Colors.white,
-                                                  )),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                  onPressed: () {
-                                    context.read<Cart>().removeProduct(index);
-                                    // setState(() {
-                                    // print(
-                                    //     "length: ${Config.comp_cart.length}");
-                                    // Config.carrito.removeAt(index);
-                                    // CarritoModelResponse().deleteCompcart(
-                                    //     Config.comp_cart[index].id!);
-                                    Componente_Carrito().deleteCompCart();
-                                    // Config.comp_cart.removeAt(index);
-                                    // });
-                                  },
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.grey,
-                                  ),
-                                  iconSize: 30,
-                                  padding: EdgeInsets.all(0))
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                )),
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        child: kartList())),
                 GestureDetector(
                   onTap: Config.carrito.length > 0
                       ? () {
@@ -420,4 +168,237 @@ class _checkOutPageState extends State<checkOutPage> {
   }
 
   bool biggerThan(double a, double b) => a != b;
+}
+
+class kartList extends StatelessWidget {
+  kartList({Key? key}) : super(key: key);
+  List<ProductoAct> productos = [];
+  var config = Config();
+  int cantCart = 0;
+  bool biggerThan(double a, double b) => a != b;
+  BuildContext? globalcontext;
+
+  int getcant(int index) => Provider.of<Cart>(globalcontext!,
+      listen: false).getCantidad(index); //globalcontext!.watch<Cart>().getCantidad(index);
+
+  @override
+  Widget build(BuildContext context) {
+    productos = Config().getProductosCarrito(context);
+    globalcontext = context;
+    return ListView.builder(
+      itemCount: productos.length,
+      itemBuilder: (context, index) {
+        return Card(
+          child: Container(
+            height: 100,
+            margin: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      Config.apiURL + productos[index].imgPrincipal!,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        width: 150,
+                        child: RichText(
+                          overflow: TextOverflow.ellipsis,
+                          strutStyle: StrutStyle(fontSize: 20),
+                          text: TextSpan(
+                              text: productos[index].nombre!,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      // Text(
+                      //   productos[index].nombre!,
+                      //   style: TextStyle(
+                      //       fontWeight: FontWeight.bold,
+                      //       fontSize: 18),
+                      // ),
+                      Expanded(
+                          child: Row(children: [
+                        Center(
+                            child: Text(
+                          "${config.getProductFinalPrice(productos[index])} US\$",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Config.maincolor),
+                          textAlign: TextAlign.center,
+                        )
+                            // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
+                            ),
+                        biggerThan(
+                                config.getProductFinalPrice(productos[index]),
+                                double.parse(
+                                    productos[index].precio!.cantidad!))
+                            ? Text(
+                                "\$ ${productos[index].precio!.cantidad}",
+                                style: TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.grey),
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(""),
+                      ])),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 200,
+                          decoration: BoxDecoration(
+                              color: Config.maincolor,
+                              borderRadius: BorderRadius.circular(60)),
+                          child: 
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: context
+                                              .watch<Cart>()
+                                              .getCantidad(index) !=
+                                          1
+                                      ? () {
+                                          if (Provider.of<Cart>(context, listen: false)
+                                                  .getCantidad(index) >
+                                              1) {
+                                            context
+                                                .read<Cart>()
+                                                .decreaseAmmount(index);
+                                            // setState(() {
+                                            //   carrito[index]
+                                            //       .decrementCantidad();
+                                            ComponenteCreate()
+                                                .updateRespaldo(index);
+                                            // });
+                                          }
+                                        }
+                                      : null,
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Config.maincolor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                  child: const Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          width: 2, color: Config.maincolor),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    alignment: Alignment.center,
+                                    height: 50,
+                                    width: 40,
+                                    child: Text(
+                                      context
+                                          .watch<Cart>()
+                                          .getCantidad(index)
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Config.maincolor),
+                                    )),
+                              ),
+                              Expanded(
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      if (getcant(index) <=
+                                          int.parse(productos[index]
+                                              .cantInventario!)) {
+                                        context
+                                            .read<Cart>()
+                                            .increaseAmmount(index);
+                                        // setState(() {
+                                        //   carrito[index]
+                                        //       .incrementCantidad();
+                                        ComponenteCreate()
+                                            .updateRespaldo(index);
+                                        // });
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        primary: Config.maincolor),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                IconButton(
+                    onPressed: () {
+                      context.read<Cart>().removeProduct(index);
+                      // setState(() {
+                      // print(
+                      //     "length: ${Config.comp_cart.length}");
+                      // Config.carrito.removeAt(index);
+                      // CarritoModelResponse().deleteCompcart(
+                      //     Config.comp_cart[index].id!);
+                      Componente_Carrito().deleteCompCart();
+                      // Config.comp_cart.removeAt(index);
+                      // });
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.grey,
+                    ),
+                    iconSize: 30,
+                    padding: EdgeInsets.all(0))
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

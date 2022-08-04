@@ -240,12 +240,16 @@ class Config {
     return d;
   }
 
-  double getTotalPriceKart() {
+  double getTotalPriceKart({BuildContext? context}) {
     double total = 0;
-    carrito.forEach((element) {
-      // print(element.respaldo);
-      total += element.respaldo!;
-    });
+    if (context == null) {
+      carrito.forEach((element) {
+        // print(element.respaldo);
+        total += element.respaldo!;
+      });
+    } else {
+      context.read<Cart>().getLista.forEach((element) {total += element.respaldo!;});
+    }
     total = double.parse(total.toStringAsFixed(2));
     print(total);
     return total;
