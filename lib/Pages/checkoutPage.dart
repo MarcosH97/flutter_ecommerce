@@ -28,16 +28,13 @@ class _checkOutPageState extends State<checkOutPage> {
   Widget build(BuildContext context) {
     var config = Config();
 
-    return Scaffold(
-        appBar: myAppBar(
-          context: context,
-          // callback: callback
-        ).AppBarM(),
-        body: SizedBox(
+    return Container(
+            color: Colors.white,
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
+                SizedBox(height: 10,),
                 Text(
                   'kart'.tr,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
@@ -47,10 +44,10 @@ class _checkOutPageState extends State<checkOutPage> {
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: kartList())),
                 GestureDetector(
-                  onTap: Config.carrito.length > 0
+                  onTap: context.read<Cart>().listaSize > 0
                       ? () {
                           // print(Config().addToCarritoPaypal().replaceAll(from, replace));
-                          Navigator.pushReplacementNamed(context, '/staging');
+                          Navigator.pushNamed(context, '/staging');
                         }
                       : null,
                   child: Container(
@@ -98,73 +95,8 @@ class _checkOutPageState extends State<checkOutPage> {
                     ),
                   ),
                 ),
-                // Padding(
-                //   padding: EdgeInsets.all(8.0),
-                //   child: Text(
-                //     "Total: " + Config().getTotalPriceKart().toString(),
-                //     style: TextStyle(
-                //         fontSize: 26,
-                //         fontWeight: FontWeight.bold,
-                //         color: Colors.white),
-                //   ),
-                // ),
-                // Card(
-                //   color: Config.maincolor,
-                //   elevation: 10.0,
-                //   child: Container(
-                //     height: 200,
-                //     width: MediaQuery.of(context).size.width,
-                //     decoration: const BoxDecoration(
-                //       borderRadius: BorderRadius.only(
-                //           topLeft: Radius.circular(20),
-                //           topRight: Radius.circular(20)),
-                //     ),
-                //     child: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.center,
-                //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //       children: [
-
-                //         Row(
-                //           crossAxisAlignment: CrossAxisAlignment.center,
-                //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //           // ignore: prefer_const_literals_to_create_immutables
-                //           children: [
-
-                //             // Padding(
-                //             //   padding: EdgeInsets.all(8.0),
-                //             //   child: Text(
-                //             //     "\$" +
-                //             //         Config().getCostActiveMun().toString() +
-                //             //         " (${'delivery'.tr})",
-                //             //     style: TextStyle(
-                //             //         fontSize: 26,
-                //             //         fontWeight: FontWeight.bold,
-                //             //         color: Colors.white),
-                //             //   ),
-                //             // ),
-                //           ],
-                //         ),
-                // ElevatedButton(
-                //     onPressed: Config.carrito.length > 0
-                //         ? () => Navigator.pushReplacementNamed(
-                //             context, '/staging')
-                //         : null,
-                //     style: ElevatedButton.styleFrom(
-                //         primary: Colors.white,
-                //         fixedSize: Size(250, 60),
-                //         shape: RoundedRectangleBorder(
-                //             borderRadius: BorderRadius.circular(10))),
-                //     child: Text(
-                //       'pay'.tr,
-                //       style: TextStyle(
-                //           fontSize: 24, color: Config.maincolor),
-                //     ))
-                //       ],
-                //     ),
-                //   ),
-                // )
               ],
-            )));
+            ));
   }
 
   bool biggerThan(double a, double b) => a != b;
@@ -378,15 +310,6 @@ class kartList extends StatelessWidget {
                 IconButton(
                     onPressed: () {
                       context.read<Cart>().removeProduct(index);
-                      // setState(() {
-                      // print(
-                      //     "length: ${Config.comp_cart.length}");
-                      // Config.carrito.removeAt(index);
-                      // CarritoModelResponse().deleteCompcart(
-                      //     Config.comp_cart[index].id!);
-                      Componente_Carrito().deleteCompCart();
-                      // Config.comp_cart.removeAt(index);
-                      // });
                     },
                     icon: const Icon(
                       Icons.delete,

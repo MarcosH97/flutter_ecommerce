@@ -1,4 +1,5 @@
 import 'package:e_commerce/Models/payload.dart';
+import 'package:e_commerce/Pages/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 
@@ -59,6 +60,7 @@ class _PayPalLastState extends State<PayPalLast> {
         // print("onSuccess: $params");
         print(params['data']['links'][0]['href']);
         Config().reducirInventario();
+        
         // Navigator.pop(context);
       },
       onError: (error) {

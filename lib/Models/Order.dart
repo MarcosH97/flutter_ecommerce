@@ -13,115 +13,88 @@ import '../Utils/Config.dart';
 class Orden {
   String? uuid;
   String? fechaCreada;
-  String? resumenPago;
-  String? total;
-  int? user;
-  int? destinatario;
-  String? componente;
+  String? destinatario;
+  double? total;
   String? currency;
+  String? status;
+  String? comerciante;
+  String? comprador;
+  String? enlace;
+  double? precioEnvio;
   String? tipo;
+  int? user;
 
-  Orden({
-    this.uuid,
-    this.fechaCreada,
-    this.resumenPago,
-    this.total,
-    this.user,
-    this.destinatario,
-    this.componente,
-    this.currency,
-    this.tipo,
-  });
+  Orden(
+      {this.uuid,
+      this.fechaCreada,
+      this.destinatario,
+      this.total,
+      this.currency,
+      this.status,
+      this.comerciante,
+      this.comprador,
+      this.enlace,
+      this.precioEnvio,
+      this.tipo,
+      this.user});
 
   Orden.fromJson(Map<String, dynamic> json) {
     uuid = json['uuid'];
     fechaCreada = json['fecha_creada'];
-    resumenPago = json['resumen_pago'];
-    total = json['total'];
-    user = json['user'];
     destinatario = json['destinatario'];
-    componente = json['componente'];
+    total = json['total'];
     currency = json['currency'];
+    status = json['status'];
+    comerciante = json['comerciante'];
+    comprador = json['comprador'];
+    enlace = json['enlace'];
+    precioEnvio = json['precio_envio'];
     tipo = json['tipo'];
+    user = json['user'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['uuid'] = this.uuid;
     data['fecha_creada'] = this.fechaCreada;
-    data['resumen_pago'] = this.resumenPago;
-    data['total'] = this.total;
-    data['user'] = this.user;
     data['destinatario'] = this.destinatario;
-    data['componente'] = this.componente;
+    data['total'] = this.total;
     data['currency'] = this.currency;
+    data['status'] = this.status;
+    data['comerciante'] = this.comerciante;
+    data['comprador'] = this.comprador;
+    data['enlace'] = this.enlace;
+    data['precio_envio'] = this.precioEnvio;
     data['tipo'] = this.tipo;
+    data['user'] = this.user;
     return data;
   }
 }
 
-class OrdenRequest {
-  Future<void> createOrderPayPal() async {
-    var headersList = {
-      'Accept-Language': Config.language,
-      'Authorization': Config.token,
-      'Content-Type': 'application/json'
-    };
-    var url = Uri.parse('https://www.diplomarket.com/backend/checkout/');
+class OrderResponse {
+  Future<void> getOrders() async {
+    List<Orden> orders = [];
 
-    var body = {
-      "fecha_creada": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-      "resumen_pago": "",
-      "total": '4.55',
-      "user": Config.activeUser.id,
-      "precio_envio": 0,
-      "destinatario": Config.activeDest,
-      "componente": jsonEncode(Config.carrito).replaceAll(r'\"', "'"),
-      "currency": Config.currency,
-      "tipo": 'paypal',
-    };
-    var req = http.Request('POST', url);
-    req.headers.addAll(headersList);
-    req.body = json.encode(body);
-
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
-
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      print("SUCCESS");
-      print(resBody);
-    } else {
-      print(res.reasonPhrase);
-    }
-  }
-
-  Future<void> createOrderTropiPay() async {
-    var headersList = {
-      'Accept-Language': Config.language,
-      'Authorization': Config.token,
-      'Content-Type': 'application/json'
-    };
+    var headersList = {'Authorization': Config.token};
     var url = Uri.parse('https://www.diplomarket.com/backend/orden/');
 
-    var body = {
-      "uuid": Uuid().v4(),
-      "fecha_creada": DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-      "destinatario": Config.activeDest,
-      "currency": Config.currency,
-      "status": "",
-      "comerciante": "",
-      "comprador": "",
-      "enlace": ""
-    };
-    var req = http.Request('POST', url);
+    var req = http.Request('GET', url);
     req.headers.addAll(headersList);
-    req.body = json.encode(body);
 
     var res = await req.send();
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print(resBody);
+      List<dynamic> body = jsonDecode(resBody)['results'];
+      body.forEach((element) {
+        Orden o = Orden.fromJson(element);
+        if (o.user == Config.user.id) {
+          orders.add(o);
+        }
+      });
+
+      Config.ordenes = orders;
+      // print(resBody);
     } else {
       print(res.reasonPhrase);
     }
@@ -147,32 +120,31 @@ class OrderPaypal {
     this.enlace,
   });
 
-
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
-  
-    if(precio_envio != null){
+
+    if (precio_envio != null) {
       result.addAll({'precio_envio': precio_envio});
     }
-    if(uuid != null){
+    if (uuid != null) {
       result.addAll({'uuid': uuid});
     }
-    if(status != null){
+    if (status != null) {
       result.addAll({'status': status});
     }
-    if(currency != null){
+    if (currency != null) {
       result.addAll({'currency': currency});
     }
-    if(comerciante != null){
+    if (comerciante != null) {
       result.addAll({'comerciante': comerciante});
     }
-    if(comprador != null){
+    if (comprador != null) {
       result.addAll({'comprador': comprador});
     }
-    if(enlace != null){
+    if (enlace != null) {
       result.addAll({'enlace': enlace});
     }
-  
+
     return result;
   }
 
@@ -190,6 +162,6 @@ class OrderPaypal {
 
   String toJson() => json.encode(toMap());
 
-  factory OrderPaypal.fromJson(String source) => OrderPaypal.fromMap(json.decode(source));
+  factory OrderPaypal.fromJson(String source) =>
+      OrderPaypal.fromMap(json.decode(source));
 }
-

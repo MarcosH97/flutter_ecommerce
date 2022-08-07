@@ -50,7 +50,7 @@ Future<void> main() async {
     }
   } else {
     Config.internet = false;
-  }
+  }               
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => Wishlist()),

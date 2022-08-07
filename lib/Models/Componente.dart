@@ -7,7 +7,7 @@ import 'package:e_commerce/Utils/Config.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Componente {
-  String? producto;
+  int? producto;
   int? cantidad;
   double? respaldo;
 
@@ -40,7 +40,7 @@ class Componente {
 
   factory Componente.fromMap(Map<String, dynamic> map) {
     return Componente(
-      producto: map['producto'] != null ? map['producto'] as String : null,
+      producto: map['producto'] != null ? map['producto'] as int : null,
       cantidad: map['cantidad'] != null ? map['cantidad'] as int : null,
       respaldo: map['respaldo'] != null ? map['respaldo'] as double : null,
     );
@@ -56,7 +56,7 @@ class ComponenteCreate {
   
   Componente createAndAddComponente(ProductoAct producto) {
     double respaldop = double.parse(producto.precio!.cantidad!);
-    return Componente(producto: producto.id, cantidad: 1, respaldo: respaldop);
+    return Componente(producto: int.parse(producto.id!), cantidad: 1, respaldo: respaldop);
   }
 
   void updateRespaldo(int index) {

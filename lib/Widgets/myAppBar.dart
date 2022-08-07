@@ -20,6 +20,8 @@ class myAppBar {
     int count = context.watch<Wishlist>().listaSize;
     int countK = context.watch<Cart>().listaSize;
     return AppBar(
+      backgroundColor: Colors.transparent,
+      iconTheme: IconThemeData(color: Colors.white),
       actions: [
         Padding(
           padding: const EdgeInsets.all(10.0),
@@ -50,46 +52,49 @@ class myAppBar {
             position: BadgePosition.center(),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Badge(
-            badgeContent: Text("$countK",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/checkout');
-              },
-              padding: EdgeInsets.all(0),
-              icon: const Icon(Icons.shopping_cart_outlined),
-              iconSize: 40,
-            ),
-            ignorePointer: true,
-            animationType: BadgeAnimationType.scale,
-            showBadge: countK > 0,
-            position: BadgePosition.center(),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: IconButton(
-              onPressed: () {
-                Config.isLoggedIn
-                    ? Navigator.pushNamed(context, '/user')
-                    : Navigator.popAndPushNamed(context, '/login');
-              },
-              padding: EdgeInsets.all(0),
-              icon: Config.isLoggedIn
-                  ? Icon(
-                      Icons.account_circle,
-                      color: Config.maincolor,
-                      size: 40,
-                    )
-                  : Icon(
-                      Icons.account_circle_outlined,
-                      size: 40,
-                    )),
-        ),
+        
+        // Padding(
+        //   padding: const EdgeInsets.all(10.0),
+        //   child: Badge(
+        //     badgeContent: Text("$countK",
+        //         style: TextStyle(
+        //             fontWeight: FontWeight.bold, color: Colors.white)),
+        //     child: IconButton(
+        //       onPressed: () {
+        //         Navigator.pushNamed(context, '/checkout');
+        //       },
+        //       padding: EdgeInsets.all(0),
+        //       icon: const Icon(Icons.shopping_cart_outlined),
+        //       iconSize: 40,
+        //     ),
+        //     ignorePointer: true,
+        //     animationType: BadgeAnimationType.scale,
+        //     showBadge: countK > 0,
+        //     position: BadgePosition.center(),
+        //   ),
+        // ),
+        
+        // Padding(
+        //   padding: const EdgeInsets.all(10.0),
+        //   child: IconButton(
+        //       onPressed: () {
+        //         Config.isLoggedIn
+        //             ? Navigator.pushNamed(context, '/user')
+        //             : Navigator.popAndPushNamed(context, '/login');
+        //       },
+        //       padding: EdgeInsets.all(0),
+        //       icon: Config.isLoggedIn
+        //           ? Icon(
+        //               Icons.account_circle,
+        //               color: Config.maincolor,
+        //               size: 40,
+        //             )
+        //           : Icon(
+        //               Icons.account_circle_outlined,
+        //               size: 40,
+        //             )),
+        // ),
+      
       ],
     );
   }

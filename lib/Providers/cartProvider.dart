@@ -18,6 +18,7 @@ class Cart with ChangeNotifier {
     if (!inKart(comp.producto!)) {
       _lista.add(comp);
       print("added");
+      print(_lista);
     } else {
       print("not added");
     }
@@ -58,7 +59,7 @@ class Cart with ChangeNotifier {
   }
   // bool get Added() => inKart(id);
 
-  bool inKart(String id) {
+  bool inKart(int id) {
     bool b = false;
     _lista.forEach((element) {
       if (element.producto == id) {

@@ -1,5 +1,6 @@
 import 'package:e_commerce/Models/Carrito.dart';
 import 'package:e_commerce/Models/Destinatario.dart';
+import 'package:e_commerce/Models/Order.dart';
 import 'package:e_commerce/Services/SharedService.dart';
 import 'package:e_commerce/Utils/Config.dart';
 import 'package:http/http.dart' as http;
@@ -67,6 +68,7 @@ class LoginModelResponse {
         }
       });
       DestinatarioResponse().getDestinatarios();
+      OrderResponse().getOrders();
     } else {
       print(res.reasonPhrase);
     }

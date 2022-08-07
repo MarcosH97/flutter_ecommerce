@@ -110,6 +110,7 @@ class Config {
           munNames.add(element.nombre!);
       });
     });
+
     CategoriaModelResponse().getCategorias().then((value) => {
           if (categories.isNotEmpty)
             {
@@ -139,7 +140,7 @@ class Config {
       if (!found) {
         carrito.add(Componente(
             cantidad: 1,
-            producto: element.producto.toString(),
+            producto: element.producto,
             respaldo:
                 getRespaldo(findProdyctByID(element.producto.toString()))));
       }
@@ -248,10 +249,12 @@ class Config {
         total += element.respaldo!;
       });
     } else {
-      context.read<Cart>().getLista.forEach((element) {total += element.respaldo!;});
+      context.read<Cart>().getLista.forEach((element) {
+        total += element.respaldo!;
+      });
     }
     total = double.parse(total.toStringAsFixed(2));
-    print(total);
+    // print(total);
     return total;
   }
 
@@ -295,7 +298,7 @@ class Config {
   ProductoAct getProductoLocal(Componente c) {
     ProductoAct pro = ProductoAct();
     AllProducts.forEach((element) {
-      if (c.producto == element.id) {
+      if (c.producto.toString() == element.id) {
         pro = element;
       }
     });
@@ -480,5 +483,37 @@ class Config {
       }
     }
     return id;
+  }
+
+  List<DataRow> getOrdenes() {
+    List<DataRow> dc = [];
+    ordenes.forEach((element) {
+        dc.add(DataRow(cells: [
+          if(element.tipo == 'paypal')
+          DataCell(Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: SizedBox(
+              width: 50,
+              child: Image.asset('assets/paypal.png')),
+          ))
+          else
+          DataCell(Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: SizedBox(
+              width: 50,
+              child: Image.asset('assets/tropi.png')),
+          )),
+          DataCell(Text(element.uuid!)),
+          DataCell(Text(element.status!)),
+          DataCell(Text(element.fechaCreada!))
+          ]));
+      });
+
+    return dc;
+  }
+
+  LoadUserData(){
+    DestinatarioResponse().getDestinatarios();
+    OrderResponse().getOrders();
   }
 }

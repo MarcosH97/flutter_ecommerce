@@ -51,7 +51,7 @@ class _productPageState extends State<productPage> {
 
   @override
   Widget build(BuildContext context) {
-    inkart = context.watch<Cart>().inKart(widget.producto.id!);
+    inkart = context.watch<Cart>().inKart( int.parse(widget.producto.id!));
     isFav = context.watch<Wishlist>().inWL(widget.prod.id!);
     return Scaffold(
       appBar: AppBar(),
@@ -89,7 +89,7 @@ class _productPageState extends State<productPage> {
                       // widget.callback;
                     });
                     context.read<Cart>().addProduct(Componente(
-                        producto: widget.producto.id,
+                        producto: int.parse(widget.producto.id!),
                         cantidad: 1,
                         respaldo: Config().getRespaldo(widget.producto)));
                   } else {

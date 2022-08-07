@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:e_commerce/Models/Destinatario.dart';
 import 'package:e_commerce/Models/Order.dart';
+import 'package:e_commerce/Models/payload.dart';
 import 'package:e_commerce/Widgets/createDestin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -67,95 +68,97 @@ class stagePageState extends State<stagePage> {
     }
 
     itemCount = context.watch<Cart>().listaSize;
-    return Scaffold(
-      appBar: AppBar(),
-      body: Theme(
-        data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(primary: Config.maincolor)),
-        child: Stepper(
-          type: StepperType.horizontal,
-          steps: getSteps(),
-          currentStep: currentStep,
-          onStepContinue: () {
-            final isLast = currentStep == getSteps().length - 1;
-            if (isLast) {
-              if (Config().validateKart()) {
-                print("validation passed");
-                Navigator.pushReplacementNamed(context, "/paypal");
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title:
-                        Text("Cantidad de un producto excede las existencias"),
-                    actions: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('ok')),
-                    ],
-                  ),
-                );
-              }
-              // OrdenRequest().createOrderPayPal();
-            } else if (currentStep == 0) {
-              // if (_switch) {
-              // }
-              setState(() {
-                currentStep++;
-              });
-            } else {
-              setState(() {
-                // DestinatarioResponse().getDestinatarios();
-                currentStep++;
-              });
-            }
-          },
-          onStepCancel: () {
-            // print(jsonEncode(Config.carrito).replaceAll(r'\"', "'"));
-            if (currentStep == 0) {
-              null;
-            } else
-              setState(() => currentStep--);
-          },
-          controlsBuilder: (context, details) {
-            return Container(
-              margin: EdgeInsets.all(10),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            fixedSize: currentStep == 2
-                                ? Size(120, 30)
-                                : Size(120, 50),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                        child: Text("ATRÁS"),
-                        onPressed: details.onStepCancel,
-                      ),
+    return SafeArea(
+      child: Scaffold(
+        // appBar: AppBar(),
+        body: Theme(
+          data: Theme.of(context).copyWith(
+              colorScheme: ColorScheme.light(primary: Config.maincolor)),
+          child: Stepper(
+            type: StepperType.horizontal,
+            steps: getSteps(),
+            currentStep: currentStep,
+            onStepContinue: () {
+              final isLast = currentStep == getSteps().length - 1;
+              if (isLast) {
+                if (Config().validateKart()) {
+                  print("validation passed");
+                  Navigator.popAndPushNamed(context, "/paypal");
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title:
+                          Text("Cantidad de un producto excede las existencias"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('ok')),
+                      ],
                     ),
-                    if (currentStep != 2)
+                  );
+                }
+                // OrdenRequest().createOrderPayPal();
+              } else if (currentStep == 0) {
+                // if (_switch) {
+                // }
+                setState(() {
+                  currentStep++;
+                });
+              } else {
+                setState(() {
+                  // DestinatarioResponse().getDestinatarios();
+                  currentStep++;
+                });
+              }
+            },
+            onStepCancel: () {
+              // print(jsonEncode(Config.carrito).replaceAll(r'\"', "'"));
+              if (currentStep == 0) {
+                null;
+              } else
+                setState(() => currentStep--);
+            },
+            controlsBuilder: (context, details) {
+              return Container(
+                margin: EdgeInsets.all(10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              primary: Config.maincolor,
-                              fixedSize: Size(120, 50),
+                              primary: Colors.white,
+                              fixedSize: currentStep == 2
+                                  ? Size(120, 30)
+                                  : Size(120, 50),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10))),
-                          child: Text(
-                            "SIGUIENTE",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: details.onStepContinue,
+                          child: Text("ATRÁS"),
+                          onPressed: details.onStepCancel,
                         ),
-                      )
-                  ]),
-            );
-          },
+                      ),
+                      if (currentStep != 2)
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Config.maincolor,
+                                fixedSize: Size(120, 50),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                            child: Text(
+                              "SIGUIENTE",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            onPressed: details.onStepContinue,
+                          ),
+                        )
+                    ]),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -598,18 +601,21 @@ class stagePageState extends State<stagePage> {
                       Expanded(
                           child: GestureDetector(
                         onTap: (() {
-                          if (!Config.karrito.isEmpty) {
-                            Navigator.popAndPushNamed(context, '/paypal');
+                          if (context.read<Cart>().listaSize > 0) {
+                            Navigator.pushNamed(context, '/paypal');
                             Config.karrito.clear();
                           } else {
                             showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: Text("Carrito vacio"),
-                                  actions: [
-                                    TextButton(onPressed: ()=>Navigator.pop(context), child: Text("ok"))
-                                  ],
-                                ));
+                                      title: Text("Carrito vacio"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("ok"))
+                                      ],
+                                    ));
                           }
                         }),
                         child: Container(
@@ -622,7 +628,16 @@ class stagePageState extends State<stagePage> {
                       Expanded(
                           child: GestureDetector(
                         onTap: (() {
-                          // Navigator.popAndPushNamed(context, '/paypal');
+                          showDialog(
+                              context: context,
+                              builder: (context) => loadingDialog(context));
+                          // showDialog(
+                          //     context: context,
+                          //     builder: (context) =>
+                          //         AlertDialog(title: Text('Compra agregada'),actions: [
+                          //           TextButton(onPressed: (){}, child: Text('ok'))
+                          //         ],));
+                          // Navigator.pop(context);
                           // Config.karrito.clear();
                         }),
                         child: Container(
@@ -637,4 +652,57 @@ class stagePageState extends State<stagePage> {
                 ))),
       ];
   bool biggerThan(double a, double b) => a != b;
+
+  Widget loadingDialog(BuildContext outcontext) {
+    return FutureBuilder(
+      future: Payload().sendTropiload(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          case ConnectionState.done:
+            {
+              if (snapshot.data == true) {
+                return AlertDialog(
+                  title: Text('Compra exitosa',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Config().reducirInventario();
+                          Config.karrito.clear();
+                          Navigator.pop(context);
+                          Navigator.of(outcontext).popAndPushNamed("/home");
+                        },
+                        child: Text("Enter"))
+                  ],
+                );
+              } else {
+                return AlertDialog(
+                  title: Text('Compra fallida',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center),
+                  actions: [
+                    TextButton(
+                        
+                        onPressed: () => Navigator.pop(context),
+                        child: Text("Ok"))
+                  ],
+                );
+              }
+            }
+          default:
+            {
+              break;
+            }
+        }
+        return Text("null");
+      },
+    );
+  }
 }

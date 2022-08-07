@@ -23,7 +23,7 @@ class FoodCardW extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool inKart = context.watch<Cart>().inKart(productReq.id!);
+    bool inKart = context.watch<Cart>().inKart(int.parse(productReq.id!));
     bool inWL = context.watch<Wishlist>().inWL(productReq.id!);
     bool outofstock;
     ProductoAct producto = productReq;
@@ -205,7 +205,7 @@ class FoodCardW extends StatelessWidget {
                                 if (Config.isLoggedIn) {
 
                                   context.read<Cart>().addProduct(Componente(
-                                      producto: producto.id,
+                                      producto: int.parse(producto.id!),
                                       cantidad: 1,
                                       respaldo:
                                           Config().getRespaldo(producto)));
