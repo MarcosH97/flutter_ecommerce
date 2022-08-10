@@ -6,6 +6,7 @@ import 'package:e_commerce/Models/Municipio.dart';
 import 'package:e_commerce/Models/Order.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/User.dart';
+import 'package:e_commerce/Models/carrusel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -38,6 +39,7 @@ class Config {
   static late List<FAQ> faqs;
 
   static List<String> provinciaL = [];
+  static List<Carrusel> carrusel = [];
   static List<Componente_Carrito> comp_cart = [];
 
   static List locals = [
@@ -101,6 +103,7 @@ class Config {
   static User get activeUser => user;
 
   Future<void> setAll() async {
+    await CarruselResponse().getCarrusel();
     await PaisRequest().getPaises();
     await ProvinciaRequest().getProvincias(pais);
     await MunicipioModelResponse().getMunicipios().then((value) {
@@ -488,31 +491,27 @@ class Config {
   List<DataRow> getOrdenes() {
     List<DataRow> dc = [];
     ordenes.forEach((element) {
-        dc.add(DataRow(cells: [
-          if(element.tipo == 'paypal')
+      dc.add(DataRow(cells: [
+        if (element.tipo == 'paypal')
           DataCell(Padding(
             padding: const EdgeInsets.all(2.0),
-            child: SizedBox(
-              width: 50,
-              child: Image.asset('assets/paypal.png')),
+            child: SizedBox(width: 50, child: Image.asset('assets/paypal.png')),
           ))
-          else
+        else
           DataCell(Padding(
             padding: const EdgeInsets.all(2.0),
-            child: SizedBox(
-              width: 50,
-              child: Image.asset('assets/tropi.png')),
+            child: SizedBox(width: 50, child: Image.asset('assets/tropi.png')),
           )),
-          DataCell(Text(element.uuid!)),
-          DataCell(Text(element.status!)),
-          DataCell(Text(element.fechaCreada!))
-          ]));
-      });
+        DataCell(Text(element.uuid!)),
+        DataCell(Text(element.status!)),
+        DataCell(Text(element.fechaCreada!))
+      ]));
+    });
 
     return dc;
   }
 
-  LoadUserData(){
+  LoadUserData() {
     DestinatarioResponse().getDestinatarios();
     OrderResponse().getOrders();
   }

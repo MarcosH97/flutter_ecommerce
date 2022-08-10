@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:badges/badges.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
@@ -25,11 +26,13 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   late var textController = TextEditingController();
   late List<ProductoAct> filter;
-  
+  int selected = 0;
+
   void callback() {
     print("callback called");
     setState(() {});
   }
+
   @override
   void initState() {
     super.initState();
@@ -43,38 +46,115 @@ class _homePageState extends State<homePage> {
 
     final _tabs = [mainPage(), userPage(), checkOutPage()];
     final _navBarItems = <BottomNavigationBarItem>[
-      const BottomNavigationBarItem(icon: Icon(Icons.home, color: Config.maincolor,), label: "home", ),
-      const BottomNavigationBarItem(icon: Icon(Icons.account_circle, color: Config.maincolor), label: "user"),
-      const BottomNavigationBarItem(icon: Icon(Icons.shopping_cart, color: Config.maincolor), label: "cart"),
+      const BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
+          color: Config.maincolor,
+        ),
+        label: "home",
+      ),
+      const BottomNavigationBarItem(
+          icon: Icon(Icons.account_circle, color: Config.maincolor),
+          label: "user"),
+      const BottomNavigationBarItem(
+          icon: Icon(Icons.shopping_cart, color: Config.maincolor),
+          label: "cart"),
     ];
     assert(_tabs.length == _navBarItems.length);
     final bottomNavBar = BottomNavigationBar(
       showSelectedLabels: false,
       showUnselectedLabels: false,
       iconSize: 30,
-      
       items: _navBarItems,
       currentIndex: currentIndex,
       type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
+      onTap: (int index) {
         setState(() {
           currentIndex = index;
         });
       },
     );
-
-    return 
-    SafeArea(
-
+    int countK = context.watch<Cart>().listaSize;
+    return SafeArea(
       child: Scaffold(
         backgroundColor: Color.fromARGB(255, 23, 31, 56),
-        appBar:
-        myAppBar(
+        appBar: myAppBar(
           context: context,
           // callback: callback
         ).AppBarM(),
         body: _tabs[currentIndex],
-        bottomNavigationBar: bottomNavBar,
+        bottomNavigationBar: Container(
+          padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              // borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
+            ),
+            height: 80,
+            // width: double.infinity,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 40,
+                    onPressed: () {
+                      setState(() {
+                        currentIndex = 0;
+                        selected = currentIndex;
+                      });
+                    },
+                    icon: Icon(
+                      Icons.home,
+                      color: selected == 0 ? Config.maincolor : Colors.grey,
+                    )),
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 40,
+                    onPressed: () {
+                      setState(() {
+                        if (Config.isLoggedIn){
+                          currentIndex = 1;
+                          selected = currentIndex;
+                        }
+                        else
+                          Navigator.popAndPushNamed(context, '/login');
+                      });
+                    },
+                    icon: Icon(
+                      Icons.account_circle_rounded,
+                      color: selected == 1 ? Config.maincolor : Colors.grey,
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Badge(
+                    badgeContent: Text("$countK",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.white)),
+                    child: IconButton(
+                      onPressed: () {
+                        // Navigator.pushNamed(context, '/checkout');
+                        setState(() {
+                          currentIndex = 2;
+                          selected = currentIndex;
+                        });
+                      },
+                      padding: EdgeInsets.all(0),
+                      icon: Icon(
+                        Icons.shopping_cart_outlined,
+                        color: selected == 2 ? Config.maincolor : Colors.grey,
+                      ),
+                      iconSize: 40,
+                    ),
+                    ignorePointer: true,
+                    animationType: BadgeAnimationType.scale,
+                    showBadge: countK > 0,
+                    position: BadgePosition.center(),
+                  ),
+                ),
+              ],
+            )),
+        // bottomNavBar,
         drawer: Drawer(
           child: drawerMenuItems(context),
         ),
@@ -431,9 +511,10 @@ class _mainPageState extends State<mainPage> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10), topLeft: Radius.circular(10))
-                          ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  topLeft: Radius.circular(10))),
                           child: TypeAheadField(
                             textFieldConfiguration: TextFieldConfiguration(
                                 autofocus: false,
@@ -531,7 +612,9 @@ class _mainPageState extends State<mainPage> {
                           ),
                         ),
                       )),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Expanded(
                           child: Container(
                         padding: EdgeInsets.all(5),
@@ -578,230 +661,258 @@ class _mainPageState extends State<mainPage> {
               ],
             ),
             Container(
-              color: Colors.white,
-              child:Column(children: [
-                Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'top_products'.tr,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              height: 500,
-              child: ProductsMobile(
-                id: 3,
-                mun: 1,
-                // callback: callback,
-                axis: Axis.horizontal,
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'top_selling'.tr,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(
-                height: 500,
-                width: MediaQuery.of(context).size.width,
-                child: ProductsMobile(
-                  id: 3,
-                  mun: 1,
-                  // callback: callback,
-                  axis: Axis.horizontal,
-                )),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'recommended'.tr,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            SizedBox(
-                height: 500,
-                width: MediaQuery.of(context).size.width,
-                child: ProductsMobile(
-                  id: 3,
-                  mun: 1,
-                  // callback: callback,
-                  axis: Axis.horizontal,
-                )),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                'in_offer'.tr,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Container(
-                margin: EdgeInsets.symmetric(vertical: 10),
-                height: 500,
-                width: MediaQuery.of(context).size.width,
-                child: ProductsMobile(
-                  id: 4,
-                  mun: 1,
-                  // callback: callback,
-                  axis: Axis.horizontal,
-                )),
-            SizedBox(
-              height: 24,
-            ),
-            Container(
-              color: Config.secondarycolor,
-              child: Column(children: [
-                Image.asset('assets/logo_large.png', fit: BoxFit.contain),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Diplomarket is a division of the Las Americas TCC, LLC. We are very proud to say that Diplomarket is one of the first American Companies to serve the purchase and logistic needs to customers between US and Cuba.",
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                        fontFamily: "Arial",
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                const Text(
-                  "INFORMACIÓN",
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                color: Colors.white,
+                child: Column(
                   children: [
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Config.maincolor)),
-                      child: const Text(
-                        "Sobre nosotros",
-                        style: TextStyle(color: Colors.white),
+                    SizedBox(
+                      height: 200,
+                      width: double.infinity,
+                      child: PageView.builder(
+                        itemBuilder: (context, index) {
+                          return Image.network(
+                            Config.apiURL + Config.carrusel[index].imagen!,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        itemCount: Config.carrusel.length,
+                        scrollDirection: Axis.horizontal,
                       ),
                     ),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Config.maincolor)),
-                      child: const Text(
-                        "Políticas de Privacidad",
-                        style: TextStyle(color: Colors.white),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text(
+                        'top_products'.tr,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Config.maincolor)),
-                      child: const Text(
-                        "Términos y Condiciones",
-                        style: TextStyle(color: Colors.white),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      height: 500,
+                      child: ProductsMobile(
+                        id: 3,
+                        mun: 1,
+                        // callback: callback,
+                        axis: Axis.horizontal,
                       ),
                     ),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Config.maincolor)),
-                      child: const Text(
-                        "Contáctenos",
-                        style: TextStyle(color: Colors.white),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text(
+                        'top_selling'.tr,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 50,
-                        child: ClipRRect(
-                            child: Image.asset(
-                          "assets/paypal.png",
-                          fit: BoxFit.fitWidth,
+                    SizedBox(
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child: ProductsMobile(
+                          id: 3,
+                          mun: 1,
+                          // callback: callback,
+                          axis: Axis.horizontal,
                         )),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text(
+                        'recommended'.tr,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      SizedBox(
-                        width: 50,
-                        child: ClipRRect(
-                            child: Image.asset(
-                          "assets/tropi.png",
-                          fit: BoxFit.fitWidth,
+                    ),
+                    SizedBox(
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child: ProductsMobile(
+                          id: 3,
+                          mun: 1,
+                          // callback: callback,
+                          axis: Axis.horizontal,
                         )),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Text(
+                        'in_offer'.tr,
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ]),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "© 2022 Diplomarket Cuba Embassies All rights reserved.",
-                  style: TextStyle(color: Colors.grey[400]),
-                ),
-              ]),
-            )
-          
-              ],)
-            ),
-            
+                    ),
+                    Container(
+                        margin: EdgeInsets.symmetric(vertical: 10),
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child: ProductsMobile(
+                          id: 4,
+                          mun: 1,
+                          // callback: callback,
+                          axis: Axis.horizontal,
+                        )),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    Container(
+                      color: Config.secondarycolor,
+                      child: Column(children: [
+                        Image.asset('assets/logo_large.png',
+                            fit: BoxFit.contain),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            "Diplomarket is a division of the Las Americas TCC, LLC. We are very proud to say that Diplomarket is one of the first American Companies to serve the purchase and logistic needs to customers between US and Cuba.",
+                            textAlign: TextAlign.justify,
+                            style: TextStyle(
+                                fontFamily: "Arial",
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        const Text(
+                          "INFORMACIÓN",
+                          style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor)),
+                              child: const Text(
+                                "Sobre nosotros",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor)),
+                              child: const Text(
+                                "Políticas de Privacidad",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor)),
+                              child: const Text(
+                                "Términos y Condiciones",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Config.maincolor)),
+                              child: const Text(
+                                "Contáctenos",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 50,
+                                child: ClipRRect(
+                                    child: Image.asset(
+                                  "assets/paypal.png",
+                                  fit: BoxFit.fitWidth,
+                                )),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              SizedBox(
+                                width: 50,
+                                child: ClipRRect(
+                                    child: Image.asset(
+                                  "assets/tropi.png",
+                                  fit: BoxFit.fitWidth,
+                                )),
+                              ),
+                            ]),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "© 2022 Diplomarket Cuba Embassies All rights reserved.",
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                      ]),
+                    )
+                  ],
+                )),
           ],
         ),
       ),
