@@ -9,7 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils/Config.dart';
 
 class userPage extends StatefulWidget {
-  userPage({Key? key}) : super(key: key);
+  Function callback;
+  userPage({Key? key, required this.callback}) : super(key: key);
 
   @override
   State<userPage> createState() => _UserPageState();
@@ -35,8 +36,6 @@ class _UserPageState extends State<userPage> {
     bool b = sh.getBool('login')!;
     print(b);
   }
-
-  callback() {}
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +74,7 @@ class _UserPageState extends State<userPage> {
                   leading: Icon(Icons.person, color: Colors.white),
                   collapsedBackgroundColor: Config.maincolor,
                   collapsedIconColor: Colors.white,
+                  iconColor: Colors.white,
                   childrenPadding: EdgeInsets.symmetric(horizontal: 10),
                   initiallyExpanded: true,
                   backgroundColor: Config.maincolor,
@@ -176,6 +176,9 @@ class _UserPageState extends State<userPage> {
                       height: 10,
                     ),
                   ]),
+
+              //-----DESTINATARIOS-----
+
               ExpansionTile(
                   iconColor: Colors.white,
                   collapsedIconColor: Colors.white,
@@ -228,14 +231,20 @@ class _UserPageState extends State<userPage> {
                         child: Column(
                           children: [
                             Text(
-                              "Crear un destinatario nuevo",
+                              'createdest'.tr,
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            createDestin(callback: callback),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            createDestin(callback: (){}),
                           ],
                         ))
                   ]),
+
+              //-----ORDERS-----
+
               ExpansionTile(
                 iconColor: Colors.white,
                 collapsedIconColor: Colors.white,
@@ -270,6 +279,9 @@ class _UserPageState extends State<userPage> {
                   )
                 ],
               ),
+
+              //-----SETTINGS-----
+
               ExpansionTile(
                 iconColor: Colors.white,
                 collapsedIconColor: Colors.white,
@@ -346,10 +358,11 @@ class _UserPageState extends State<userPage> {
             onPressed: () {
               SharedService().ClearData();
               Config.login = false;
-              Navigator.popAndPushNamed(context, "/home");
+              // Navigator.popAndPushNamed(context, "/home");
+              widget.callback();
             },
             child: Text(
-              "Cerrar cuenta",
+              "close".tr,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,

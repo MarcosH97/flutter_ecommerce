@@ -50,7 +50,7 @@ Future<void> main() async {
     }
   } else {
     Config.internet = false;
-  }               
+  }
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => Wishlist()),
@@ -72,7 +72,7 @@ class MyApp extends StatefulWidget {
 
 class _myApp extends State<MyApp> {
   bool _login = false;
-
+  
   @override
   void initState() {
     super.initState();
@@ -105,10 +105,8 @@ class _myApp extends State<MyApp> {
         '/home': (context) => homePage(),
         '/login': (context) => loginPage(),
         '/register': (context) => registerPage(),
-        '/checkout': (context) => checkOutPage(),
         '/staging': (context) => stagePage(),
         '/allproducts': (context) => allProductsPage(),
-        '/user': (context) => userPage(),
         '/paypal': (context) => PayPalLast(),
         '/braintree': (context) => PayPage(),
         '/help': (context) => helpPage(),

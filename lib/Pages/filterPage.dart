@@ -1,11 +1,12 @@
 import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Widgets/foodCardW.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 
 class filterPage extends StatefulWidget {
   final headerName;
-  final List<ProductoAct> productos;
+  final List<ProductoMun> productos;
   filterPage({Key? key, required this.headerName, required this.productos})
       : super(key: key);
 
@@ -21,7 +22,7 @@ class _FilterPageState extends State<filterPage> {
   //   });
   // }
   
-  List<ProductoAct> productos = [];
+  List<ProductoMun> productos = [];
   @override
   Widget build(BuildContext context) {
     productos = widget.productos;
@@ -45,7 +46,7 @@ class _FilterPageState extends State<filterPage> {
                 child: ListView.builder(
                     itemCount: productos.length,
                     itemBuilder: (context, index) =>
-                        FoodCardW(productReq: productos[index], index: index, 
+                        FoodCardW(productReq: Config().findProdyctByID(productos[index].id!) , index: index, 
                         // callback: callback,
                         )),
               ),

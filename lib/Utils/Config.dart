@@ -6,7 +6,7 @@ import 'package:e_commerce/Models/Municipio.dart';
 import 'package:e_commerce/Models/Order.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/User.dart';
-import 'package:e_commerce/Models/carrusel.dart';
+import 'package:e_commerce/Models/Carrusel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -23,8 +23,9 @@ import '../Providers/cartProvider.dart';
 class Config {
   static late List<Municipio> municipios;
   static late List<Componente> carrito;
-  static late List<ProductoAct> wishlist;
-  static late List<ProductoAct> AllProducts;
+  static late List<ProductoMun> wishlist;
+  static late List<Producto> AllProducts = [];
+  static late List<ProductoMun> AllProductsMun = [];
   static late List<Destinatario> destinatarios;
   static late List<Categoria> categories;
   static late List<Subcategoria> subcategories;
@@ -125,10 +126,7 @@ class Config {
             }
         });
 
-    // print('carrito: ${kart.pk}}');
-
     faqs = await FAQModelResponse().getFAQ();
-    // print("Municipios: "+municipios.length.toString());
   }
 
   updateCarrito() async {
@@ -144,21 +142,14 @@ class Config {
         carrito.add(Componente(
             cantidad: 1,
             producto: element.producto,
-            respaldo:
-                getRespaldo(findProdyctByID(element.producto.toString()))));
+            respaldo: getProductFinalPrice(element.producto!)));
       }
-      print("carrito: $carrito");
     });
   }
 
-  ProductoAct findProdyctByID(id) {
-    ProductoAct pa = ProductoAct();
-    AllProducts.forEach((element) {
-      if (element.id == id) {
-        pa = element;
-      }
-    });
-    return pa;
+  // static late Producto prodid;
+  findProdyctByID(String id) async {
+    AllProducts.add(await ProductoModelResponse().getProductobyID(id));
   }
 
   Future<bool> checkInternetConnection() async {
@@ -203,15 +194,19 @@ class Config {
     return d;
   }
 
-  double getProductFinalPrice(ProductoAct p) {
-    double preciof = double.parse(p.precio!.cantidad!);
+  double getProductFinalPrice(int id) {
+    ProductoMun p = ProductoMun();
+    for (var v in AllProductsMun) {
+      if (v.id == id.toString()) p = v;
+    }
+    var preciof = double.parse(p.precio!.cantidad!);
     if (p.promocion!.activo != null) {
       if (p.promocion!.activo!) {
         preciof =
             double.parse(p.precio!.cantidad!) * p.promocion!.descuento! / 100;
       }
     }
-    // print(preciof);
+
     return preciof;
   }
 
@@ -221,7 +216,6 @@ class Config {
         destinos.add(element.nombre!);
       }
     });
-    // print("Lista dests: $destinos");
   }
 
   setDestinIndexes(String name) {
@@ -240,7 +234,7 @@ class Config {
         d = element;
       }
     }
-    // print(d.nombre);
+
     return d;
   }
 
@@ -248,7 +242,6 @@ class Config {
     double total = 0;
     if (context == null) {
       carrito.forEach((element) {
-        // print(element.respaldo);
         total += element.respaldo!;
       });
     } else {
@@ -257,7 +250,7 @@ class Config {
       });
     }
     total = double.parse(total.toStringAsFixed(2));
-    // print(total);
+
     return total;
   }
 
@@ -269,61 +262,55 @@ class Config {
     return total;
   }
 
-  double getLocalTotalPrice(ProductoAct producto, int cantidad) {
-    return double.parse(producto.precio!.cantidad!) * cantidad;
+  double getLocalTotalPrice(Producto producto, int cantidad) {
+    return producto.precio! * cantidad;
   }
 
-  Future<ProductoAct> getProducto(String id) async {
-    var pro;
-    List<ProductoAct>? productos =
-        await ProductoModelResponse().getProductRecList();
-    productos!.forEach((element) {
-      if (element.id == id) {
-        pro = element;
-        // print("product found");
+  Future<Producto> getProducto(String id) async {
+    return await ProductoModelResponse().getProductobyID(id);
+  }
+
+  ProductoMun findProductoMun(Producto p) {
+    for (var v in AllProductsMun) {
+      if (v.id == p.id) {
+        return v;
       }
-    });
-    if (pro != null) {
-      return pro;
     }
-    return ProductoAct();
+    return ProductoMun();
   }
 
-  List<ProductoAct> getProductosCarrito(BuildContext context) {
-    List<ProductoAct> listado = [];
+  List<Producto> getProductosCarrito(BuildContext context) {
+    List<Producto> listado = [];
     carrito = context.watch<Cart>().getLista;
     carrito.forEach((element) {
+      // print(element.producto);
       listado.add(getProductoLocal(element));
     });
+    print(listado[0].nombre);
     return listado;
   }
 
-  ProductoAct getProductoLocal(Componente c) {
-    ProductoAct pro = ProductoAct();
-    AllProducts.forEach((element) {
+  Producto getProductoLocal(Componente c) {
+    Producto pro = Producto();
+    AllProductsMun.forEach((element) {
       if (c.producto.toString() == element.id) {
-        pro = element;
+        pro = ProductoModelResponse().getProductobyID(element.id!);
       }
     });
     return pro;
   }
 
-  double getRespaldo(ProductoAct prod) {
-    // print(prod.id);
-    return getProductFinalPrice(prod);
-  }
-
-  bool inCarrito(ProductoAct producto) {
+  bool inCarrito(int id) {
     bool inKart = false;
     carrito.forEach((element) {
-      if (element.producto == producto.id) {
+      if (element.producto == id) {
         inKart = true;
       }
     });
     return inKart;
   }
 
-  bool inWishlist(ProductoAct producto) {
+  bool inWishlist(Producto producto) {
     bool inWL = false;
     wishlist.forEach((element) {
       if (element.id == producto.id) {
@@ -349,9 +336,9 @@ class Config {
       ComponentePaypal cp = ComponentePaypal(
           name: getProductoLocal(element).nombre,
           currency: currency,
-          price: getProductFinalPrice(getProductoLocal(element)).toString(),
+          price: getProductFinalPrice(element.producto!).toString(),
           quantity: element.cantidad.toString());
-      // print(cp.toJson());
+
       karrito.forEach((e) {
         if (e.name == cp.name) {
           exists = true;
@@ -387,7 +374,7 @@ class Config {
     print('entered validation');
     bool b = false;
     kart.componentes!.forEach((element) async {
-      ProductoAct futuro = await getProducto(element.producto!.id!);
+      Producto futuro = await getProducto(element.producto!.id!);
       if (int.parse(element.cantidad!) <= int.parse(futuro.cantInventario!)) {
         print('validated');
         b = true;
@@ -396,31 +383,36 @@ class Config {
     return b;
   }
 
-  List<ProductoAct> filter(String key, int type) {
-    List<ProductoAct> list = [];
+  List<ProductoMun> filter(String key, int type) {
+    List<ProductoMun> list = [];
 
     AllProducts.forEach((element) {
+      var prod = getLocalProdMun(int.parse(element.id!));
       switch (type) {
         case 1:
           {
-            if (element.marca!.nombre == key) list.add(element);
+            if (element.marca!.nombre == key) list.add(prod);
             break;
           }
         case 2:
           {
-            if (element.proveedor!.nombre == key) list.add(element);
+            if (element.proveedor!.nombre == key) list.add(prod);
             break;
           }
-        // case 3:
-        //   {
-        //     if (element == key) list.add(element);
-        //     break;
-        //   }
+        case 3:
+          {
+            if (element.subcategoria == key) list.add(prod);
+            break;
+          }
         default:
           break;
       }
     });
     return list;
+  }
+
+  ProductoMun getLocalProdMun(int id) {
+    return AllProductsMun.firstWhere((element) => element.id == id);
   }
 
   sendCart() {}
@@ -449,10 +441,8 @@ class Config {
       body.forEach((element) {
         lista.add(element['nombre']);
       });
-      print(resBody);
       return lista;
     } else {
-      print(res.reasonPhrase);
       return lista;
     }
   }

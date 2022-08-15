@@ -3,15 +3,165 @@ import 'package:http/http.dart' as http;
 import 'package:e_commerce/Models/Municipio.dart';
 import 'package:e_commerce/Utils/Config.dart';
 
-class ProductoRec {
+class Producto {
+  String? id;
+  String? nombre;
+  double? precio;
+  String? precioCurrency;
+  double? precioxlibra;
+  String? precioxlibraCurrency;
+  String? um;
+  String? imgPrincipal;
+  Proveedor? proveedor;
+  Marca? marca;
+  int? max;
+  String? descripcion;
+  List<municipio>? municipios;
+  String? cantInventario;
+  Etiquetas? etiquetas;
+  String? upc;
+  String? sku;
+  String? subcategoria;
+  Promocion? promocion;
+  List<String>? galeria;
+  String? slug;
+
+  Producto(
+      {this.id,
+      this.nombre,
+      this.precio,
+      this.precioCurrency,
+      this.precioxlibra,
+      this.precioxlibraCurrency,
+      this.um,
+      this.imgPrincipal,
+      this.proveedor,
+      this.marca,
+      this.max,
+      this.descripcion,
+      this.municipios,
+      this.cantInventario,
+      this.etiquetas,
+      this.upc,
+      this.sku,
+      this.subcategoria,
+      this.promocion,
+      this.galeria,
+      this.slug});
+
+  Producto.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    nombre = json['nombre'];
+    precio = json['precio'];
+    precioCurrency = json['precio_currency'];
+    precioxlibra = json['precioxlibra'];
+    precioxlibraCurrency = json['precioxlibra_currency'];
+    um = json['um'];
+    imgPrincipal = json['img_principal'];
+    proveedor = json['proveedor'] != null
+        ? new Proveedor.fromJson(json['proveedor'])
+        : null;
+    marca = json['marca'] != null ? new Marca.fromJson(json['marca']) : null;
+    max = json['max'];
+    descripcion = json['descripcion'];
+    if (json['municipios'] != null) {
+      municipios = <municipio>[];
+      json['municipios'].forEach((v) {
+        municipios!.add(new municipio.fromJson(v));
+      });
+    }
+    cantInventario = json['cant_inventario'];
+    etiquetas = json['etiquetas'] != null
+        ? new Etiquetas.fromJson(json['etiquetas'])
+        : null;
+    upc = json['upc'];
+    sku = json['sku'];
+    subcategoria = json['subcategoria'];
+    promocion = json['promocion'] != null
+        ? new Promocion.fromJson(json['promocion'])
+        : null;
+    galeria = json['galeria'].cast<String>();
+    slug = json['slug'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['nombre'] = this.nombre;
+    data['precio'] = this.precio;
+    data['precio_currency'] = this.precioCurrency;
+    data['precioxlibra'] = this.precioxlibra;
+    data['precioxlibra_currency'] = this.precioxlibraCurrency;
+    data['um'] = this.um;
+    data['img_principal'] = this.imgPrincipal;
+    if (this.proveedor != null) {
+      data['proveedor'] = this.proveedor!.toJson();
+    }
+    if (this.marca != null) {
+      data['marca'] = this.marca!.toJson();
+    }
+    data['max'] = this.max;
+    data['descripcion'] = this.descripcion;
+    if (this.municipios != null) {
+      data['municipios'] = this.municipios!.map((v) => v.toJson()).toList();
+    }
+    data['cant_inventario'] = this.cantInventario;
+    if (this.etiquetas != null) {
+      data['etiquetas'] = this.etiquetas!.toJson();
+    }
+    data['upc'] = this.upc;
+    data['sku'] = this.sku;
+    data['subcategoria'] = this.subcategoria;
+    if (this.promocion != null) {
+      data['promocion'] = this.promocion!.toJson();
+    }
+    data['galeria'] = this.galeria;
+    data['slug'] = this.slug;
+    return data;
+  }
+
+  Future<void> substractAmmount(int cant) async {
+    print("entered substract");
+    int cant_inv = int.parse(cantInventario!);
+
+    int cantFinal = cant_inv - cant;
+
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token,
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('https://www.diplomarket.com/backend/producto/$id/');
+
+    var body = {"cantidad_inventario": "$cantFinal"};
+    var req = http.Request('PATCH', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print("reduces");
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
+  }
+}
+
+class ProductoMun {
   String? id;
   String? nombre;
   Precio? precio;
   Precio? precioxlibra;
+  String? um;
   String? imgPrincipal;
   Proveedor? proveedor;
-  Proveedor? marca;
+  Marca? marca;
+  int? max;
   String? descripcion;
+  List<municipio>? municipios;
   String? cantInventario;
   Etiquetas? etiquetas;
   String? slug;
@@ -20,15 +170,18 @@ class ProductoRec {
   Promocion? promocion;
   List<String>? galeria;
 
-  ProductoRec(
+  ProductoMun(
       {this.id,
       this.nombre,
       this.precio,
       this.precioxlibra,
+      this.um,
       this.imgPrincipal,
       this.proveedor,
       this.marca,
+      this.max,
       this.descripcion,
+      this.municipios,
       this.cantInventario,
       this.etiquetas,
       this.slug,
@@ -37,7 +190,7 @@ class ProductoRec {
       this.promocion,
       this.galeria});
 
-  ProductoRec.fromJson(Map<String, dynamic> json) {
+  ProductoMun.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nombre = json['nombre'];
     precio =
@@ -45,16 +198,21 @@ class ProductoRec {
     precioxlibra = json['precioxlibra'] != null
         ? new Precio.fromJson(json['precioxlibra'])
         : null;
+
+    um = json['um'];
     imgPrincipal = json['img_principal'];
     proveedor = json['proveedor'] != null
         ? new Proveedor.fromJson(json['proveedor'])
         : null;
-    marca =
-        json['marca'] != null ? new Proveedor.fromJson(json['marca']) : null;
+    marca = json['marca'] != null ? new Marca.fromJson(json['marca']) : null;
+    max = json['max'];
     descripcion = json['descripcion'];
-    // municipios = json['municipios'] != null
-    //     ? new Municipios.fromJson(json['municipios'])
-    //     : null;
+    if (json['municipios'] != null) {
+      municipios = <municipio>[];
+      json['municipios'].forEach((v) {
+        municipios!.add(new municipio.fromJson(v));
+      });
+    }
     cantInventario = json['cant_inventario'];
     etiquetas = json['etiquetas'] != null
         ? new Etiquetas.fromJson(json['etiquetas'])
@@ -83,6 +241,7 @@ class ProductoRec {
     if (this.precioxlibra != null) {
       data['precioxlibra'] = this.precioxlibra!.toJson();
     }
+    data['um'] = this.um;
     data['img_principal'] = this.imgPrincipal;
     if (this.proveedor != null) {
       data['proveedor'] = this.proveedor!.toJson();
@@ -90,10 +249,11 @@ class ProductoRec {
     if (this.marca != null) {
       data['marca'] = this.marca!.toJson();
     }
+    data['max'] = this.max;
     data['descripcion'] = this.descripcion;
-    // if (this.municipios != null) {
-    //   data['municipios'] = this.municipios!.toJson();
-    // }
+    if (this.municipios != null) {
+      data['municipios'] = this.municipios!.map((v) => v.toJson()).toList();
+    }
     data['cant_inventario'] = this.cantInventario;
     if (this.etiquetas != null) {
       data['etiquetas'] = this.etiquetas!.toJson();
@@ -104,10 +264,39 @@ class ProductoRec {
     if (this.promocion != null) {
       data['promocion'] = this.promocion!.toJson();
     }
-    if (galeria != null) {
-      data['galeria'] = galeria!.map((v) => v).toList();
+    if (this.galeria != null) {
+      data['galeria'] = this.galeria!.map((v) => v).toList();
     }
     return data;
+  }
+
+  Future<void> substractAmmount(int cant) async {
+    print("entered substract");
+    int cant_inv = int.parse(cantInventario!);
+
+    int cantFinal = cant_inv - cant;
+
+    var headersList = {
+      'Accept-Language': Config.language,
+      'Authorization': Config.token,
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('https://www.diplomarket.com/backend/producto/$id/');
+
+    var body = {"cantidad_inventario": "$cantFinal"};
+    var req = http.Request('PATCH', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      print("reduces");
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
   }
 }
 
@@ -123,9 +312,9 @@ class Precio {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['cantidad'] = cantidad;
-    data['moneda'] = moneda;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['cantidad'] = this.cantidad;
+    data['moneda'] = this.moneda;
     return data;
   }
 }
@@ -137,19 +326,17 @@ class Proveedor {
   Proveedor({this.id, this.nombre});
 
   Proveedor.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['pk'];
     nombre = json['nombre'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
+    data['pk'] = id;
     data['nombre'] = nombre;
     return data;
   }
 }
-
-
 
 class Etiquetas {
   int? id;
@@ -263,28 +450,28 @@ class Marca {
   Marca({this.id, this.nombre});
 
   Marca.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['pk'];
     nombre = json['nombre'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = id;
+    data['pk'] = id;
     data['nombre'] = nombre;
     return data;
   }
 }
 
 class ProductoSec {
-  List<ProductoAct>? data;
+  List<Producto>? data;
 
   ProductoSec({this.data});
 
   ProductoSec.fromJson(Map<String, dynamic> json) {
     if (json['results'] != null) {
-      data = <ProductoAct>[];
+      data = <Producto>[];
       json['results'].forEach((v) {
-        data!.add(new ProductoAct.fromJson(v));
+        data!.add(new Producto.fromJson(v));
       });
     }
   }
@@ -295,152 +482,6 @@ class ProductoSec {
       data['results'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
-  }
-}
-
-class ProductoAct {
-  String? id;
-  String? nombre;
-  Precio? precio;
-  Precio? precioxlibra;
-  String? um;
-  String? imgPrincipal;
-  Proveedor? proveedor;
-  Proveedor? marca;
-  String? descripcion;
-  List<municipio>? municipios;
-  String? cantInventario;
-  Etiquetas? etiquetas;
-  String? slug;
-  bool? visible;
-  int? ventas;
-  Promocion? promocion;
-  List<String>? galeria;
-
-  ProductoAct(
-      {this.id,
-      this.nombre,
-      this.precio,
-      this.precioxlibra,
-      this.um,
-      this.imgPrincipal,
-      this.proveedor,
-      this.marca,
-      this.descripcion,
-      this.municipios,
-      this.cantInventario,
-      this.etiquetas,
-      this.slug,
-      this.visible,
-      this.ventas,
-      this.promocion,
-      this.galeria});
-
-  ProductoAct.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    nombre = json['nombre'];
-    precio =
-        json['precio'] != null ? new Precio.fromJson(json['precio']) : null;
-    precioxlibra = json['precioxlibra'] != null
-        ? new Precio.fromJson(json['precioxlibra'])
-        : null;
-    um = json['um'];
-    imgPrincipal = json['img_principal'];
-    proveedor = json['proveedor'] != null
-        ? new Proveedor.fromJson(json['proveedor'])
-        : null;
-    marca =
-        json['marca'] != null ? new Proveedor.fromJson(json['marca']) : null;
-    descripcion = json['descripcion'];
-    if (json['municipios'] != null) {
-      municipios = <municipio>[];
-      json['municipios'].forEach((v) {
-        municipios!.add(new municipio.fromJson(v));
-      });
-    }
-    cantInventario = json['cant_inventario'];
-    etiquetas = json['etiquetas'] != null
-        ? new Etiquetas.fromJson(json['etiquetas'])
-        : null;
-    slug = json['slug'];
-    visible = json['visible'];
-    ventas = json['ventas'];
-    promocion = json['promocion'] != null
-        ? new Promocion.fromJson(json['promocion'])
-        : null;
-    if (json['galeria'] != null) {
-      galeria = <String>[];
-      json['galeria'].forEach((v) {
-        galeria!.add(v);
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['nombre'] = this.nombre;
-    if (this.precio != null) {
-      data['precio'] = this.precio!.toJson();
-    }
-    if (this.precioxlibra != null) {
-      data['precioxlibra'] = this.precioxlibra!.toJson();
-    }
-    data['um'] = this.um;
-    data['img_principal'] = this.imgPrincipal;
-    if (this.proveedor != null) {
-      data['proveedor'] = this.proveedor!.toJson();
-    }
-    if (this.marca != null) {
-      data['marca'] = this.marca!.toJson();
-    }
-    data['descripcion'] = this.descripcion;
-    if (this.municipios != null) {
-      data['municipios'] = this.municipios!.map((v) => v.toJson()).toList();
-    }
-    data['cant_inventario'] = this.cantInventario;
-    if (this.etiquetas != null) {
-      data['etiquetas'] = this.etiquetas!.toJson();
-    }
-    data['slug'] = this.slug;
-    data['visible'] = this.visible;
-    data['ventas'] = this.ventas;
-    if (this.promocion != null) {
-      data['promocion'] = this.promocion!.toJson();
-    }
-    if (this.galeria != null) {
-      data['galeria'] = this.galeria!.map((v) => v).toList();
-    }
-    return data;
-  }
-
-  Future<void> substractAmmount(int cant) async {
-    print("entered substract");
-    int cant_inv = int.parse(cantInventario!);
-
-    int cantFinal = cant_inv - cant;
-
-    var headersList = {
-      'Accept-Language': Config.language,
-      'Authorization': Config.token,
-      'Content-Type': 'application/json'
-    };
-    var url = Uri.parse('https://www.diplomarket.com/backend/producto/$id/');
-
-    var body = {"cantidad_inventario": "$cantFinal"};
-    var req = http.Request('PATCH', url);
-    req.headers.addAll(headersList);
-    req.body = json.encode(body);
-
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
-
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      print("reduces");
-      print(resBody);
-    } else {
-      print(res.reasonPhrase);
-    }
   }
 }
 
@@ -467,8 +508,8 @@ class municipio {
 }
 
 class ProductoFiltro {
-  Future<List<ProductoAct>> FilteredList(String key, String? subkey) async {
-    List<ProductoAct> filtrado = [];
+  Future<List<ProductoMun>> FilteredList(String key, String? subkey) async {
+    List<ProductoMun> filtrado = [];
     var headersList = {
       'Accept-Language': Config.language,
       'Authorization': Config.token
@@ -506,7 +547,7 @@ class ProductoFiltro {
         print(body);
       }
       body.forEach((element) {
-        filtrado.add(ProductoAct.fromJson(element));
+        filtrado.add(ProductoMun.fromJson(element));
       });
       print(filtrado);
     } else {

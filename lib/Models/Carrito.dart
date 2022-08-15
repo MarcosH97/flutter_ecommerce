@@ -144,7 +144,7 @@ class Componente_Carrito {
 
   Future<void> deleteCompCart() async {
     final http.Response response = await http.delete(
-      Uri.parse('https://www.diplomarket.com/backend/componente_carrito/29'),
+      Uri.parse('https://www.diplomarket.com/backend/componente_carrito/$id'),
       headers: <String, String>{'Authorization': Config.token},
     );
     print(response.statusCode);

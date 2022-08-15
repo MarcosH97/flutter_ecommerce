@@ -29,74 +29,73 @@ class _checkOutPageState extends State<checkOutPage> {
     var config = Config();
 
     return Container(
-            color: Colors.white,
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                SizedBox(height: 10,),
-                Text(
-                  'kart'.tr,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                Expanded(
-                    child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: kartList())),
-                GestureDetector(
-                  onTap: context.read<Cart>().listaSize > 0
-                      ? () {
-                          // print(Config().addToCarritoPaypal().replaceAll(from, replace));
-                          Navigator.pushNamed(context, '/staging');
-                        }
-                      : null,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    padding: EdgeInsets.all(5),
-                    height: 70,
-                    decoration: BoxDecoration(
-                        color: context.watch<Cart>().listaSize > 0
-                            ? Config.maincolor
-                            : Colors.grey,
-                        borderRadius: BorderRadius.circular(100)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                            flex: 2,
-                            child: Text('pay'.tr,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold))),
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
+        color: Colors.white,
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'kart'.tr,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+            Expanded(
+                child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: kartList())),
+            GestureDetector(
+              onTap: context.read<Cart>().listaSize > 0
+                  ? () {
+                      // print(Config().addToCarritoPaypal().replaceAll(from, replace));
+                      Navigator.pushNamed(context, '/staging');
+                    }
+                  : null,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: EdgeInsets.all(5),
+                height: 70,
+                decoration: BoxDecoration(
+                    color: context.watch<Cart>().listaSize > 0
+                        ? Config.maincolor
+                        : Colors.grey,
+                    borderRadius: BorderRadius.circular(100)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(
+                        flex: 2,
+                        child: Text('pay'.tr,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Text(
-                              context
-                                      .watch<Cart>()
-                                      .getTotalPriceKart()
-                                      .toString() +
-                                  ' US\$',
-                              softWrap: true,
-                              style: TextStyle(
-                                  color: Config.maincolor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold))),
+                    Expanded(
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100)),
+                        child: Text(
+                          context.watch<Cart>().getTotalPriceKart().toString() +
+                              ' US\$',
+                          softWrap: true,
+                          style: TextStyle(
+                              color: Config.maincolor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              ],
-            ));
+              ),
+            ),
+          ],
+        ));
   }
 
   bool biggerThan(double a, double b) => a != b;
@@ -104,14 +103,14 @@ class _checkOutPageState extends State<checkOutPage> {
 
 class kartList extends StatelessWidget {
   kartList({Key? key}) : super(key: key);
-  List<ProductoAct> productos = [];
+  List<Producto> productos = [];
   var config = Config();
   int cantCart = 0;
   bool biggerThan(double a, double b) => a != b;
   BuildContext? globalcontext;
 
-  int getcant(int index) => Provider.of<Cart>(globalcontext!,
-      listen: false).getCantidad(index); //globalcontext!.watch<Cart>().getCantidad(index);
+  int getcant(int index) => Provider.of<Cart>(globalcontext!, listen: false)
+      .getCantidad(index); //globalcontext!.watch<Cart>().getCantidad(index);
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +180,7 @@ class kartList extends StatelessWidget {
                           child: Row(children: [
                         Center(
                             child: Text(
-                          "${config.getProductFinalPrice(productos[index])} US\$",
+                          "${config.getProductFinalPrice(int.parse(productos[index].id!))} US\$",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
@@ -191,11 +190,11 @@ class kartList extends StatelessWidget {
                             // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
                             ),
                         biggerThan(
-                                config.getProductFinalPrice(productos[index]),
-                                double.parse(
-                                    productos[index].precio!.cantidad!))
+                                config.getProductFinalPrice(
+                                    int.parse(productos[index].id!)),
+                                productos[index].precio!)
                             ? Text(
-                                "\$ ${productos[index].precio!.cantidad}",
+                                "\$ ${productos[index].precio!}",
                                 style: TextStyle(
                                     decoration: TextDecoration.lineThrough,
                                     fontWeight: FontWeight.bold,
@@ -212,8 +211,7 @@ class kartList extends StatelessWidget {
                           decoration: BoxDecoration(
                               color: Config.maincolor,
                               borderRadius: BorderRadius.circular(60)),
-                          child: 
-                          Row(
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -224,7 +222,8 @@ class kartList extends StatelessWidget {
                                               .getCantidad(index) !=
                                           1
                                       ? () {
-                                          if (Provider.of<Cart>(context, listen: false)
+                                          if (Provider.of<Cart>(context,
+                                                      listen: false)
                                                   .getCantidad(index) >
                                               1) {
                                             context
@@ -301,7 +300,6 @@ class kartList extends StatelessWidget {
                               ),
                             ],
                           ),
-                        
                         ),
                       )
                     ],

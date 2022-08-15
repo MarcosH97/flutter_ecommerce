@@ -64,7 +64,7 @@ class LoginModelResponse {
           sh.setBool('login', true);
           // SharedService().SaveData();
           // Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
-          Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
+          // Config.kart = await CarritoModelResponse().getCarrito(usuario.id!);
         }
       });
       DestinatarioResponse().getDestinatarios();

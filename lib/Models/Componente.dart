@@ -54,32 +54,22 @@ class Componente {
 
 class ComponenteCreate {
   
-  Componente createAndAddComponente(ProductoAct producto) {
-    double respaldop = double.parse(producto.precio!.cantidad!);
+  Componente createAndAddComponente(Producto producto) {
+    double respaldop = producto.precio! as double;
     return Componente(producto: int.parse(producto.id!), cantidad: 1, respaldo: respaldop);
   }
 
   void updateRespaldo(int index) {
-    // List<ProductoAct>? productos =
-    //     await ProductoModelResponse().getProductRecList();
-    // productos!.forEach((element) {
-    //   if (element.id == Config.carrito[index].producto) {
-    //     Config.carrito[index].setRespaldo(
-    //         double.parse(element.precio!.cantidad!) *
-    //                 Config.carrito[index].cantidad! +
-    //             1);
-    //   }
-    // });
     Componente c = Config.carrito[index];
 
     double value = c.cantidad! *
-        Config().getProductFinalPrice(Config().getProductoLocal(c));
+        Config().getProductFinalPrice(c.producto!);
     Config.carrito[index].setRespaldo(value);
   }
 }
 
 class ComponenteSec {
-  ProductoAct? producto;
+  Producto? producto;
   String? cantidad;
   ComponenteSec({
     this.producto,
@@ -88,7 +78,7 @@ class ComponenteSec {
 
   
 ComponenteSec.fromJson(Map<String, dynamic> json) {
-		producto = json['producto'] != null ? new ProductoAct.fromJson(json['producto']) : null;
+		producto = json['producto'] != null ? new Producto.fromJson(json['producto']) : null;
 		cantidad = json['cantidad'];
 	}
 

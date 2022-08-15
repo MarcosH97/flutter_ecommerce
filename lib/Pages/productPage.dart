@@ -10,7 +10,7 @@ import '../Models/Componente.dart';
 import 'filterPage.dart';
 
 class productPage extends StatefulWidget {
-  final ProductoAct producto;
+  final Producto producto;
   final int index;
   // final Function callback;
 
@@ -20,7 +20,7 @@ class productPage extends StatefulWidget {
     required this.index,
   }) : super(key: key);
 
-  ProductoAct get prod => producto;
+  Producto get prod => producto;
   @override
   State<StatefulWidget> createState() => _productPageState();
 }
@@ -32,16 +32,15 @@ class _productPageState extends State<productPage> {
 
   @override
   void initState() {
-    // isFav = context.watch<Wishlist>().getLista.contains(widget.producto);
-    print('reloaded');
+
     super.initState();
   }
 
   double getDiscount() {
     if (widget.producto.promocion!.activo != null) {
-      print("es nullo");
+      // print("es nullo");
       if (widget.producto.promocion!.activo!) {
-        return double.parse(widget.producto.precio!.cantidad!) *
+        return widget.producto.precio! *
             widget.producto.promocion!.descuento! /
             100;
       }
@@ -51,7 +50,7 @@ class _productPageState extends State<productPage> {
 
   @override
   Widget build(BuildContext context) {
-    inkart = context.watch<Cart>().inKart( int.parse(widget.producto.id!));
+    inkart = context.watch<Cart>().inKart(int.parse(widget.producto.id!));
     isFav = context.watch<Wishlist>().inWL(widget.prod.id!);
     return Scaffold(
       appBar: AppBar(),
@@ -60,13 +59,11 @@ class _productPageState extends State<productPage> {
               height: 75,
               width: 75,
               child: FloatingActionButton(
-                onPressed:
-                    // !Config().inCarrito(widget.producto)
-                    !inkart
-                        ? (() => setState(() {
-                              expanded = !expanded;
-                            }))
-                        : null,
+                onPressed: !inkart
+                    ? (() => setState(() {
+                          expanded = !expanded;
+                        }))
+                    : null,
                 child: Icon(Icons.shopping_cart_checkout, size: 30),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100)),
@@ -82,16 +79,11 @@ class _productPageState extends State<productPage> {
                   if (Config.isLoggedIn) {
                     setState(() {
                       expanded = !expanded;
-                      // Config.carrito.add(Componente(
-                      //     producto: widget.producto.id,
-                      //     cantidad: 1,
-                      //     respaldo: Config().getRespaldo(widget.producto)));
-                      // widget.callback;
                     });
                     context.read<Cart>().addProduct(Componente(
                         producto: int.parse(widget.producto.id!),
                         cantidad: 1,
-                        respaldo: Config().getRespaldo(widget.producto)));
+                        respaldo: Config().getProductFinalPrice(int.parse(widget.producto.id!))));
                   } else {
                     showDialog(
                         context: context,
@@ -123,32 +115,35 @@ class _productPageState extends State<productPage> {
         child: Stack(
           children: [
             Container(
-              alignment: Alignment.center,
-              color: Colors.white,
-              // width: double.infinity,
-              height: MediaQuery.of(context).size.height / 2 - 150,
-              child: Image.network(
-                  Config.apiURL + widget.producto.imgPrincipal!,
-                  fit: BoxFit.fitHeight,
-                  alignment: Alignment.center,
-                  loadingBuilder: (context, child, progress) {
-                return progress == null
-                    ? child
-                    : Container(
-                        width: 50,
-                        height: 50,
-                        child: const Center(
-                            child: CircularProgressIndicator(
-                                color: Config.maincolor)),
+                alignment: Alignment.center,
+                color: Colors.white,
+                height: MediaQuery.of(context).size.height / 2 - 150,
+                child: PageView.builder(
+                  itemCount: widget.prod.galeria!.length,
+                  itemBuilder: (context, index) {
+                    return Image.network(
+                        Config.apiURL + widget.producto.galeria![index],
+                        fit: BoxFit.fitHeight,
+                        alignment: Alignment.center,
+                        loadingBuilder: (context, child, progress) {
+                      return progress == null
+                          ? child
+                          : Container(
+                              width: 50,
+                              height: 50,
+                              child: const Center(
+                                  child: CircularProgressIndicator(
+                                      color: Config.maincolor)),
+                            );
+                    }, errorBuilder: (context, error, stacktrace) {
+                      return const Icon(
+                        Icons.error,
+                        size: 50,
+                        color: Colors.grey,
                       );
-              }, errorBuilder: (context, error, stacktrace) {
-                return const Icon(
-                  Icons.error,
-                  size: 50,
-                  color: Colors.grey,
-                );
-              }),
-            ),
+                    });
+                  },
+                )),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
               margin: EdgeInsets.only(
@@ -193,23 +188,15 @@ class _productPageState extends State<productPage> {
                           alignment: Alignment.center,
                           onPressed: () {
                             if (Config.isLoggedIn) {
-                              // setState(() {
                               if (!isFav) {
-                                // print('is not fav');
                                 context
                                     .read<Wishlist>()
-                                    .addProduct(widget.producto);
-                                // Config.wishlist.add(widget.producto);
+                                    .addProduct(Config().findProductoMun(widget.prod));
                               } else {
-                                // print('is fav');
                                 context
                                     .read<Wishlist>()
                                     .removeProduct(widget.index);
-                                // Config.wishlist.removeAt(widget.index);
-                                // isFav = !isFav;
                               }
-                              // widget.callback;
-                              // });
                             } else {
                               showDialog(
                                   context: context,
@@ -245,7 +232,7 @@ class _productPageState extends State<productPage> {
                     children: [
                       Expanded(
                         child: Text(
-                            "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!.cantidad!} \$",
+                            "${getDiscount() > 0 ? getDiscount().toString() : widget.producto.precio!} \$",
                             style: const TextStyle(
                                 fontSize: 30,
                                 color: Config.maincolor,
@@ -254,7 +241,7 @@ class _productPageState extends State<productPage> {
                       ),
                       if (getDiscount() > 0)
                         Expanded(
-                          child: Text("${widget.producto.precio!.cantidad!} \$",
+                          child: Text("${widget.producto.precio!} \$",
                               style: const TextStyle(
                                   fontSize: 24,
                                   color: Colors.grey,
@@ -290,9 +277,7 @@ class _productPageState extends State<productPage> {
                     ],
                   ),
                   Text(
-                      "\$" +
-                          widget.producto.precioxlibra!.cantidad! +
-                          " /${widget.producto.um}",
+                      "\$ ${widget.producto.precioxlibra!} /${widget.producto.um}",
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 20,
@@ -393,23 +378,6 @@ class _productPageState extends State<productPage> {
                   Divider(
                     thickness: 2,
                   ),
-
-                  // RichText(
-                  //   text: TextSpan(
-                  //       style: TextStyle(color: Colors.amber, fontSize: 16),
-                  //       children: <TextSpan>[
-                  //         TextSpan(text: "no_acc_1".tr),
-                  //         TextSpan(
-                  //             text: "no_acc_2".tr,
-                  //             style: TextStyle(
-                  //                 color: Colors.grey[500],
-                  //                 decoration: TextDecoration.underline),
-                  //             recognizer: TapGestureRecognizer()
-                  //               ..onTap = () {
-                  //                 Navigator.pushNamed(context, "/register");
-                  //               })
-                  //       ]),
-                  // ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RichText(
@@ -435,69 +403,8 @@ class _productPageState extends State<productPage> {
                     //       fontSize: 20),
                     // ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        '${'stock'.tr}: ' +
-                            widget.producto.cantInventario.toString(),
-                        style: TextStyle(
-                            color: Colors.grey[700],
-                            fontFamily: "Arial",
-                            fontSize: 18)),
-                  ),
                 ],
               ),
-
-              // ButtonBar(
-              //   alignment: MainAxisAlignment.center,
-              //   children: [
-              //     ElevatedButton(
-              //       onPressed: !Config().inCarrito(widget.producto)
-              //           ? () {
-              //               if (Config.isLoggedIn) {
-              //                 setState(() {
-              //                   Config.carrito.add(Componente(
-              //                       producto: widget.producto.id,
-              //                       cantidad: 1,
-              //                       respaldo: Config()
-              //                           .getRespaldo(widget.producto)));
-              //                 });
-              //               } else {
-              //                 showDialog(
-              //                     context: context,
-              //                     builder: (context) => AlertDialog(
-              //                           title: Text(
-              //                               "Debe estar autenticado para realizar esta acción"),
-              //                           actions: [
-              //                             TextButton(
-              //                                 onPressed: (() =>
-              //                                     Navigator.pop(context)),
-              //                                 child: Text('Aceptar')),
-              //                           ],
-              //                         ));
-              //               }
-              //             }
-              //           : null,
-              //       style: ButtonStyle(
-              //           fixedSize: MaterialStateProperty.all(Size(150, 50)),
-              //           backgroundColor: MaterialStateProperty.all(
-              //               !Config().inCarrito(widget.producto)
-              //                   ? Config.maincolor
-              //                   : Colors.red[100]),
-              //           shape: MaterialStateProperty.all(
-              //               RoundedRectangleBorder(
-              //                   borderRadius: BorderRadius.circular(10)))),
-              //       child: Text(
-              //           !Config().inCarrito(widget.producto)
-              //               ? "COMPRAR"
-              //               : "AÑADIDO",
-              //           style: TextStyle(
-              //               color: Colors.white,
-              //               fontFamily: "Arial",
-              //               fontSize: 18)),
-              //     ),
-              //   ],
-              // )
             ),
           ],
         ),

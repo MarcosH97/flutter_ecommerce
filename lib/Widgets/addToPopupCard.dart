@@ -20,7 +20,7 @@ class AddTodoPopupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<ProductoAct> deseos = context.watch<Wishlist>().getLista;
+    List<ProductoMun> deseos = context.watch<Wishlist>().getLista;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -79,7 +79,7 @@ class AddTodoPopupCard extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => productPage(
-                                          producto: deseos[index],
+                                          producto: Config().findProdyctByID(deseos[index].id!),
                                           index: index,
                                           // callback: callback,
                                         )));

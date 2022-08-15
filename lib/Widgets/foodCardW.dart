@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
+import 'package:e_commerce/Models/ProductoModelResponse.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -10,31 +11,29 @@ import '../Providers/cartProvider.dart';
 import '../Utils/Config.dart';
 
 class FoodCardW extends StatelessWidget {
-  final ProductoAct productReq;
+  final ProductoMun productReq;
   final int index;
   // final Function callback;
 
-  FoodCardW(
-      {Key? key,
-      required this.productReq,
-      required this.index,
-      })
-      : super(key: key);
+  FoodCardW({
+    Key? key,
+    required this.productReq,
+    required this.index,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     bool inKart = context.watch<Cart>().inKart(int.parse(productReq.id!));
     bool inWL = context.watch<Wishlist>().inWL(productReq.id!);
     bool outofstock;
-    ProductoAct producto = productReq;
-    // inKart = Config().inCarrito(producto);
-    // inWL = Config().inWishlist(producto);
     outofstock = int.parse(productReq.cantInventario!) > 0;
 
     return Card(
       elevation: 5,
       child: InkWell(
-        onTap: () {
+        onTap: () async {
+          var producto =
+              await ProductoModelResponse().getProductobyID(productReq.id!);
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -60,7 +59,7 @@ class FoodCardW extends StatelessWidget {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
-                        Config.apiURL + producto.imgPrincipal.toString(),
+                        Config.apiURL + productReq.imgPrincipal.toString(),
                         fit: BoxFit.fitHeight,
                         loadingBuilder: (context, child, progress) {
                       return progress == null
@@ -90,7 +89,7 @@ class FoodCardW extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       strutStyle: StrutStyle(fontSize: 20),
                       text: TextSpan(
-                          text: producto.nombre!,
+                          text: productReq.nombre!,
                           style: TextStyle(color: Colors.black, fontSize: 22)),
                     ),
                   ),
@@ -104,7 +103,7 @@ class FoodCardW extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       strutStyle: StrutStyle(fontSize: 20),
                       text: TextSpan(
-                          text: producto.marca!.nombre!,
+                          text: productReq.marca!.nombre!,
                           style: TextStyle(
                               color: Config.maincolor,
                               fontWeight: FontWeight.bold,
@@ -121,7 +120,7 @@ class FoodCardW extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        "${Config().getProductFinalPrice(producto).toString()} \$",
+                        "${Config().getProductFinalPrice(int.parse(productReq.id!)).toString()} \$",
                         // +producto[index].slug!,
                         style: const TextStyle(
                           color: Config.maincolor,
@@ -130,11 +129,12 @@ class FoodCardW extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (Config().getProductFinalPrice(producto) <
-                        double.parse(producto.precio!.cantidad!))
+                    if (Config()
+                            .getProductFinalPrice(int.parse(productReq.id!)) <
+                        double.parse(productReq.precio!.cantidad!))
                       Expanded(
                         child: Text(
-                          "${producto.precio!.cantidad} \$",
+                          "${productReq.precio!} \$",
                           // +producto[index].slug!,
                           style: const TextStyle(
                             decoration: TextDecoration.lineThrough,
@@ -203,24 +203,12 @@ class FoodCardW extends StatelessWidget {
                         onPressed: !inKart
                             ? () {
                                 if (Config.isLoggedIn) {
-
                                   context.read<Cart>().addProduct(Componente(
-                                      producto: int.parse(producto.id!),
+                                      producto: int.parse(productReq.id!),
                                       cantidad: 1,
-                                      respaldo:
-                                          Config().getRespaldo(producto)));
-                                  // Componente_Carrito().createCompCart(
-                                  //     Componente_Carrito(
-                                  //         cantidad: 1,
-                                  //         producto: int.parse(producto.id!),
-                                  //         carrito: Config.kart.pk));
-                                  // Config.carrito.add(Componente(
-                                  //     producto: producto.id,
-                                  //     cantidad: 1,
-                                  //     respaldo:
-                                  //         Config().getRespaldo(producto)));
-                                  // Config().updateCarrito();
-                                  // callback();
+                                      respaldo: Config().getProductFinalPrice(
+                                          int.parse(productReq.id!))));
+                                  
                                 } else {
                                   showDialog(
                                       context: context,
@@ -268,7 +256,7 @@ class FoodCardW extends StatelessWidget {
     );
   }
 
-  bool inCarrito(ProductoAct producto) {
+  bool inCarrito(Producto producto) {
     bool inKart = false;
     Config.carrito.forEach((element) {
       if (element.producto == producto.id) {

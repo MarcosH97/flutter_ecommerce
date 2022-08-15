@@ -6,28 +6,32 @@ import 'dart:convert';
 import 'dart:async';
 
 class ProductoModelResponse {
-  Future<dynamic> getProductRecList() async {
+  Future<List<ProductoMun>> getProductList() async {
+    print('entered get prods');
     var headersList = {
       'Accept-Language': Config.language,
       'Authorization': Config.token
     };
     var url = Uri.parse(
         'https://www.diplomarket.com/backend/producto/?municipios=${Config.activeMun}');
-    // print("getting PREC");
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
     var res = await req.send().timeout(const Duration(seconds: 5));
-    // print(res.statusCode);
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      // print(resBody);
-
-      ProductoSec body = ProductoSec.fromJson(jsonDecode(resBody));
-      List<ProductoAct>? pro = body.data;
-      if (pro != null) {
-        Config.AllProducts = pro;
-      }
-      return pro;
+      List<dynamic> pro = jsonDecode(resBody)['results'];
+      // print(pro);
+      var prod = pro[0];
+      // print(prod);
+      List<ProductoMun> lista = [];
+      pro.forEach((element) {
+        if (!Config.AllProductsMun.contains(ProductoMun.fromJson(element)))
+          Config.AllProductsMun.add(ProductoMun.fromJson(element));
+        
+        lista.add(ProductoMun.fromJson(element));
+      });
+      // print(lista);
+      return lista;
     } else {
       print(res.reasonPhrase);
       // print("error");
@@ -35,58 +39,51 @@ class ProductoModelResponse {
     }
   }
 
-  Future<int> getSpecificProductStock(String id) async {
+  Future<Producto> getProductobyID(String id) async {
     var headersList = {
-      'Authorization': Config.token,
-      'Content-Type': 'application/json'
+      'Accept-Language': Config.language,
+      'Authorization': Config.token
     };
     var url = Uri.parse('https://www.diplomarket.com/backend/producto/$id');
+
     var req = http.Request('GET', url);
     req.headers.addAll(headersList);
-
-    var res = await req.send();
+    var res = await req.send().timeout(const Duration(seconds: 5));
     final resBody = await res.stream.bytesToString();
-
-    int result = jsonDecode(resBody)['cant_inventario'];
-
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print(result);
-      print(resBody);
-    } else {
-      print(res.reasonPhrase);
+      return Producto.fromJson(jsonDecode(resBody));
     }
-    return result;
+    return Producto();
   }
 
-  Future<void> getProductTopSellList(municipioID) async {
+  Future<List<ProductoMun>> getProductTopSellList() async {
+    List<ProductoMun> lista = [];
+
     var headersList = {'Authorization': Config.token};
-    var url = Uri.parse(Config.apiURL + Config.masvendidosAPI + "1");
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/masvendidos/ultimahora/${Config.activeMun}');
 
     var req = http.Request('GET', url);
 
     req.headers.addAll(headersList);
     var res = await req.send().timeout(const Duration(seconds: 5));
 
-    // print("Top seller status: "+ res.statusCode.toString());
-
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      var body = jsonDecode(resBody);
-      List<dynamic> lista = List.from(body);
-      ProductoRec pr = lista[0];
-
-      // print(pr);
-      // print(body);
-      // return body;
+      print('topsell: $resBody');
+      List<dynamic> body = jsonDecode(resBody);
+      body.forEach((element) {
+        lista.add(ProductoMun.fromJson(element));
+      });
+      return lista;
     } else {
       print(res.reasonPhrase);
-      // print("error");
       throw Exception();
     }
   }
 
-  Future<List<ProductoAct>> getProductSpecialList() async {
-    List<ProductoAct> lista = [];
+  Future<List<ProductoMun>> getProductSpecialList() async {
+    List<ProductoMun> lista = [];
     var headersList = {
       'Accept-Language': Config.language,
       'Authorization': Config.token
@@ -101,9 +98,10 @@ class ProductoModelResponse {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
+      print('special: $resBody');
       List<dynamic> body = jsonDecode(resBody);
-      for(var v in body){
-          lista.add(ProductoAct.fromJson(v));
+      for (var v in body) {
+        lista.add(ProductoMun.fromJson(v));
       }
       // print(resBody);
     } else {

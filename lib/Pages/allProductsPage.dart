@@ -22,121 +22,17 @@ class _AllProductsPageState extends State<allProductsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // print(_products.then((value) => value));
     return Scaffold(
-      appBar: AppBar(),
-        body: ProductsMobile(id: 3, mun: Config.activeMun, 
-        // callback: callback, 
-        axis: Axis.vertical,));
-    // FutureBuilder<dynamic>(
-    //     future: ProductoModelResponse().getProductRecList(),
-    //     builder: (context, snapshot) {
-    //       switch (snapshot.connectionState) {
-    //         case ConnectionState.waiting:
-    //           return CustomScrollView(slivers: <Widget>[
-    //             SliverAppBar(
-    //               foregroundColor: Colors.white,
-    //               backgroundColor: Color.fromARGB(255, 19, 51, 87),
-    //               floating: false,
-    //               pinned: true,
-    //               expandedHeight: 100,
-    //               flexibleSpace: FlexibleSpaceBar(
-    //                 centerTitle: true,
-    //                 title: const Text(
-    //                   "Todos los Productos",
-    //                   style: TextStyle(
-    //                     fontSize: 20,
-    //                     fontWeight: FontWeight.bold,
-    //                   ),
-    //                 ),
-    //                 background: Container(
-    //                   color: Color.fromARGB(255, 19, 51, 87),
-    //                 ),
-    //               ),
-    //             ),
-    //             SliverGrid(
-    //               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //                 crossAxisCount: Device().isMobile(context) ? 1 : 3,
-    //               ),
-    //               delegate: SliverChildBuilderDelegate(
-    //                 ((context, index) {
-    //                   return SizedBox(
-    //                     height: 400,
-    //                     child: Card(
-    //                       margin: EdgeInsets.all(10),
-    //                       elevation: 10,
-    //                       child: Container(
-    //                         width: 360,
-    //                         child: const Center(
-    //                             child: SizedBox(
-    //                                 height: 50,
-    //                                 width: 50,
-    //                                 child: CircularProgressIndicator(
-    //                                     color: Config.maincolor))),
-    //                       ),
-    //                     ),
-    //                   );
-    //                 }),
-    //               ),
-    //             ),
-    //           ]);
-
-    //         case ConnectionState.done:
-    //         // {
-    //         //   return Text("no cargo");
-    //         // }
-    //         default:
-    //           if (snapshot.hasError) {
-    //             print("ALL PRODUCTS: Data Error");
-    //             return Text(snapshot.data.toString());
-    //           } else if (snapshot.hasData) {
-    //             print('has data');
-    //             return CustomScrollView(slivers: <Widget>[
-    //               SliverAppBar(
-    //                 foregroundColor: Colors.white,
-    //                 backgroundColor: Color.fromARGB(255, 19, 51, 87),
-    //                 floating: false,
-    //                 pinned: true,
-    //                 expandedHeight: 100,
-    //                 flexibleSpace: FlexibleSpaceBar(
-    //                   centerTitle: true,
-    //                   title: const Text(
-    //                     "Todos los Productos",
-    //                     style: TextStyle(
-    //                       fontSize: 20,
-    //                       fontWeight: FontWeight.bold,
-    //                     ),
-    //                   ),
-    //                   background: Container(
-    //                     color: Color.fromARGB(255, 19, 51, 87),
-    //                   ),
-    //                 ),
-    //               ),
-    //               SliverGrid(
-    //                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //                   crossAxisCount: Device().isMobile(context) ? 1 : 3,
-    //                 ),
-    //                 delegate: SliverChildBuilderDelegate(
-    //                   ((context, index) {
-    //                     return FoodCardW(
-    //                         productReq: snapshot.data[index], index: index, callback: callback(),);
-    //                     // return foodCard(index, snapshot.data);
-    //                     // return FoodCardWidget(
-    //                     //     pr: snapshot.data, index: index);
-    //                   }),
-    //                   childCount: snapshot.data.length,
-    //                 ),
-    //               ),
-    //             ]);
-    //           }
-    //           return Text("null");
-    //       }
-    //     }
-    //     ));
+        appBar: AppBar(),
+        body: ProductsMobile(
+          id: 3,
+          mun: Config.activeMun,
+          axis: Axis.vertical,
+        ));
   }
 
   Widget foodCard(index, pro) {
-    List<ProductoAct> proreq = pro.results;
+    List<ProductoMun> proreq = pro.results;
 
     return Card(
       margin: EdgeInsets.all(10),
@@ -147,9 +43,8 @@ class _AllProductsPageState extends State<allProductsPage> {
               context,
               MaterialPageRoute(
                   builder: (context) => productPage(
-                        producto: proreq[index],
-                        index: index,
-                        // callback: callback(),
+                          producto: Config().findProdyctByID(
+                        proreq[index].id!),index: index
                       )));
         },
         child: SizedBox(

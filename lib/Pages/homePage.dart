@@ -8,11 +8,14 @@ import 'package:e_commerce/Utils/Config.dart';
 import 'package:e_commerce/Widgets/myAppBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_launch/flutter_launch.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../Widgets/MobileWidgets/productsMobile.dart';
 import 'filterPage.dart';
 
@@ -25,12 +28,13 @@ class homePage extends StatefulWidget {
 
 class _homePageState extends State<homePage> {
   late var textController = TextEditingController();
-  late List<ProductoAct> filter;
+  late List<ProductoMun> filter;
   int selected = 0;
 
   void callback() {
-    print("callback called");
-    setState(() {});
+    setState(() {
+      currentIndex = 0;
+    });
   }
 
   @override
@@ -44,7 +48,7 @@ class _homePageState extends State<homePage> {
   Widget build(BuildContext context) {
     ToastContext().init(context);
 
-    final _tabs = [mainPage(), userPage(), checkOutPage()];
+    final _tabs = [mainPage(), userPage(callback: callback,), checkOutPage()];
     final _navBarItems = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(
         icon: Icon(
@@ -84,7 +88,7 @@ class _homePageState extends State<homePage> {
         ).AppBarM(),
         body: _tabs[currentIndex],
         bottomNavigationBar: Container(
-          padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.white,
               // borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
@@ -113,11 +117,10 @@ class _homePageState extends State<homePage> {
                     iconSize: 40,
                     onPressed: () {
                       setState(() {
-                        if (Config.isLoggedIn){
+                        if (Config.isLoggedIn) {
                           currentIndex = 1;
                           selected = currentIndex;
-                        }
-                        else
+                        } else
                           Navigator.popAndPushNamed(context, '/login');
                       });
                     },
@@ -400,13 +403,14 @@ class _homePageState extends State<homePage> {
                                 Icons.phone,
                                 color: Colors.white,
                               ),
-                              onTap: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: "53 54024747"));
-                                Fluttertoast.showToast(
-                                    msg: 'cclip'.tr,
-                                    gravity: ToastGravity.BOTTOM);
-                                // Toast.show('cclip'.tr, duration: Toast.lengthShort, gravity: Toast.bottom);
+                              //13053377539
+                              onTap: () async {
+                                var wassa =
+                                    "whatsapp://send?phone=+5356955024&text=Hola,%20Diplomarket";
+                                try {
+                                  launchUrl(Uri.parse(wassa),
+                                      mode: LaunchMode.externalApplication);
+                                } catch (e) {}
                               }),
                           ListTile(
                               title: drawerText("+1 305 26 7330"),
@@ -414,38 +418,26 @@ class _homePageState extends State<homePage> {
                                 Icons.phone,
                                 color: Colors.white,
                               ),
-                              onTap: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: "1 305 26 7330"));
-                                Fluttertoast.showToast(
-                                    msg: 'cclip'.tr,
-                                    gravity: ToastGravity.BOTTOM);
+                              onTap: () async {
+                                var wassa =
+                                    "whatsapp://send?phone=+13053377539&text=Hola,%20Diplomarket";
+                                try {
+                                  launchUrl(Uri.parse(wassa),
+                                      mode: LaunchMode.externalApplication);
+                                } catch (e) {}
                               }),
                           ListTile(
-                              title: drawerText("sales@lasamericastcc.com"),
+                              title: drawerText("soporte@diplomarket.com"),
                               leading: Icon(
                                 Icons.mail_outline,
                                 color: Colors.white,
                               ),
                               onTap: () {
-                                Clipboard.setData(ClipboardData(
-                                    text: "sales@lasamericastcc.com"));
-                                Fluttertoast.showToast(
-                                    msg: 'cclip'.tr,
-                                    gravity: ToastGravity.BOTTOM);
-                              }),
-                          ListTile(
-                              title: drawerText("info@lasamericastcc.com"),
-                              leading: Icon(
-                                Icons.mail_outline,
-                                color: Colors.white,
-                              ),
-                              onTap: () {
-                                Clipboard.setData(ClipboardData(
-                                    text: "info@lasamericastcc.com"));
-                                Fluttertoast.showToast(
-                                    msg: 'cclip'.tr,
-                                    gravity: ToastGravity.BOTTOM);
+                                var uri = Uri(
+                                    scheme: 'mailto',
+                                    path: 'soporte@diplomarket.com');
+                                launchUrl(uri,
+                                    mode: LaunchMode.externalApplication);
                               }),
                         ]),
                   ],
@@ -664,14 +656,16 @@ class _mainPageState extends State<mainPage> {
                 color: Colors.white,
                 child: Column(
                   children: [
+                    //------BANNER------
+
                     SizedBox(
-                      height: 200,
+                      height: 400,
                       width: double.infinity,
                       child: PageView.builder(
                         itemBuilder: (context, index) {
                           return Image.network(
-                            Config.apiURL + Config.carrusel[index].imagen!,
-                            fit: BoxFit.cover,
+                            Config.apiURL + Config.carrusel[index].imgMovil!,
+                            fit: BoxFit.fill,
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) {
                                 return child;

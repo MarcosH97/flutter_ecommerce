@@ -71,15 +71,15 @@ class Cart with ChangeNotifier {
 }
 
 class Wishlist with ChangeNotifier {
-  List<ProductoAct> _lista = [];
+  List<ProductoMun> _lista = [];
 
-  List<ProductoAct> get getLista => _lista;
+  List<ProductoMun> get getLista => _lista;
 
   int get listaSize => _lista.length;
 
   cleanCart() => _lista.clear();
 
-  addProduct(ProductoAct prod) {
+  addProduct(ProductoMun prod) {
     if (!inWL(prod.id!)) {
       _lista.add(prod);
       print("added");
@@ -107,7 +107,7 @@ class Wishlist with ChangeNotifier {
   }
 
   purgeList() {
-    List<ProductoAct> temp = [];
+    List<ProductoMun> temp = [];
     _lista.forEach((element) {
       String id = element.id!;
       if (!inWL(id)) {

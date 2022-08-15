@@ -62,7 +62,7 @@ class CarruselResponse {
           }
         },
       );
-      print(resBody);
+      // print(resBody);
     } else {
       print(res.reasonPhrase);
     }

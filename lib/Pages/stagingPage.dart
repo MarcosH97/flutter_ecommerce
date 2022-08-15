@@ -32,7 +32,7 @@ class stagePageState extends State<stagePage> {
 
   bool selPayMet = true;
 
-  List<ProductoAct> productos = [];
+  List<Producto> productos = [];
 
   late List<DropdownMenuItem<String>> _destinos;
 
@@ -247,7 +247,7 @@ class stagePageState extends State<stagePage> {
                         selPayMet = true;
                       }),
                       child: Container(
-                        height: 100,
+                        height: 50,
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
                             border: Border.all(
@@ -346,7 +346,7 @@ class stagePageState extends State<stagePage> {
                                                 children: [
                                               Center(
                                                   child: Text(
-                                                "${config.getProductFinalPrice(productos[index])} US\$",
+                                                "${config.getProductFinalPrice(int.parse(productos[index].id!))} US\$",
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 24,
@@ -598,56 +598,60 @@ class stagePageState extends State<stagePage> {
                       height: 10,
                     ),
                     if (selPayMet)
-                      Expanded(
-                          child: GestureDetector(
+                      GestureDetector(
                         onTap: (() {
-                          if (context.read<Cart>().listaSize > 0) {
-                            Navigator.pushNamed(context, '/paypal');
-                            Config.karrito.clear();
-                          } else {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text("Carrito vacio"),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: Text("ok"))
-                                      ],
-                                    ));
-                          }
+                      if (context.read<Cart>().listaSize > 0) {
+                        Navigator.pushNamed(context, '/paypal');
+                        Config.karrito.clear();
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text("Carrito vacio"),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context),
+                                        child: Text("ok"))
+                                  ],
+                                ));
+                      }
                         }),
                         child: Container(
-                          alignment: Alignment.center,
-                          color: Colors.amber,
-                          child: Image.asset('assets/paypallarge.png'),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                      color: Colors.amber,
+
+                          ),
+                      height: 80,
+                      alignment: Alignment.center,
+                      child: ClipRRect(
+                        child: Image.asset('assets/paypallarge.png', fit: BoxFit.fitHeight,)),
                         ),
-                      ))
+                      )
                     else
-                      Expanded(
-                          child: GestureDetector(
+                      GestureDetector(
                         onTap: (() {
-                          showDialog(
-                              context: context,
-                              builder: (context) => loadingDialog(context));
-                          // showDialog(
-                          //     context: context,
-                          //     builder: (context) =>
-                          //         AlertDialog(title: Text('Compra agregada'),actions: [
-                          //           TextButton(onPressed: (){}, child: Text('ok'))
-                          //         ],));
-                          // Navigator.pop(context);
-                          // Config.karrito.clear();
+                      showDialog(
+                          context: context,
+                          builder: (context) => loadingDialog(context));
+                      // showDialog(
+                      //     context: context,
+                      //     builder: (context) =>
+                      //         AlertDialog(title: Text('Compra agregada'),actions: [
+                      //           TextButton(onPressed: (){}, child: Text('ok'))
+                      //         ],));
+                      // Navigator.pop(context);
+                      // Config.karrito.clear();
                         }),
                         child: Container(
-                          alignment: Alignment.center,
-                          color: Colors.amber,
-                          child: Image.asset(Config.lang
-                              ? 'assets/tropi_es.png'
-                              : 'assets/tropi_en.png'),
+                          height: 80,
+                      alignment: Alignment.center,
+                      child: Image.asset(Config.lang
+                          ? 'assets/tropi_es.png'
+                          : 'assets/tropi_en.png'),
                         ),
-                      ))
+                      )
                   ],
                 ))),
       ];
