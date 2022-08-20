@@ -25,8 +25,7 @@ class _AllProductsPageState extends State<allProductsPage> {
     return Scaffold(
         appBar: AppBar(),
         body: ProductsMobile(
-          id: 3,
-          mun: Config.activeMun,
+          id: 1,
           axis: Axis.vertical,
         ));
   }
@@ -42,9 +41,7 @@ class _AllProductsPageState extends State<allProductsPage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => productPage(
-                          producto: Config().findProdyctByID(
-                        proreq[index].id!),index: index
+                  builder: (context) => productPage(id: proreq[index].id!,index: index
                       )));
         },
         child: SizedBox(

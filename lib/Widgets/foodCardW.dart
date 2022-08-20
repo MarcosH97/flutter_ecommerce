@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/Models/Componente.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Models/ProductoModelResponse.dart';
@@ -29,55 +30,42 @@ class FoodCardW extends StatelessWidget {
     outofstock = int.parse(productReq.cantInventario!) > 0;
 
     return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+      // color: Colors.amber,
       elevation: 5,
       child: InkWell(
-        onTap: () async {
-          var producto =
-              await ProductoModelResponse().getProductobyID(productReq.id!);
+        onTap: () {
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => productPage(
-                        producto: producto,
+                        id: productReq.id!,
                         index: index,
                       )));
         },
         child: SizedBox(
-          width: 360,
+          width: 300,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 height: 280,
-                width: 400,
-                padding: EdgeInsets.all(15),
-                margin: EdgeInsets.only(top: 15, right: 20, left: 20),
+                width: 300,
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(top: 10, right: 10, left: 10),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(30)),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                        Config.apiURL + productReq.imgPrincipal.toString(),
-                        fit: BoxFit.fitHeight,
-                        loadingBuilder: (context, child, progress) {
-                      return progress == null
-                          ? child
-                          : Container(
-                              width: 50,
-                              height: 50,
-                              child: const Center(
-                                  child: CircularProgressIndicator(
-                                      color: Config.maincolor)),
-                            );
-                    }, errorBuilder: (context, error, stacktrace) {
-                      return const Icon(
-                        Icons.error,
-                        size: 50,
-                        color: Colors.grey,
-                      );
-                    })),
+                    child: 
+                    CachedNetworkImage(imageUrl: Config.apiURL + productReq.imgPrincipal.toString(),
+                    progressIndicatorBuilder: (context, url, progress) => LinearProgressIndicator(
+                            value: progress.progress,
+                          ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    ))
               ),
               Wrap(
                 textDirection: TextDirection.ltr,
@@ -145,7 +133,7 @@ class FoodCardW extends StatelessWidget {
                         ),
                       ),
                     Expanded(
-                      flex: 2,
+                      flex: 0,
                       child: Container(
                           height: 55,
                           width: 42,

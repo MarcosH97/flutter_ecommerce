@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:badges/badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce/Models/Producto.dart';
 import 'package:e_commerce/Pages/checkoutPage.dart';
+import 'package:e_commerce/Pages/productPage.dart';
 import 'package:e_commerce/Pages/userPage.dart';
 import 'package:e_commerce/Providers/cartProvider.dart';
 import 'package:e_commerce/Utils/Config.dart';
@@ -48,7 +50,13 @@ class _homePageState extends State<homePage> {
   Widget build(BuildContext context) {
     ToastContext().init(context);
 
-    final _tabs = [mainPage(), userPage(callback: callback,), checkOutPage()];
+    final _tabs = [
+      mainPage(),
+      userPage(
+        callback: callback,
+      ),
+      checkOutPage()
+    ];
     final _navBarItems = <BottomNavigationBarItem>[
       const BottomNavigationBarItem(
         icon: Icon(
@@ -71,7 +79,7 @@ class _homePageState extends State<homePage> {
       iconSize: 30,
       items: _navBarItems,
       currentIndex: currentIndex,
-      type: BottomNavigationBarType.fixed,
+      type: BottomNavigationBarType.shifting,
       onTap: (int index) {
         setState(() {
           currentIndex = index;
@@ -81,6 +89,7 @@ class _homePageState extends State<homePage> {
     int countK = context.watch<Cart>().listaSize;
     return SafeArea(
       child: Scaffold(
+        // extendBody: true,
         backgroundColor: Color.fromARGB(255, 23, 31, 56),
         appBar: myAppBar(
           context: context,
@@ -90,13 +99,11 @@ class _homePageState extends State<homePage> {
         bottomNavigationBar: Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white,
-              // borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30))
+              color: Color.fromARGB(255, 91, 131, 160),
             ),
-            height: 80,
-            // width: double.infinity,
+            height: 60,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
@@ -129,30 +136,29 @@ class _homePageState extends State<homePage> {
                       color: selected == 1 ? Config.maincolor : Colors.grey,
                     )),
                 Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(0.0),
                   child: Badge(
                     badgeContent: Text("$countK",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.white)),
+                    ignorePointer: true,
+                    animationType: BadgeAnimationType.scale,
+                    showBadge: countK > 0,
+                    position: BadgePosition.center(),
                     child: IconButton(
                       onPressed: () {
-                        // Navigator.pushNamed(context, '/checkout');
                         setState(() {
                           currentIndex = 2;
                           selected = currentIndex;
                         });
                       },
-                      padding: EdgeInsets.all(0),
+                      padding: EdgeInsets.zero,
                       icon: Icon(
                         Icons.shopping_cart_outlined,
                         color: selected == 2 ? Config.maincolor : Colors.grey,
                       ),
                       iconSize: 40,
                     ),
-                    ignorePointer: true,
-                    animationType: BadgeAnimationType.scale,
-                    showBadge: countK > 0,
-                    position: BadgePosition.center(),
                   ),
                 ),
               ],
@@ -199,27 +205,24 @@ class _homePageState extends State<homePage> {
                             children: [
                               ListTile(
                                 title: drawerText('Todas'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Aceites", null);
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: 'Aceites',
                                               headerName: "Aceites")));
                                 },
                               ),
                               ListTile(
                                 title: drawerText('Pomos'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Aceites", "Pomos");
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: 'Aceites',
+                                              subcat: 'Pomos',
                                               headerName: "Pomos")));
                                 },
                               ),
@@ -235,66 +238,60 @@ class _homePageState extends State<homePage> {
                             children: [
                               ListTile(
                                 title: drawerText('Todas'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Bebidas", null);
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: 'Bebidas',
                                               headerName: "Bebidas")));
                                 },
                               ),
                               ListTile(
                                 title: drawerText('Aguas'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Bebidas", "Aguas");
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: "Bebidas",
+                                              subcat: "Aguas",
                                               headerName: "Aguas")));
                                 },
                               ),
                               ListTile(
                                 title: drawerText('Gaseadas'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Bebidas", "Gaseadas");
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: "Bebidas",
+                                              subcat: "Gaseadas",
                                               headerName: "Gaseadas")));
                                 },
                               ),
                               ListTile(
                                 title: drawerText('Instantáneas'),
-                                onTap: () async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList("Bebidas", "Instantáneas");
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: "Bebidas",
+                                              subcat: "Instantáneas",
                                               headerName: "Instantáneas")));
                                 },
                               ),
                               ListTile(
                                 title: drawerText('Jugos'),
-                                onTap: () async {
-                                  await ProductoFiltro()
-                                      .FilteredList("Bebidas", "Jugos");
+                                onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: 'Jugos',
+                                              subcat: 'Bebidas',
                                               headerName: "Jugos")));
                                 },
                               ),
@@ -309,15 +306,53 @@ class _homePageState extends State<homePage> {
                                 Color.fromARGB(255, 143, 34, 34),
                             children: [],
                           ),
+                          ExpansionTile(
+                            title: drawerText('Electrónicos'),
+                            iconColor: Colors.white,
+                            collapsedIconColor: Colors.white,
+                            backgroundColor: Color.fromARGB(255, 77, 22, 18),
+                            collapsedBackgroundColor:
+                                Color.fromARGB(255, 143, 34, 34),
+                            children: [
+                              ListTile(
+                                title: drawerText('Todas'),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              cat: 'Electrónicos',
+                                              headerName: "Electrónicos")));
+                                },
+                              ),
+                              ListTile(
+                                title: drawerText('Electrodomesticos'),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              cat: 'Electrónicos',
+                                              subcat: "Electrodomesticos",
+                                              headerName:
+                                                  "Electrodomesticos")));
+                                },
+                              ),
+                              ListTile(
+                                title: drawerText('Piezas de Pc'),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => filterPage(
+                                              cat: "Electrónicos",
+                                              subcat: "Piezas de Pc",
+                                              headerName: "Piezas de Pc")));
+                                },
+                              ),
+                            ],
+                          ),
                         ]),
-                    ListTile(
-                      title: drawerText('account'.tr),
-                      onTap: () {
-                        Config.isLoggedIn
-                            ? Navigator.pushNamed(context, '/user')
-                            : Navigator.popAndPushNamed(context, '/login');
-                      },
-                    ),
                     ListTile(
                       title: drawerText('all_products'.tr),
                       onTap: () {
@@ -386,10 +421,10 @@ class _homePageState extends State<homePage> {
                                   "USD",
                                   style: TextStyle(color: Colors.white),
                                 )),
-                                ListTile(
-                                  title: Text("EUR",
-                                      style: TextStyle(color: Colors.white)),
-                                ),
+                                // ListTile(
+                                //   title: Text("EUR",
+                                //       style: TextStyle(color: Colors.white)),
+                                // ),
                               ]),
                         ]),
                     ExpansionTile(
@@ -500,32 +535,71 @@ class _mainPageState extends State<mainPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      //-----SEARCH BAR-----
+
                       Expanded(
                         child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(10),
-                                  topLeft: Radius.circular(10))),
+                          // decoration: BoxDecoration(
+                          //     // color: Colors.white,
+                          //     borderRadius: BorderRadius.only(
+                          //         bottomLeft: Radius.circular(10),
+                          //         topLeft: Radius.circular(10))),
                           child: TypeAheadField(
                             textFieldConfiguration: TextFieldConfiguration(
                                 autofocus: false,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
+                                    suffixIcon: Icon(Icons.search),
+                                    suffixIconColor: Config.maincolor,
+                                    filled: true,
+                                    focusColor: Config.maincolor,
+                                    fillColor: Colors.white,
+                                    floatingLabelBehavior:
+                                        FloatingLabelBehavior.never,
                                     label: Text('search'.tr),
-                                    border: OutlineInputBorder())),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Config.maincolor)))),
                             itemBuilder: (context, itemData) => ListTile(
                               title: Text(itemData.toString()),
                             ),
-                            onSuggestionSelected: (suggestion) async {
-                              filter = await ProductoFiltro()
-                                  .FilteredList(suggestion.toString(), null);
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => filterPage(
+                            onSuggestionSelected: (suggestion) {
+                              // filter = await ProductoFiltro().FilteredList(
+                              //     key: suggestion.toString(), subkey: null);
+                              int z = Config()
+                                  .suggestionType(suggestion.toString());
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                // print('Z = $z');
+                                switch (z) {
+                                  case 1:
+                                    {
+                                      ProductoMun p =
+                                          Config.AllProductsMun.firstWhere(
+                                              (element) =>
+                                                  element.nombre == suggestion);
+                                      return productPage(id: p.id!, index: 0);
+                                    }
+                                  case 2:
+                                    {
+                                      return filterPage(
+                                          cat: suggestion.toString(),
+                                          headerName: "$suggestion");
+                                    }
+                                  case 3:
+                                    {
+                                      return filterPage(
+                                          subcat: suggestion.toString(),
+                                          headerName: "$suggestion");
+                                    }
+                                  default:
+                                    {
+                                      return filterPage(
                                           productos: filter,
-                                          headerName: "$suggestion")));
+                                          headerName: "$suggestion");
+                                    }
+                                }
+                              }));
                             },
                             suggestionsCallback: (pattern) async {
                               return await Config().searchBar(pattern);
@@ -533,21 +607,21 @@ class _mainPageState extends State<mainPage> {
                           ),
                         ),
                       ),
-                      ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.all(0),
-                            alignment: Alignment.center,
-                            primary: Config.maincolor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(2)),
-                            fixedSize: Size(30, 60),
-                          ),
-                          child: const Icon(
-                            Icons.search,
-                            color: Colors.white,
-                            size: 30,
-                          ))
+                      // ElevatedButton(
+                      //     onPressed: () {},
+                      //     style: ElevatedButton.styleFrom(
+                      //       padding: EdgeInsets.all(0),
+                      //       alignment: Alignment.center,
+                      //       primary: Config.maincolor,
+                      //       shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(2)),
+                      //       fixedSize: Size(30, 60),
+                      //     ),
+                      //     child: const Icon(
+                      //       Icons.search,
+                      //       color: Colors.white,
+                      //       size: 30,
+                      //     ))
                     ],
                   ),
                 ),
@@ -588,14 +662,15 @@ class _mainPageState extends State<mainPage> {
                             alignment: Alignment.center,
                             onChanged: (String? newValue) {
                               if (newValue != null) {
-                                setState(() async {
-                                  filter = await ProductoFiltro()
-                                      .FilteredList(newValue, null);
+                                setState(() {
+                                  // print(newValue);
+                                  // filter = await ProductoFiltro()
+                                  //     .FilteredList(key: newValue, subkey: null);
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => filterPage(
-                                              productos: filter,
+                                              cat: newValue,
                                               headerName: "$newValue")));
                                   // Config.selectedCar = newValue;
                                 });
@@ -663,29 +738,25 @@ class _mainPageState extends State<mainPage> {
                       width: double.infinity,
                       child: PageView.builder(
                         itemBuilder: (context, index) {
-                          return Image.network(
-                            Config.apiURL + Config.carrusel[index].imgMovil!,
-                            fit: BoxFit.fill,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              }
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes !=
-                                          null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                          );
+                          return CachedNetworkImage(
+                              imageUrl: Config.apiURL +
+                                  Config.carrusel[index].imgMovil!,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: LinearProgressIndicator(),
+                                  ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error));
                         },
                         itemCount: Config.carrusel.length,
                         scrollDirection: Axis.horizontal,
                       ),
                     ),
+
+                    //-----TOP PRODUCTS-----
+
                     Padding(
                       padding: EdgeInsets.all(15),
                       child: Text(
@@ -702,8 +773,7 @@ class _mainPageState extends State<mainPage> {
                       margin: EdgeInsets.symmetric(horizontal: 10),
                       height: 500,
                       child: ProductsMobile(
-                        id: 3,
-                        mun: 1,
+                        id: 1,
                         // callback: callback,
                         axis: Axis.horizontal,
                       ),
@@ -727,8 +797,7 @@ class _mainPageState extends State<mainPage> {
                         height: 500,
                         width: MediaQuery.of(context).size.width,
                         child: ProductsMobile(
-                          id: 3,
-                          mun: 1,
+                          id: 2,
                           // callback: callback,
                           axis: Axis.horizontal,
                         )),
@@ -752,7 +821,6 @@ class _mainPageState extends State<mainPage> {
                         width: MediaQuery.of(context).size.width,
                         child: ProductsMobile(
                           id: 3,
-                          mun: 1,
                           // callback: callback,
                           axis: Axis.horizontal,
                         )),
@@ -777,7 +845,6 @@ class _mainPageState extends State<mainPage> {
                         width: MediaQuery.of(context).size.width,
                         child: ProductsMobile(
                           id: 4,
-                          mun: 1,
                           // callback: callback,
                           axis: Axis.horizontal,
                         )),
@@ -787,12 +854,18 @@ class _mainPageState extends State<mainPage> {
                     Container(
                       color: Config.secondarycolor,
                       child: Column(children: [
-                        Image.asset('assets/logo_large.png',
-                            fit: BoxFit.contain),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset('assets/logo_large.png',
+                                fit: BoxFit.contain),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            "Diplomarket is a division of the Las Americas TCC, LLC. We are very proud to say that Diplomarket is one of the first American Companies to serve the purchase and logistic needs to customers between US and Cuba.",
+                            "diplomsg".tr,
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                                 fontFamily: "Arial",

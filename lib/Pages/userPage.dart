@@ -267,6 +267,7 @@ class _UserPageState extends State<userPage> {
                       child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: DataTable(
+                            
                             columns: [
                               DataColumn(label: Text('Pasarela')),
                               DataColumn(label: Text('ID de Orden')),

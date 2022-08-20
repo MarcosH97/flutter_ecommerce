@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 
 class filterPage extends StatefulWidget {
   final headerName;
-  final List<ProductoMun> productos;
-  filterPage({Key? key, required this.headerName, required this.productos})
+  final String? subcat;
+  final String? cat;
+  final List<ProductoMun>? productos;
+  filterPage({Key? key, required this.headerName, this.productos, this.subcat, this.cat})
       : super(key: key);
 
   @override
@@ -16,22 +18,20 @@ class filterPage extends StatefulWidget {
 
 class _FilterPageState extends State<filterPage> {
 
-  // callback(){
-  //   setState(() {
-      
-  //   });
-  // }
-  
   List<ProductoMun> productos = [];
   @override
   Widget build(BuildContext context) {
-    productos = widget.productos;
+    if (widget.productos != null) {
+      productos = widget.productos!;
+      print(productos.length);
+    }
     return Scaffold(
-      appBar: myAppBar(context: context, 
-      // callback: callback
+      appBar: myAppBar(
+        context: context,
+        // callback: callback
       ).AppBarM(),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
+          margin: EdgeInsets.symmetric(horizontal: 10),
           height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
@@ -43,12 +43,50 @@ class _FilterPageState extends State<filterPage> {
                 style: TextStyle(fontSize: 24),
               ),
               Expanded(
-                child: ListView.builder(
-                    itemCount: productos.length,
-                    itemBuilder: (context, index) =>
-                        FoodCardW(productReq: Config().findProdyctByID(productos[index].id!) , index: index, 
-                        // callback: callback,
-                        )),
+                child: productos.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: productos.length,
+                        itemBuilder: (context, index) => FoodCardW(
+                              productReq: productos[index],
+                              index: index,
+                              // callback: callback,
+                            ))
+                    : FutureBuilder(
+                        future: widget.cat == null ? ProductoFiltro().FilteredList(key: null, subkey: widget.subcat) : (widget.subcat == null ? ProductoFiltro()
+                                .FilteredList(key: widget.cat, subkey: null): ProductoFiltro().FilteredList(
+                                    key: widget.cat, subkey: widget.subcat)),
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              {
+                                return LinearProgressIndicator();
+                              }
+                            case ConnectionState.none:
+                              {
+                                return Text('null');
+                              }
+                            case ConnectionState.done:
+                              {
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  productos =
+                                      snapshot.data as List<ProductoMun>;
+                                  return ListView.builder(
+                                      itemCount: productos.length,
+                                      itemBuilder: (context, index) =>
+                                          FoodCardW(
+                                            productReq: productos[index],
+                                            index: index,
+                                            // callback: callback,
+                                          ));
+                                }
+                                return Text('null');
+                              }
+                            default:
+                              {
+                                return Text('null');
+                              }
+                          }
+                        }),
               ),
             ],
           )),

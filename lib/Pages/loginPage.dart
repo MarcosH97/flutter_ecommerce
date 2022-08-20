@@ -182,7 +182,7 @@ class _loginPageState extends State<loginPage> {
                                       TextSpan(
                                           text: "pw_fgn".tr,
                                           style: TextStyle(
-                                              color: Colors.grey,
+                                              color: Colors.white,
                                               decoration:
                                                   TextDecoration.underline),
                                           recognizer: TapGestureRecognizer()

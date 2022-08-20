@@ -279,25 +279,24 @@ class Config {
     return ProductoMun();
   }
 
-  List<Producto> getProductosCarrito(BuildContext context) {
-    List<Producto> listado = [];
+  List<ProductoMun> getProductosCarrito(BuildContext context) {
+    List<ProductoMun> listado = [];
     carrito = context.watch<Cart>().getLista;
     carrito.forEach((element) {
       // print(element.producto);
       listado.add(getProductoLocal(element));
     });
-    print(listado[0].nombre);
+    // print(listado[0].nombre);
     return listado;
   }
 
-  Producto getProductoLocal(Componente c) {
-    Producto pro = Producto();
-    AllProductsMun.forEach((element) {
-      if (c.producto.toString() == element.id) {
-        pro = ProductoModelResponse().getProductobyID(element.id!);
+  ProductoMun getProductoLocal(Componente c) {
+    for (var v in AllProductsMun) {
+      if (c.producto.toString() == v.id) {
+        return v;
       }
-    });
-    return pro;
+    }
+    return ProductoMun();
   }
 
   bool inCarrito(int id) {
@@ -385,39 +384,38 @@ class Config {
 
   List<ProductoMun> filter(String key, int type) {
     List<ProductoMun> list = [];
-
-    AllProducts.forEach((element) {
-      var prod = getLocalProdMun(int.parse(element.id!));
+    // print('entered filter');
+    // print(AllProductsMun.length);
+    for (var v in AllProductsMun) {
       switch (type) {
         case 1:
           {
-            if (element.marca!.nombre == key) list.add(prod);
+            if (v.marca!.nombre == key) list.add(v);
             break;
           }
         case 2:
           {
-            if (element.proveedor!.nombre == key) list.add(prod);
-            break;
-          }
-        case 3:
-          {
-            if (element.subcategoria == key) list.add(prod);
+            if (v.proveedor!.nombre == key) list.add(v);
             break;
           }
         default:
           break;
       }
-    });
+    }
+    // print(list.length);
     return list;
   }
 
-  ProductoMun getLocalProdMun(int id) {
-    return AllProductsMun.firstWhere((element) => element.id == id);
+  ProductoMun getLocalProdMun(String id) {
+    for (var v in AllProductsMun) {
+      if (v.id == id) {
+        return v;
+      }
+    }
+    return ProductoMun();
   }
 
-  sendCart() {}
-
-  sendCheckout() async {}
+  static late Map<String, String> searchList;
 
   Future<List<String>> searchBar(String key) async {
     List<String> lista = [];
@@ -437,9 +435,10 @@ class Config {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       List<dynamic> body = jsonDecode(resBody);
-
+      searchList = new Map();
       body.forEach((element) {
         lista.add(element['nombre']);
+        searchList[element['nombre']] = element['tipo'];
       });
       return lista;
     } else {
@@ -504,5 +503,29 @@ class Config {
   LoadUserData() {
     DestinatarioResponse().getDestinatarios();
     OrderResponse().getOrders();
+  }
+
+  int suggestionType(String suggestion) {
+    // print(searchList[suggestion]);
+    switch (searchList[suggestion]) {
+      case 'Producto':
+        {
+          // print('returns 1');
+          return 1;
+        }
+      case 'Categoria':
+        {
+          return 2;
+        }
+      case 'Subcategoria':
+        {
+          return 3;
+        }
+      default:
+        {
+          break;
+        }
+    }
+    return 0;
   }
 }

@@ -80,56 +80,16 @@ class _registerPageState extends State<registerPage>
                       margin: EdgeInsets.all(10),
                       child: Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: registerLast()
-                          // registerBody()
-                          // RegisterBody(key: _globalKey),
-                          ),
+                          child: registerLast()),
                     ),
                     const SizedBox(
                       height: 15,
                     ),
-                    // ElevatedButton(
-                    //   style: ElevatedButton.styleFrom(
-                    //       elevation: 10,
-                    //       padding: const EdgeInsets.all(20),
-                    //       primary: Config.maincolor,
-                    //       fixedSize: Size(
-                    //           Device().isMobile(context)
-                    //               ? MediaQuery.of(context).size.width / 1.5
-                    //               : MediaQuery.of(context).size.width / 3,
-                    //           60),
-                    //       shape: RoundedRectangleBorder(
-                    //           borderRadius: BorderRadius.circular(10))),
-                    //   onPressed: () async {
-                    //     if (_globalKey.currentState!.validate()) {
-                    //       _globalKey.currentState!.save();
-                    //       if (await Config().checkInternetConnection()) {
-                    //         loadingDialog();
-                    //         // ScaffoldMessenger.of(context).showSnackBar(
-                    //         //     SnackBar(content: Text('reg_yes'.tr)));
-                    //       } else {
-                    //         //   // ScaffoldMessenger.of(context).showSnackBar(
-                    //         //     SnackBar(content: Text('reg_no'.tr)));
-                    //       }
-                    //     } else {
-                    //       ScaffoldMessenger.of(context).showSnackBar(
-                    //           SnackBar(content: Text("No hay conexion")));
-                    //     }
-                    //   },
-                    // },
-                    //   child: Text(
-                    //     'register'.tr,
-                    //     textScaleFactor: 1.3,
-                    //     style: TextStyle(color: Colors.white, wordSpacing: 3),
-                    //   ),
-                    // ),
                     SizedBox(
                       height: 20,
                     ),
                   ],
                 ),
-                // RegisterBody(),
-                // child: registerBody(),
               ),
               Align(
                 alignment: Alignment.center,
@@ -470,6 +430,7 @@ class registerLast extends StatefulWidget {
 class _registerLastState extends State<registerLast> {
   final _globalKey = GlobalKey<FormState>();
   bool hidden = true;
+  bool approved = false;
   User u = User();
 
   Widget RegisterMessage() {
@@ -582,9 +543,6 @@ class _registerLastState extends State<registerLast> {
                 keyboardType: TextInputType.emailAddress,
                 validator: validateEmail,
                 autofocus: false,
-                // onChanged: (String value) {
-                //   u.email = value;
-                // },
                 onSaved: (newValue) => u.email = newValue,
                 decoration: InputDecoration(
                     fillColor: Colors.white,
@@ -693,7 +651,57 @@ class _registerLastState extends State<registerLast> {
               ),
             ],
           ),
-          const SizedBox(
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Checkbox(
+                  value: approved,
+                  onChanged: (value) {
+                    setState(() {
+                      approved = value!;
+                    });
+                  }),
+              //Al registrarte aceptas nuestros términos de uso y política de privacidad.
+              Expanded(
+                child: RichText(
+                  overflow: TextOverflow.clip,
+                  maxLines: 2,
+                  softWrap: true,
+                  text: TextSpan(children: <TextSpan>[
+                    TextSpan(
+                      text: 'tos_1'.tr,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                    TextSpan(
+                        style: TextStyle(color: Config.maincolor, fontSize: 18),
+                        text: 'tos'.tr,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => popUp(true));
+                          }),
+                    TextSpan(
+                      text: 'tos_2'.tr,
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                    TextSpan(
+                        text: 'privpol'.tr,
+                        style: TextStyle(color: Config.maincolor, fontSize: 18),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => popUp(false));
+                          }),
+                  ]),
+                ),
+              )
+            ],
+          ),
+          SizedBox(
             height: 15,
           ),
           ElevatedButton(
@@ -709,16 +717,13 @@ class _registerLastState extends State<registerLast> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10))),
             onPressed: () async {
-              // if (_globalKey.currentState != null) {
-              if (_globalKey.currentState!.validate()) {
+              if (_globalKey.currentState!.validate() && approved) {
                 _globalKey.currentState!.save();
-                // print(u.toJson());
                 if (await Config().checkInternetConnection()) {
-                  // print("hay conexion");
                   showDialog(
-                      context: context,
-                      builder: (context) => loadingDialog(),
-                    );
+                    context: context,
+                    builder: (context) => loadingDialog(),
+                  );
                 } else {
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text("No hay conexion")));
@@ -736,6 +741,97 @@ class _registerLastState extends State<registerLast> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget popUp(bool tyc) {
+    return Container(
+      height: 400,
+      width: 500,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
+      child: SingleChildScrollView(
+          child: tyc ? 
+        Wrap(
+        runSpacing: 10,
+        children: [
+          Text('privacy'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('privacy_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('buypros'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('buypros_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('cookies'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('cookies_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('otherpriv'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('otherpriv_txt'.tr, style: TextStyle(color: Colors.black)),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Ok'))
+        ],
+      )
+        :
+        Wrap(
+        runSpacing: 10,
+        children: [
+          Text('legalinfo'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('legalinfo_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('infopa'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('infopa_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('prodvar'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('prodvar_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('whobuy'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('whobuy_txt'.tr, style: TextStyle(color: Colors.black)),
+          Text('problim'.tr,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16)),
+          Text('problim_txt'.tr, style: TextStyle(color: Colors.black)),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Ok'))
+        ],
+      )),
+    
     );
   }
 

@@ -79,7 +79,7 @@ class AddTodoPopupCard extends StatelessWidget {
                               onTap: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => productPage(
-                                          producto: Config().findProdyctByID(deseos[index].id!),
+                                          id:deseos[index].id!,
                                           index: index,
                                           // callback: callback,
                                         )));

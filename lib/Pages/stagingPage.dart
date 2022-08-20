@@ -32,7 +32,7 @@ class stagePageState extends State<stagePage> {
 
   bool selPayMet = true;
 
-  List<Producto> productos = [];
+  List<ProductoMun> productos = [];
 
   late List<DropdownMenuItem<String>> _destinos;
 
@@ -289,371 +289,358 @@ class stagePageState extends State<stagePage> {
         Step(
             isActive: currentStep >= 2,
             title: currentStep == 2 ? Text('pay'.tr) : Text(""),
-            content: Container(
-                height: MediaQuery.of(context).size.height / 2 + 200,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Summary',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Container(
-                      height: 300,
-                      decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: ListView.builder(
-                        itemCount: itemCount,
-                        //  context.watch<Cart>().listaSize,
-                        itemBuilder: (context, index) {
-                          return Card(
-                            child: Container(
-                              height: 100,
-                              margin: EdgeInsets.all(5),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          child: RichText(
-                                            overflow: TextOverflow.ellipsis,
-                                            strutStyle:
-                                                StrutStyle(fontSize: 20),
-                                            text: TextSpan(
-                                                text: productos[index].nombre!,
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-                                        ),
-                                        Expanded(
-                                            child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                              Center(
-                                                  child: Text(
-                                                "${config.getProductFinalPrice(int.parse(productos[index].id!))} US\$",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 24,
-                                                    color: Config.maincolor),
-                                                textAlign: TextAlign.center,
-                                              )
-                                                  // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
-                                                  ),
-                                              Text(
-                                                "",
-                                                // "${context.watch<Cart>().getLista[index].respaldo!.toStringAsFixed(2)} US\$",
-                                                // carrito[index].respaldo!.toStringAsFixed(2)} US\$",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20,
-                                                    color: Colors.grey[700]),
-                                                textAlign: TextAlign.center,
-                                              )
-                                            ])),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Container(
-                                            height: 200,
-                                            decoration: BoxDecoration(
-                                                color: Config.maincolor,
-                                                borderRadius:
-                                                    BorderRadius.circular(60)),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: context
-                                                                .watch<Cart>()
-                                                                .getCantidad(
-                                                                    index) !=
-                                                            1
-                                                        ? () {
-                                                            if (Provider.of<Cart>(
-                                                                        context,
-                                                                        listen:
-                                                                            false)
-                                                                    .getCantidad(
-                                                                        index) >
-                                                                1) {
-                                                              context
-                                                                  .read<Cart>()
-                                                                  .decreaseAmmount(
-                                                                      index);
-                                                              // setState(() {
-                                                              //   carrito[index]
-                                                              //       .decrementCantidad();
-                                                              ComponenteCreate()
-                                                                  .updateRespaldo(
-                                                                      index);
-                                                              // });
-                                                            }
-                                                          }
-                                                        : null,
-                                                    style: ElevatedButton.styleFrom(
-                                                        primary:
-                                                            Config.maincolor,
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10))),
-                                                    child: const Icon(
-                                                      Icons.remove,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        border: Border.all(
-                                                            width: 2,
-                                                            color: Config
-                                                                .maincolor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                      ),
-                                                      alignment:
-                                                          Alignment.center,
-                                                      height: 50,
-                                                      width: 40,
-                                                      child: Text(
-                                                        context
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Summary',
+                  style: TextStyle(fontSize: 20),
+                ),
+                Container(
+                  height: 300,
+                  decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: ListView.builder(
+                    itemCount: itemCount,
+                    //  context.watch<Cart>().listaSize,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: Container(
+                          height: 100,
+                          margin: EdgeInsets.all(5),
+                          child: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(
+                                      width: 100,
+                                      child: RichText(
+                                        overflow: TextOverflow.ellipsis,
+                                        strutStyle:
+                                            StrutStyle(fontSize: 20),
+                                        text: TextSpan(
+                                            text: productos[index].nombre!,
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18,
+                                                fontWeight:
+                                                    FontWeight.bold)),
+                                      ),
+                                    ),
+                                    Expanded(
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment
+                                                    .spaceBetween,
+                                            children: [
+                                          Center(
+                                              child: Text(
+                                            "${config.getProductFinalPrice(int.parse(productos[index].id!))} US\$",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 24,
+                                                color: Config.maincolor),
+                                            textAlign: TextAlign.center,
+                                          )
+                                              // Text(Config.carrito[index].producto!.nombre!, textAlign: TextAlign.center,)
+                                              ),
+                                          Text(
+                                            "",
+                                            // "${context.watch<Cart>().getLista[index].respaldo!.toStringAsFixed(2)} US\$",
+                                            // carrito[index].respaldo!.toStringAsFixed(2)} US\$",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                                color: Colors.grey[700]),
+                                            textAlign: TextAlign.center,
+                                          )
+                                        ])),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Container(
+                                        height: 200,
+                                        decoration: BoxDecoration(
+                                            color: Config.maincolor,
+                                            borderRadius:
+                                                BorderRadius.circular(60)),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: context
                                                             .watch<Cart>()
-                                                            .getCantidad(index)
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize: 18,
-                                                            color: Config
-                                                                .maincolor),
-                                                      )),
-                                                ),
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                      onPressed: () {
+                                                            .getCantidad(
+                                                                index) !=
+                                                        1
+                                                    ? () {
                                                         if (Provider.of<Cart>(
                                                                     context,
                                                                     listen:
                                                                         false)
                                                                 .getCantidad(
-                                                                    index) <=
-                                                            int.parse(productos[
-                                                                    index]
-                                                                .cantInventario!)) {
+                                                                    index) >
+                                                            1) {
                                                           context
                                                               .read<Cart>()
-                                                              .increaseAmmount(
+                                                              .decreaseAmmount(
                                                                   index);
                                                           // setState(() {
                                                           //   carrito[index]
-                                                          //       .incrementCantidad();
+                                                          //       .decrementCantidad();
                                                           ComponenteCreate()
                                                               .updateRespaldo(
                                                                   index);
                                                           // });
                                                         }
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
-                                                          primary:
-                                                              Config.maincolor),
-                                                      child: const Icon(
-                                                        Icons.add,
-                                                        color: Colors.white,
-                                                      )),
+                                                      }
+                                                    : null,
+                                                style: ElevatedButton.styleFrom(
+                                                    primary:
+                                                        Config.maincolor,
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    10))),
+                                                child: const Icon(
+                                                  Icons.remove,
+                                                  color: Colors.white,
                                                 ),
-                                              ],
+                                              ),
                                             ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                      onPressed: () {
-                                        context
-                                            .read<Cart>()
-                                            .removeProduct(index);
-                                        // setState(() {
-                                        //   Config.carrito.removeAt(index);
-                                        // });
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.grey,
+                                            Expanded(
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    border: Border.all(
+                                                        width: 2,
+                                                        color: Config
+                                                            .maincolor),
+                                                    borderRadius:
+                                                        BorderRadius
+                                                            .circular(10),
+                                                  ),
+                                                  alignment:
+                                                      Alignment.center,
+                                                  height: 50,
+                                                  width: 40,
+                                                  child: Text(
+                                                    context
+                                                        .watch<Cart>()
+                                                        .getCantidad(index)
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                        color: Config
+                                                            .maincolor),
+                                                  )),
+                                            ),
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                  onPressed: () {
+                                                    if (Provider.of<Cart>(
+                                                                context,
+                                                                listen:
+                                                                    false)
+                                                            .getCantidad(
+                                                                index) <=
+                                                        productos[
+                                                                index]
+                                                            .max!) {
+                                                      context
+                                                          .read<Cart>()
+                                                          .increaseAmmount(
+                                                              index);
+                                                      // setState(() {
+                                                      //   carrito[index]
+                                                      //       .incrementCantidad();
+                                                      ComponenteCreate()
+                                                          .updateRespaldo(
+                                                              index);
+                                                      // });
+                                                    }
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                      shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      10)),
+                                                      primary:
+                                                          Config.maincolor),
+                                                  child: const Icon(
+                                                    Icons.add,
+                                                    color: Colors.white,
+                                                  )),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      iconSize: 30,
-                                      padding: EdgeInsets.all(0))
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Wrap(
-                      runSpacing: 10,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                "${'deliver'.tr} ${Config.selectedMun} (${Config.provincia})",
-                                style: TextStyle(fontSize: 14)),
-                            Text("\$${Config().getCostActiveMun()}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18))
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Subtotal", style: TextStyle(fontSize: 14)),
-                            Text(
-                                "\$${Config().getTotalPriceKart(context: context)}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18))
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Total", style: TextStyle(fontSize: 14)),
-                            Text(
-                                "\$${(Config().getTotalPriceKart(context: context) + Config().getCostActiveMun()).toStringAsFixed(2)}",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18))
-                          ],
-                        ),
-                      ],
-                    ),
-                    Divider(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                            child: Wrap(
-                          direction: Axis.vertical,
-                          spacing: 5,
-                          children: [
-                            Text('payDet'.tr,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(Config.user.name!),
-                            Text(Config.user.email!),
-                            Text(""),
-                          ],
-                        )),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
-                          height: 100,
-                          width: 1,
-                          color: Colors.grey,
-                        ),
-                        Expanded(
-                            child: Wrap(
-                          direction: Axis.vertical,
-                          spacing: 5,
-                          children: [
-                            Text('shipping'.tr,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(Config().getDestinatario().email!),
-                            Text(Config().getDestinatario().direccion!),
-                            Text(Config().getDestinatario().nombre!),
-                          ],
-                        ))
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    if (selPayMet)
-                      GestureDetector(
-                        onTap: (() {
-                      if (context.read<Cart>().listaSize > 0) {
-                        Navigator.pushNamed(context, '/paypal');
-                        Config.karrito.clear();
-                      } else {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  title: Text("Carrito vacio"),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context),
-                                        child: Text("ok"))
+                                    )
                                   ],
-                                ));
-                      }
-                        }),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                      color: Colors.amber,
-
+                                ),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    context
+                                        .read<Cart>()
+                                        .removeProduct(index);
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.grey,
+                                  ),
+                                  iconSize: 30,
+                                  padding: EdgeInsets.all(0))
+                            ],
                           ),
-                      height: 80,
-                      alignment: Alignment.center,
-                      child: ClipRRect(
-                        child: Image.asset('assets/paypallarge.png', fit: BoxFit.fitHeight,)),
                         ),
-                      )
-                    else
-                      GestureDetector(
-                        onTap: (() {
-                      showDialog(
-                          context: context,
-                          builder: (context) => loadingDialog(context));
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (context) =>
-                      //         AlertDialog(title: Text('Compra agregada'),actions: [
-                      //           TextButton(onPressed: (){}, child: Text('ok'))
-                      //         ],));
-                      // Navigator.pop(context);
-                      // Config.karrito.clear();
-                        }),
-                        child: Container(
-                          height: 80,
-                      alignment: Alignment.center,
-                      child: Image.asset(Config.lang
-                          ? 'assets/tropi_es.png'
-                          : 'assets/tropi_en.png'),
-                        ),
-                      )
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Wrap(
+                  runSpacing: 10,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            "${'deliver'.tr} ${Config.selectedMun} (${Config.provincia})",
+                            style: TextStyle(fontSize: 14)),
+                        Text("\$${Config().getCostActiveMun()}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18))
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Subtotal", style: TextStyle(fontSize: 14)),
+                        Text(
+                            "\$${Config().getTotalPriceKart(context: context)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18))
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Total", style: TextStyle(fontSize: 14)),
+                        Text(
+                            "\$${(Config().getTotalPriceKart(context: context) + Config().getCostActiveMun()).toStringAsFixed(2)}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18))
+                      ],
+                    ),
                   ],
-                ))),
+                ),
+                Divider(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                        child: Wrap(
+                      direction: Axis.vertical,
+                      spacing: 5,
+                      children: [
+                        Text('payDet'.tr,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(Config.user.name!),
+                        Text(Config.user.email!),
+                        Text(""),
+                      ],
+                    )),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      height: 100,
+                      width: 1,
+                      color: Colors.grey,
+                    ),
+                    Expanded(
+                        child: Wrap(
+                      direction: Axis.vertical,
+                      spacing: 5,
+                      children: [
+                        Text('shipping'.tr,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(Config().getDestinatario().email!),
+                        Text(Config().getDestinatario().direccion!),
+                        Text(Config().getDestinatario().nombre!),
+                      ],
+                    ))
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                if (selPayMet)
+                  GestureDetector(
+                    onTap: (() {
+                  if (context.read<Cart>().listaSize > 0) {
+                    Navigator.popAndPushNamed(context, '/paypal');
+                    Config.karrito.clear();
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: Text("Carrito vacio"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context),
+                                    child: Text("ok"))
+                              ],
+                            ));
+                  }
+                    }),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                  color: Colors.amber,
+                  
+                      ),
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: ClipRRect(
+                    child: Image.asset('assets/paypallarge.png', fit: BoxFit.fitHeight,)),
+                    ),
+                  )
+                else
+                  GestureDetector(
+                    onTap: (() {
+                  showDialog(
+                      context: context,
+                      builder: (context) => loadingDialog(context));
+                    }),
+                    child: Container(
+                      height: 80,
+                  alignment: Alignment.center,
+                  child: Image.asset(Config.lang
+                      ? 'assets/tropi_es.png'
+                      : 'assets/tropi_en.png'),
+                    ),
+                  )
+              ],
+            )),
       ];
   bool biggerThan(double a, double b) => a != b;
 

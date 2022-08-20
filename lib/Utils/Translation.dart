@@ -34,6 +34,10 @@ class TranslationUtil extends Translations {
           'verify': 'Verify your email',
           'verify_txt':
               'Head to your email and verify your account to start shopping! Check in your inbox ,or the spam folder, it might have ended up there ',
+          'tos_1':'By signing up you agree to our ',
+          'tos_2':'and',
+          'tos':'terms of service',
+          'privpol':'privacy policy',
 
           //home
           'top_products': 'Top Products',
@@ -107,6 +111,8 @@ class TranslationUtil extends Translations {
           'termscond':'THESE TERMS AND CONDITIONS MAY VARY',
           'termscond_txt':'Diplomarket reserves the right to modify these TOS at any time without prior notice. Your use of this site after any changes are made constitutes your consent to comply with and be bound by the T&C after such changes and modifications are made. For this reason, we suggest that you review these T&C each time you use the site.',
 
+          'avat': 'Avaliable at:',
+
           //destin
           'show':'Show',
           'edit':'Edit',
@@ -168,6 +174,10 @@ class TranslationUtil extends Translations {
           'verify': 'Verifique su correo',
           'verify_txt':
               'Vaya a su correo y verifique su cuenta para entrar al sitio. Diríjase a su bandeja de entrada, de no estar ahí, revise en spam, puede su correo lo haya enviado ahí 😅.',
+          'tos_1': 'Al registrarte aceptas nuestros ',
+          'tos_2': ' y ',
+          'tos': 'términos de uso',
+          'privpol': ' política de privacidad.',
 
           //home
           'top_products': 'Productos Destacados',
@@ -240,6 +250,20 @@ class TranslationUtil extends Translations {
           'termscond':'ESTOS TÉRMINOS Y CONDICIONES PUEDEN VARIAR',
           'termscond_txt':'Diplomarket se reserva el derecho de modificar estos TYC en cualquier momento sin previo aviso. El uso que usted haga de este sitio posterior a cualquier cambio que se realice, constituye su consentimiento para cumplir y estar sujeto a los TYC después de las modificaciones y cambios que se realicen. Por esta razón, le sugerimos que revise estos TYC toda vez que usted use el sitio.',
 
+          'legalinfo':'INFORMACIÓN LEGAL',
+          'legalinfo_txt':'Todos los productos y servicios que se realizan en esta página web, la relación con proveedores, el destino del producto final, el uso de estos y sus beneficiarios, son acorde a diferentes licencias y excepción de estas, que se han obtenido por las distintas entidades Federales, Estatales, Locales en los Estados Unidos, así como aquellas aprobadas para los actores económicos cubanos, por las instituciones estatales y reguladoras, dentro de Cuba.',
+          'infopa':'INFORMACION DE LA PÁGINA',
+          'infopa_txt':'DIPLOMARKET es la una tienda que abarca varios productores y comercializadores en Cuba, que ponen sus productos y servicios para satisfacer las necesidades de usted, familiares y amigos. No importa donde usted se encuentre, le llevamos sus compras a su destino final dentro de Cuba. Los productos ya están dentro de Cuba, es solo entregarlos. Lo hacemos fácil para usted, puede pagarnos por Zelle, Paypal, Visa o MasterCard, con 100% de seguridad en sus transacciones por esta vía. Por nuestro equipo se revisan y confirman cada transacción. No somos una empresa de “envíos de paquetes desde EUA”, sino una empresa que trabaja con actores económicos que tienen sus PRODUCTOS DENTRO DE CUBA, YA LISTOS PARA SER ENTREGADOS. Los tiempos de entregas son de 3 a 5 días dentro de la Habana y entre 15 a 20 días en las provincias en los que nuestros productos y servicios estarán disponibles. Del grupo de productores, comercializadores dentro de esta página web, se encuentran aquellos que realizan la distribución de sus compras hasta la puerta de su casa o de los suyos. Todos estamos responsabilizados que su entrega final llegue en el mejor estado.¿Eres Productor, Comercializador y estás interesados en poner tus productos y servicios con nosotros?... No hay problema Click Aquí.',
+          'prodvar':'EN DIPLOMARKET LA VARIEDAD DE PRODUCTOS SON:',
+          'prodvar_txt':'Productos Nacionales Cubanos: En esta web usted podrá acceder a productos que son producidos dentro de Cuba, y comercializados por FGNE, agricultores o entidades de servicios, productos frescos, de calidad y conservación garantizada. Productos Importados desde el exterior: En esta web también usted podrá acceder a productos que ya han sido importados desde el exterior, según las regulaciones vigentes, y que ya están en función para usted y su familia, tan pronto sea confirmado su pago. Muchos de esos productos son conocidos por usted, y que desea que sean también consumidos por usted, sus familiares y amigos. Nuestra variedad de producto y servicios es la meta, y que sean permanente a precios más asequibles. Todos los productos tienen garantizada su calidad, conservación, fecha valida para su consumo, y han sido registrados ante entidades reguladoras del comercio, tanto en el exterior como dentro de Cuba. Escoja nuestra Agencia Online para realizar sus envíos. Tenemos más de 1000 productos que ponemos a su disposición para hacerlos llegar, desde la comodidad de su casa, de un modo rápido y seguro. Como cliente, podrá contar también con soporte de ayuda las 24 horas del día, donde le ayudaremos en el proceso de compra o ante cualquier duda o inquietud. Sera nuestro placer atenderle, contáctenos por teléfono o por email. DIPLOMARKET, ni sus asociados son una agencia de paquetería. No estamos asociados ni a envíos de paquetes con limitadas cantidades (Paquetería), ni por Menajes de Casa, o Equipajes No Acompañados, ni realizamos correspondencias desde el exterior o entregas personales vía aérea (conocidas por “Mulas”), Somos un MarketPlace para actores económicos, proveedores, sus productos y servicios dentro de Cuba.',
+          'prodpre':'PRODUCTOS Y PRECIOS',
+          'prodpre_txt':'Los productos YA ESTAN DENTRO DE CUBA, el precio que usted paga es el precio final del producto, no necesita ser enviado a CUBA, por que ya se encuentra importado, dentro de Cuba. Los precios adicionales que usted podrá pagar son aquellos relacionados con la entrega a domicilio, por instalación u otros cargos que serán explicados antes de ser pagados finalmente. Si existiese algún cargo extra sobre estos temas, que se necesite después de su pago, será contactado inmediatamente por un representante. Usted podrá confirmar finalmente la compra con el monto a cancelar con su rápido reembolso. Desea comprar en cantidades, por encargos o entregas en volúmenes, puede acercarse a nosotros enviándonos sus intereses, solo Click Aquí. Si desea comprar otros tipos de productos o de servicios que no encuentra en esta pagina web, por favor no dude en contactarnos, estamos aquí para buscar soluciones legales, de suministros y logísticos.Click Aquí.',
+          'whobuy':'QUIEN PUEDE COMPRAR EN ESTA WEB*',
+          'whobuy_txt':'',
+          'problim':'PROHIBICIONES/LIMITACIONES DE COMPRAR EN ESTA PAGINA WEB',
+          'problim_txt':'Además de aquellas entidades restringidos por las regulaciones del Departamento de Estado de los EUA, para saber más por favor Click Aquí. Nuestras empresas o asociados no somos responsables del resultado negativo de sus compras, que podrá incluir bloquear cuentas de compradores por instituciones federales, cancelaciones de órdenes, demoras de reembolsos al comprador, no entrega de mercancías a destinos finales, entre otras que lo puede afectar. Por favor, al menos que se encuentre dentro de la lista de QUIEN PUEDE COMPRAR EN ESTA WEB*, por favor no realizar transacciones. No obstante, debido a que existe regulaciones que aplican para casos específicos sean para personas naturales o extranjeras, estatales o privadas, nuestras empresas estan dispuestas a trabajar de conjunto y según regulaciones vigentes en E.U.A y Cuba al momento que usted lea nuestra web, por favor contáctenos',
+
+          'avat':'Disponible en:',
 
           //destin
           'show':'Mostrar',

@@ -5,7 +5,6 @@ import 'package:e_commerce/Pages/checkoutPage.dart';
 import 'package:e_commerce/Pages/helpPage.dart';
 import 'package:e_commerce/Pages/homePage.dart';
 import 'package:e_commerce/Pages/loginPage.dart';
-import 'package:e_commerce/Pages/paypalPage.dart';
 import 'package:e_commerce/Pages/paypalthree.dart';
 import 'package:e_commerce/Pages/setupPage.dart';
 import 'package:e_commerce/Pages/stagingPage.dart';
@@ -39,10 +38,7 @@ Future<void> main() async {
   Config.paisesT = [];
   Config.provincias = [];
   Config.faqs = [];
-  // Config().setAll;
-  // SharedPreferences sh = await SharedPreferences.getInstance();
-  // bool _login = sh.getBool('login')!;
-  // Config.login = _login;
+
   if (await Config().checkInternetConnection()) {
     if (Platform.isAndroid) {
       WidgetsFlutterBinding.ensureInitialized();
@@ -88,9 +84,7 @@ class _myApp extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Widget _defaultHome = loginPage();
-    // loadLogin();
     SharedService().LoadData;
-
     return GetMaterialApp(
       translations: TranslationUtil(),
       locale: Locale('es', 'ES'),
@@ -108,7 +102,6 @@ class _myApp extends State<MyApp> {
         '/staging': (context) => stagePage(),
         '/allproducts': (context) => allProductsPage(),
         '/paypal': (context) => PayPalLast(),
-        '/braintree': (context) => PayPage(),
         '/help': (context) => helpPage(),
       },
     );

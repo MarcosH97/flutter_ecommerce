@@ -103,7 +103,7 @@ class _checkOutPageState extends State<checkOutPage> {
 
 class kartList extends StatelessWidget {
   kartList({Key? key}) : super(key: key);
-  List<Producto> productos = [];
+  List<ProductoMun> productos = [];
   var config = Config();
   int cantCart = 0;
   bool biggerThan(double a, double b) => a != b;
@@ -192,7 +192,8 @@ class kartList extends StatelessWidget {
                         biggerThan(
                                 config.getProductFinalPrice(
                                     int.parse(productos[index].id!)),
-                                productos[index].precio!)
+                                double.parse(
+                                    productos[index].precio!.cantidad!))
                             ? Text(
                                 "\$ ${productos[index].precio!}",
                                 style: TextStyle(
@@ -275,8 +276,8 @@ class kartList extends StatelessWidget {
                                 child: ElevatedButton(
                                     onPressed: () {
                                       if (getcant(index) <=
-                                          int.parse(productos[index]
-                                              .cantInventario!)) {
+                                          productos[index]
+                                              .max!) {
                                         context
                                             .read<Cart>()
                                             .increaseAmmount(index);

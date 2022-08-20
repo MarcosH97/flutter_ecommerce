@@ -508,7 +508,11 @@ class municipio {
 }
 
 class ProductoFiltro {
-  Future<List<ProductoMun>> FilteredList(String key, String? subkey) async {
+  Future<List<ProductoMun>> FilteredList({String? key, String? subkey}) async {
+    print('key $key  subcat $subkey');
+
+    List<String> bebidas = ['Aguas', 'Gaseadas', 'Instantáneas', 'Jugos'];
+    List<String> elect = ['Electrodomesticos', 'Piezas de Pc'];
     List<ProductoMun> filtrado = [];
     var headersList = {
       'Accept-Language': Config.language,
@@ -523,33 +527,65 @@ class ProductoFiltro {
     final resBody = await res.stream.bytesToString();
     // print(resBody);
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      List<dynamic> body;
-
-      if (subkey != null) {
+      List<dynamic> body = [];
+      if (key == null && subkey != null) {
+        if (bebidas.contains(subkey)) {
+          body = jsonDecode(resBody)['Bebidas']['$subkey'];
+        } else if (elect.contains(subkey)) {
+          body = jsonDecode(resBody)['Electrónicos']['$subkey'];
+        } else if (subkey == 'Pomos') {
+          body = jsonDecode(resBody)['Aceites']['$subkey'];
+        } else {}
+        body.forEach((element) {
+          filtrado.add(ProductoMun.fromJson(element));
+        });
+        return filtrado;
+      } else if (subkey != null) {
         body = jsonDecode(resBody)['$key']['$subkey'];
-      } else {
+        body.forEach((element) {
+          filtrado.add(ProductoMun.fromJson(element));
+        });
+      } else if (key != null && subkey == null) {
         switch (key) {
           case "Aceites":
             {
               subkey = "Pomos";
-              break;
+              body = jsonDecode(resBody)['$key']['$subkey'];
+              body.forEach((element) {
+                filtrado.add(ProductoMun.fromJson(element));
+              });
+              return filtrado;
             }
-
           case "Bebidas":
             {
-              subkey = "Aguas";
-              break;
+              for (var s in bebidas) {
+                body = jsonDecode(resBody)['$key'][s];
+                body.forEach((element) {
+                  filtrado.add(ProductoMun.fromJson(element));
+                });
+              }
+              return filtrado;
+            }
+          case "Electrónicos":
+            {
+              for (var s in elect) {
+                body = jsonDecode(resBody)['$key'][s];
+                body.forEach((element) {
+                  filtrado.add(ProductoMun.fromJson(element));
+                });
+              }
+              return filtrado;
             }
           default:
             {}
         }
-        body = jsonDecode(resBody)['$key']['$subkey'];
-        print(body);
+      } else {
+        body = jsonDecode(resBody)[key][subkey];
+        body.forEach((element) {
+          filtrado.add(ProductoMun.fromJson(element));
+        });
+        return filtrado;
       }
-      body.forEach((element) {
-        filtrado.add(ProductoMun.fromJson(element));
-      });
-      print(filtrado);
     } else {
       print(res.reasonPhrase);
     }

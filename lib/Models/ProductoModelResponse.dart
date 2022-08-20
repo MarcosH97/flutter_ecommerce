@@ -20,21 +20,15 @@ class ProductoModelResponse {
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
       List<dynamic> pro = jsonDecode(resBody)['results'];
-      // print(pro);
-      var prod = pro[0];
-      // print(prod);
+      // var prod = pro[0];
       List<ProductoMun> lista = [];
       pro.forEach((element) {
-        if (!Config.AllProductsMun.contains(ProductoMun.fromJson(element)))
-          Config.AllProductsMun.add(ProductoMun.fromJson(element));
-        
         lista.add(ProductoMun.fromJson(element));
       });
-      // print(lista);
+      Config.AllProductsMun = lista;
       return lista;
     } else {
       print(res.reasonPhrase);
-      // print("error");
       throw Exception();
     }
   }
@@ -70,7 +64,32 @@ class ProductoModelResponse {
 
     final resBody = await res.stream.bytesToString();
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print('topsell: $resBody');
+      // print('topsell: $resBody');
+      List<dynamic> body = jsonDecode(resBody);
+      body.forEach((element) {
+        lista.add(ProductoMun.fromJson(element));
+      });
+      return lista;
+    } else {
+      print(res.reasonPhrase);
+      throw Exception();
+    }
+  }
+  Future<List<ProductoMun>> getProductRecommendedList() async {
+    List<ProductoMun> lista = [];
+
+    var headersList = {'Authorization': Config.token};
+    var url = Uri.parse(
+        'https://www.diplomarket.com/backend/recomendados/${Config.user.id}/${Config.activeMun}/');
+
+    var req = http.Request('GET', url);
+
+    req.headers.addAll(headersList);
+    var res = await req.send().timeout(const Duration(seconds: 5));
+
+    final resBody = await res.stream.bytesToString();
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      // print('topsell: $resBody');
       List<dynamic> body = jsonDecode(resBody);
       body.forEach((element) {
         lista.add(ProductoMun.fromJson(element));
@@ -98,7 +117,7 @@ class ProductoModelResponse {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print('special: $resBody');
+      // print('special: $resBody');
       List<dynamic> body = jsonDecode(resBody);
       for (var v in body) {
         lista.add(ProductoMun.fromJson(v));
